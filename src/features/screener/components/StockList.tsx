@@ -31,9 +31,9 @@ export function StockList({ data, loading, onPageChange }: StockListProps) {
     <div>
       {/* Column headers (desktop) */}
       <div className="hidden sm:grid grid-cols-[minmax(180px,1.2fr)_minmax(240px,1.5fr)_minmax(100px,0.8fr)] gap-x-4 px-4 pb-2 text-[11px] font-medium text-zinc-400 uppercase tracking-wide">
-        <span>{txt({ ko: '종목', en: 'Stock' })}</span>
-        <span>{txt({ ko: '리스크 5대 지표', en: 'Risk 5 Dimensions' })}</span>
-        <span className="text-right">{txt({ ko: '현재가', en: 'Price' })}</span>
+        <span>{txt(t.screener.colStock)}</span>
+        <span>{txt(t.screener.colRiskDimensions)}</span>
+        <span className="text-right">{txt(t.screener.colPrice)}</span>
       </div>
 
       <div className="flex flex-col gap-1.5">

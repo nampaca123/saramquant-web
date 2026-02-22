@@ -21,10 +21,10 @@ interface AiAnalysisSectionProps {
 }
 
 const PRESETS: { key: string; label: LocalizedText; subtitle: LocalizedText }[] = [
-  { key: 'summary', label: t.stock.presetSummary, subtitle: { ko: '핵심만 간단하게', en: 'Key points briefly' } },
-  { key: 'beginner', label: t.stock.presetBeginner, subtitle: { ko: '처음 투자하시는 분을 위해', en: 'For first-time investors' } },
-  { key: 'risk', label: t.stock.presetRisk, subtitle: { ko: '위험 요소를 집중 분석', en: 'Focus on risk factors' } },
-  { key: 'financial', label: t.stock.presetFinancial, subtitle: { ko: '회사의 돈 상태를 분석', en: 'Analyze company finances' } },
+  { key: 'summary', label: t.stock.presetSummary, subtitle: t.stock.presetSubSummary },
+  { key: 'beginner', label: t.stock.presetBeginner, subtitle: t.stock.presetSubBeginner },
+  { key: 'risk', label: t.stock.presetRisk, subtitle: t.stock.presetSubRisk },
+  { key: 'financial', label: t.stock.presetFinancial, subtitle: t.stock.presetSubFinancial },
 ];
 
 export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysisSectionProps) {
@@ -72,10 +72,7 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
       </div>
 
       <p className="text-xs text-zinc-500 mb-3">
-        {txt({
-          ko: 'AI가 이 종목의 리스크와 상태를 쉬운 말로 분석해드려요.',
-          en: "AI analyzes this stock's risk and status in plain language.",
-        })}
+        {txt(t.stock.aiDesc)}
       </p>
 
       {/* Preset selector -- always visible */}
@@ -152,10 +149,7 @@ function AnalysisPreview({ txt, preset }: { txt: (v: any) => string; preset: str
             <div className="h-3 w-2/3 rounded bg-zinc-200/60" />
           </div>
           <p className="text-[11px] text-zinc-400 mt-3">
-            {txt({
-              ko: '위 버튼을 눌러 분석을 요청하면 여기에 AI 분석 결과가 표시돼요',
-              en: 'Press the button above to request analysis — results will appear here',
-            })}
+            {txt(t.stock.aiPreview)}
           </p>
         </div>
       </div>

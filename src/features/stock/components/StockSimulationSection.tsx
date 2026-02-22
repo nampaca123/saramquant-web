@@ -26,27 +26,18 @@ interface StockSimulationSectionProps {
   currentPrice: number | null;
 }
 
-const PERCENTILE_LABELS: Record<string, { ko: string; en: string }> = {
-  '10': { ko: '비관적 (하위 10%)', en: 'Pessimistic (P10)' },
-  '25': { ko: '보수적 (하위 25%)', en: 'Conservative (P25)' },
-  '50': { ko: '중간값 (예상 중심)', en: 'Median (P50)' },
-  '75': { ko: '낙관적 (상위 25%)', en: 'Optimistic (P75)' },
-  '90': { ko: '매우 낙관적 (상위 10%)', en: 'Very Optimistic (P90)' },
+const PERCENTILE_LABELS: Record<string, typeof t.simulation.pctPessimistic> = {
+  '10': t.simulation.pctPessimistic,
+  '25': t.simulation.pctConservative,
+  '50': t.simulation.pctMedian,
+  '75': t.simulation.pctOptimistic,
+  '90': t.simulation.pctVeryOptimistic,
 };
 
 const RESULT_TOOLTIPS = {
-  expectedReturn: {
-    ko: '과거 패턴이 계속된다면 평균적으로 기대할 수 있는 수익이에요',
-    en: 'Average expected return if past patterns continue',
-  },
-  var: {
-    ko: '이 확률 범위 안에서 최악의 경우 이 정도까지 떨어질 수 있어요',
-    en: 'Maximum expected loss within the selected probability range',
-  },
-  cvar: {
-    ko: '최악의 상황들만 모았을 때 평균 손실이에요. VaR보다 보수적인 수치예요',
-    en: 'Average loss in the worst-case tail. More conservative than VaR',
-  },
+  expectedReturn: t.simulation.tooltipReturn,
+  var: t.simulation.tooltipVar,
+  cvar: t.simulation.tooltipCvar,
 };
 
 export function StockSimulationSection({ symbol, currentPrice }: StockSimulationSectionProps) {
@@ -85,10 +76,7 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
       </div>
 
       <p className="text-xs text-zinc-500 mb-4">
-        {txt({
-          ko: '이 종목의 과거 데이터를 기반으로, 앞으로 가격이 어느 범위 안에 있을지 통계적으로 추정해요.',
-          en: 'Statistically estimates the likely future price range based on historical data.',
-        })}
+        {txt(t.simulation.desc)}
       </p>
 
       {/* Controls -- always visible */}
@@ -99,10 +87,10 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
             value={days}
             onChange={(e) => setDays(e.target.value)}
             options={[
-              { value: '30', label: txt({ ko: '30일', en: '30 days' }) },
-              { value: '60', label: txt({ ko: '60일', en: '60 days' }) },
-              { value: '120', label: txt({ ko: '120일', en: '120 days' }) },
-              { value: '252', label: txt({ ko: '1년', en: '1 year' }) },
+              { value: '30', label: txt(t.simulation.days30) },
+              { value: '60', label: txt(t.simulation.days60) },
+              { value: '120', label: txt(t.simulation.days120) },
+              { value: '252', label: txt(t.simulation.days252) },
             ]}
             className="w-24"
           />
@@ -112,10 +100,7 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
             {txt(t.simulation.confidence)}
             <span
               className="ml-1 text-zinc-400 cursor-help"
-              title={txt({
-                ko: '95%면 100번 중 95번은 이 범위 안에 있다는 뜻이에요',
-                en: '95% means 95 out of 100 times the price falls within this range',
-              })}
+              title={txt(t.simulation.confidenceTooltip)}
             >
               <Info className="inline h-3 w-3" />
             </span>
@@ -175,14 +160,14 @@ function OutputPreview({ confidenceLabel, txt, language }: { confidenceLabel: st
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 py-10">
         <BarChart3 className="h-8 w-8 text-zinc-200 mb-2" />
         <p className="text-xs text-zinc-400">
-          {txt({ ko: '실행하면 가격 범위 차트가 여기에 표시돼요', en: 'Price range chart will appear here after running' })}
+          {txt(t.simulation.chartPreview)}
         </p>
       </div>
 
       {/* Percentile table skeleton */}
       <div className="rounded-xl border border-dashed border-zinc-200 p-3">
         <p className="text-[11px] text-zinc-400 mb-2 font-medium">
-          {txt({ ko: '최종 예상 가격 분포', en: 'Final Price Distribution' })}
+          {txt(t.simulation.finalDistribution)}
         </p>
         <div className="space-y-1.5">
           {['10', '25', '50', '75', '90'].map((pct) => (

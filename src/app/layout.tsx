@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'SaramQuant',
-  description: 'Numbers into signals, risk at a glance',
+  description: 'Translating risk into easy language, not numbers',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

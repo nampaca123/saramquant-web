@@ -106,7 +106,7 @@ export default function PortfolioPage() {
           <div>
             <h1 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.title)}</h1>
             <p className="text-xs text-zinc-500">
-              {txt({ ko: '내 투자의 전체 리스크를 진단하세요', en: 'Diagnose your total investment risk' })}
+              {txt(t.portfolio.subtitle)}
             </p>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function PortfolioPage() {
           <Card className="text-center py-12">
             <Briefcase className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
             <p className="text-sm text-zinc-600">
-              {txt({ ko: '보유 종목을 등록하면 리스크 분석을 시작할 수 있어요', en: 'Register holdings to start risk analysis' })}
+              {txt(t.portfolio.emptyMessage)}
             </p>
             <Button
               variant="primary"
@@ -130,7 +130,7 @@ export default function PortfolioPage() {
               className="mt-4"
               onClick={() => router.push('/screener')}
             >
-              {txt({ ko: '종목 찾기', en: 'Find stocks' })}
+              {txt(t.portfolio.findStocks)}
             </Button>
           </Card>
         )

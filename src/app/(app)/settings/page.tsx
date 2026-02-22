@@ -45,7 +45,7 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-xl font-bold text-zinc-900">{txt(t.settings.title)}</h1>
           <p className="text-xs text-zinc-500">
-            {txt({ ko: '프로필과 환경설정을 관리하세요', en: 'Manage your profile and preferences' })}
+            {txt(t.settings.subtitle)}
           </p>
         </div>
       </div>
@@ -113,7 +113,7 @@ function LanguageCard() {
   return (
     <Card>
       <p className="text-xs text-zinc-500 mb-3">
-        {txt({ ko: '앱에 표시되는 언어를 선택하세요', en: 'Choose the language displayed in the app' })}
+        {txt(t.settings.languageDesc)}
       </p>
       <div className="flex gap-2 mb-3">
         {([['ko', '한국어'], ['en', 'English']] as const).map(([val, label]) => (

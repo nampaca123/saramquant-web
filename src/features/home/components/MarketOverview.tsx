@@ -12,11 +12,11 @@ const TIER_COLORS: Record<string, string> = {
   WARNING: 'bg-warning',
 };
 
-const TIER_LABELS: Record<string, { ko: string; en: string }> = {
-  STABLE: { ko: '안정', en: 'Stable' },
-  CAUTION: { ko: '주의', en: 'Caution' },
-  WARNING: { ko: '경고', en: 'Warning' },
-};
+const TIER_TEXTS = {
+  STABLE: t.home.tierStable,
+  CAUTION: t.home.tierCaution,
+  WARNING: t.home.tierWarning,
+} as const;
 
 const MARKET_LABELS: Record<string, string> = {
   KR_KOSPI: 'KOSPI',
@@ -86,7 +86,7 @@ export function MarketOverview({ data }: MarketOverviewProps) {
         {TIERS.map((tier) => (
           <div key={tier} className="flex items-center gap-1.5 text-xs text-zinc-600">
             <span className={cn('h-2 w-2 rounded-full', TIER_COLORS[tier])} />
-            {txt(TIER_LABELS[tier])}
+            {txt(TIER_TEXTS[tier])}
           </div>
         ))}
       </div>

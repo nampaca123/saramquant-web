@@ -6,6 +6,7 @@ import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { getAllComparisons } from '@/lib/utils/format-comparison';
 import { cn } from '@/lib/utils/cn';
+import { t } from '@/lib/i18n/translations';
 import type { SectorComparison, StockFundamentals } from '../types/stock.types';
 
 interface SectorComparisonCardProps {
@@ -37,7 +38,7 @@ export function SectorComparisonCard({ comparison, fundamentals }: SectorCompari
           {txt({ ko: `같은 업종(${comparison.sector}) 비교`, en: `Sector Comparison (${comparison.sector})` })}
         </h3>
         <span className="text-xs text-zinc-400">
-          {comparison.stockCount}{txt({ ko: '개 종목', en: ' stocks' })}
+          {comparison.stockCount}{txt(t.stock.sectorStockCount)}
         </span>
       </div>
 

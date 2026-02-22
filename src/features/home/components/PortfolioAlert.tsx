@@ -37,9 +37,9 @@ export function PortfolioAlert({ portfolios }: PortfolioAlertProps) {
         <h2 className="text-sm font-semibold text-zinc-900 mb-2">{txt(t.home.portfolioAlert)}</h2>
         <div className="flex flex-col items-center py-6">
           <PieChart className="h-8 w-8 text-zinc-300 mb-2" />
-          <p className="text-sm text-zinc-400">{txt({ ko: '보유 종목을 등록해보세요', en: 'Register your holdings' })}</p>
+          <p className="text-sm text-zinc-400">{txt(t.home.emptyPortfolio)}</p>
           <Link href="/screener" className="mt-3">
-            <Button size="sm" variant="secondary">{txt({ ko: '종목 찾기', en: 'Find stocks' })}</Button>
+            <Button size="sm" variant="secondary">{txt(t.home.findStocks)}</Button>
           </Link>
         </div>
       </Card>

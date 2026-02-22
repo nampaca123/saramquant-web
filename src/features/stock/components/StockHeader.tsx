@@ -55,7 +55,7 @@ export function StockHeader({ header, riskBadge, onAddPortfolio }: StockHeaderPr
 
       <div className="mt-3 flex items-center justify-between">
         <p className="text-xs text-zinc-400">
-          {txt({ ko: '이미 보유한 종목을 등록하면 포트폴리오 리스크 분석을 받을 수 있어요', en: 'Register holdings to get portfolio risk analysis' })}
+          {txt(t.stock.registrationPrompt)}
         </p>
         <Button variant="secondary" size="sm" onClick={onAddPortfolio}>
           <Plus className="h-4 w-4 mr-1" />

@@ -41,7 +41,7 @@ export default function HomePage() {
         <div>
           <h1 className="text-xl font-bold text-zinc-900">{txt(t.home.title)}</h1>
           <p className="text-xs text-zinc-500">
-            {txt({ ko: '오늘의 시장 상태를 한눈에', en: "Today's market at a glance" })}
+            {txt(t.home.subtitle)}
           </p>
         </div>
       </div>

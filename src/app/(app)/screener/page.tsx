@@ -47,7 +47,7 @@ export default function ScreenerPage() {
         <div>
           <h1 className="text-xl font-bold text-zinc-900">{txt(t.screener.title)}</h1>
           <p className="text-xs text-zinc-500">
-            {txt({ ko: '조건에 맞는 종목을 리스크 관점에서 찾아보세요', en: 'Find stocks filtered by risk criteria' })}
+            {txt(t.screener.subtitle)}
           </p>
         </div>
       </div>

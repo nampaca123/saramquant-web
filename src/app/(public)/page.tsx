@@ -9,26 +9,13 @@ import { LanguageToggle } from '@/components/common/LanguageToggle';
 import { OAuthButtons } from '@/features/auth/components/OAuthButtons';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { SignupForm } from '@/features/auth/components/SignupForm';
-import type { LocalizedText } from '@/types';
 
 type AuthView = 'main' | 'login' | 'signup';
 
-const FEATURES: { icon: typeof Shield; title: LocalizedText; desc: LocalizedText }[] = [
-  {
-    icon: Shield,
-    title: { ko: '5차원 리스크 신호', en: '5-Dimension Risk Signals' },
-    desc: { ko: '복잡한 지표를 안정/주의/경고 세 단계로 번역', en: 'Complex indicators translated into 3 simple signals' },
-  },
-  {
-    icon: Sparkles,
-    title: { ko: 'AI 쉬운 말 분석', en: 'AI Plain-Language Analysis' },
-    desc: { ko: '전문 용어 없이 누구나 이해할 수 있는 분석', en: 'Analysis anyone can understand, no jargon' },
-  },
-  {
-    icon: PieChart,
-    title: { ko: '포트폴리오 리스크 진단', en: 'Portfolio Risk Diagnosis' },
-    desc: { ko: '보유 종목의 전체 리스크를 한눈에 파악', en: 'See your total portfolio risk at a glance' },
-  },
+const FEATURES = [
+  { icon: Shield, titleKey: 'featureSignalTitle' as const, descKey: 'featureSignalDesc' as const },
+  { icon: Sparkles, titleKey: 'featureAiTitle' as const, descKey: 'featureAiDesc' as const },
+  { icon: PieChart, titleKey: 'featurePortfolioTitle' as const, descKey: 'featurePortfolioDesc' as const },
 ];
 
 export default function LandingPage() {
@@ -36,58 +23,73 @@ export default function LandingPage() {
   const [view, setView] = useState<AuthView>('main');
 
   return (
-    <div className="min-h-dvh">
-      {/* Language toggle */}
+    <div className="min-h-dvh bg-white">
       <div className="absolute right-4 top-4 z-10">
         <LanguageToggle />
       </div>
 
       <div className="flex min-h-dvh flex-col lg:flex-row">
-        {/* Left: Hero */}
-        <div className="flex flex-1 flex-col justify-center px-8 py-16 lg:px-16 bg-gradient-to-br from-white via-gold-wash/30 to-white">
-          <div className="max-w-lg mx-auto lg:mx-0 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
+        {/* Hero */}
+        <div className="relative flex flex-1 flex-col justify-center overflow-hidden px-6 py-10 sm:px-12 lg:px-20 lg:py-0">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/60 via-transparent to-white" />
+          <div className="pointer-events-none absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full bg-gold-wash/50 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-[300px] w-[300px] rounded-full bg-gold-light/20 blur-3xl" />
+
+          <div className="relative mx-auto max-w-xl animate-fade-in lg:mx-0">
+            <div className="flex items-center gap-4 mb-8">
               <Image
                 src="/image/logo/saramquant-logo.jpg"
                 alt="SaramQuant"
-                width={48}
-                height={48}
-                className="rounded-xl shadow-md"
+                width={56}
+                height={56}
+                className="rounded-2xl shadow-lg ring-1 ring-black/5"
                 priority
               />
-              <span className="text-2xl font-bold text-zinc-900">SaramQuant</span>
+              <span className="text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl">
+                SaramQuant
+              </span>
             </div>
 
-            <h1 className="text-3xl font-bold text-zinc-900 leading-tight lg:text-4xl">
-              {txt({ ko: '리스크를 숫자가 아닌\n신호로 번역해드려요', en: 'Translating risk\ninto signals, not numbers' })}
+            <h1 className="text-3xl font-extrabold leading-snug tracking-tight text-zinc-900 sm:text-4xl lg:text-5xl">
+              {txt(t.landing.headlinePrimary)}
+              <br />
+              <span className="bg-gradient-to-r from-gold to-amber-500 bg-clip-text text-transparent">
+                {txt(t.landing.headlineAccent)}
+              </span>
             </h1>
 
-            <p className="mt-4 text-base text-zinc-500 leading-relaxed">
-              {txt(t.onboarding.tagline)}
+            <p className="mt-4 max-w-md text-base leading-relaxed text-zinc-500 sm:text-lg">
+              {txt(t.landing.subheading)}
             </p>
 
-            <div className="mt-10 space-y-4">
-              {FEATURES.map((f) => (
-                <div key={txt(f.title)} className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold-wash">
-                    <f.icon className="h-4 w-4 text-gold" />
+            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              {FEATURES.map((f, i) => (
+                <div
+                  key={f.titleKey}
+                  className={`animate-slide-up rounded-2xl border border-zinc-100 bg-white/80 p-4 shadow-sm backdrop-blur-sm${
+                    i === 1 ? ' animation-delay-200' : i === 2 ? ' animation-delay-400' : ''
+                  }`}
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-wash">
+                    <f.icon className="h-5 w-5 text-gold" />
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-zinc-800">{txt(f.title)}</p>
-                    <p className="text-xs text-zinc-500">{txt(f.desc)}</p>
-                  </div>
+                  <p className="mt-3 text-sm font-bold text-zinc-900">{txt(t.landing[f.titleKey])}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-zinc-500">{txt(t.landing[f.descKey])}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Right: Auth */}
-        <div className="flex items-center justify-center px-8 py-16 lg:w-[420px] lg:shrink-0 lg:border-l lg:border-zinc-100">
+        {/* Auth */}
+        <div className="flex items-center justify-center border-t border-zinc-100 bg-zinc-50/50 px-6 py-12 sm:px-12 lg:w-[440px] lg:shrink-0 lg:border-l lg:border-t-0 lg:py-0">
           <div className="w-full max-w-sm animate-slide-up">
-            <h2 className="text-xl font-bold text-zinc-900 mb-6">
-              {txt({ ko: '시작하기', en: 'Get Started' })}
+            <h2 className="text-2xl font-bold text-zinc-900 mb-2">
+              {txt(t.landing.getStarted)}
             </h2>
+            <p className="mb-8 text-sm text-zinc-500">
+              {txt(t.landing.getStartedDesc)}
+            </p>
 
             {view === 'main' && (
               <div className="flex flex-col gap-4">

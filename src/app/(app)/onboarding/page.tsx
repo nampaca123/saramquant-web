@@ -194,7 +194,7 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="text-sm font-medium text-zinc-700 mb-1 block">
-                  {txt({ ko: '닉네임', en: 'Nickname' })} <span className="text-warning">*</span>
+                  {txt(t.onboarding.nicknameLabel)} <span className="text-warning">*</span>
                 </label>
                 <input
                   type="text"

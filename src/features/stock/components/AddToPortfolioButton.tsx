@@ -114,7 +114,7 @@ export function AddToPortfolioButton({ stockId, open, onClose }: AddToPortfolioB
             {isInvalidShares && (
               <p className="mt-1 flex items-center gap-1 text-xs text-warning">
                 <AlertCircle className="h-3 w-3" />
-                {txt({ ko: '1 이상의 정수를 입력하세요', en: 'Enter a whole number ≥ 1' })}
+                {txt(t.stock.sharesError)}
               </p>
             )}
           </div>
@@ -133,7 +133,7 @@ export function AddToPortfolioButton({ stockId, open, onClose }: AddToPortfolioB
             {isFutureDate && (
               <p className="mt-1 flex items-center gap-1 text-xs text-warning">
                 <AlertCircle className="h-3 w-3" />
-                {txt({ ko: '미래 날짜는 선택할 수 없어요', en: 'Cannot select a future date' })}
+                {txt(t.stock.dateError)}
               </p>
             )}
           </div>

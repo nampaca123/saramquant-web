@@ -6,6 +6,7 @@ import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { FACTOR_LABELS } from '@/constants/indicator-tooltips.constants';
 import { cn } from '@/lib/utils/cn';
+import { t } from '@/lib/i18n/translations';
 import type { FactorExposures } from '../types/stock.types';
 
 interface FactorExposureChartProps {
@@ -31,7 +32,7 @@ export function FactorExposureChart({ exposures }: FactorExposureChartProps) {
       <div className="flex items-center gap-2 mb-4">
         <Info className="h-4 w-4 text-gold" />
         <h3 className="text-sm font-bold text-zinc-900">
-          {txt({ ko: '이 종목의 성격', en: 'Stock Characteristics' })}
+          {txt(t.stock.factorTitle)}
         </h3>
       </div>
 
@@ -69,10 +70,7 @@ export function FactorExposureChart({ exposures }: FactorExposureChartProps) {
       </div>
 
       <p className="mt-3 text-xs text-zinc-400">
-        {txt({
-          ko: '같은 시장의 모든 종목 대비 이 종목이 어디쯤에 있는지 보여줘요. 가운데가 평균이에요.',
-          en: 'Shows where this stock stands compared to all stocks in the same market. Center = average.',
-        })}
+        {txt(t.stock.factorDesc)}
       </p>
     </Card>
   );
