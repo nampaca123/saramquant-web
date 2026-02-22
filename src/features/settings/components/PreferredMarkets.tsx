@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { FlagIcon } from '@/components/common/FlagIcon';
 import { useText } from '@/lib/i18n/use-text';
 import { useAuth } from '@/providers/AuthProvider';
 import { userApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
+import { cn } from '@/lib/utils/cn';
 import type { Market } from '@/types';
 
 const MARKETS: { value: Market; label: string }[] = [
@@ -42,18 +44,21 @@ export function PreferredMarkets() {
 
   return (
     <Card>
-      <h3 className="text-sm font-medium text-zinc-700 mb-3">{txt(t.settings.preferredMarkets)}</h3>
       <div className="grid grid-cols-2 gap-2 mb-3">
         {MARKETS.map((m) => (
-          <label key={m.value} className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={selected.includes(m.value)}
-              onChange={() => toggle(m.value)}
-              className="accent-gold"
-            />
+          <button
+            key={m.value}
+            onClick={() => toggle(m.value)}
+            className={cn(
+              'flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all',
+              selected.includes(m.value)
+                ? 'border-gold bg-gold-wash text-gold'
+                : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
+            )}
+          >
+            <FlagIcon market={m.value} size={16} />
             {m.label}
-          </label>
+          </button>
         ))}
       </div>
       <div className="flex justify-end">

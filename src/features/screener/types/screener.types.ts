@@ -35,6 +35,7 @@ export interface DashboardStockItem {
   market: string;
   sector: string | null;
   summaryTier: RiskTier | null;
+  dimensionTiers: Record<string, string> | null;
   latestClose: number | null;
   priceChangePercent: number | null;
   beta: number | null;

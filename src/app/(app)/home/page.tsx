@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Home } from 'lucide-react';
 import { homeApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
@@ -35,10 +36,22 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-bold text-zinc-900">{txt(t.home.title)}</h1>
+      <div className="flex items-center gap-2">
+        <Home className="h-5 w-5 text-gold" />
+        <div>
+          <h1 className="text-xl font-bold text-zinc-900">{txt(t.home.title)}</h1>
+          <p className="text-xs text-zinc-500">
+            {txt({ ko: '오늘의 시장 상태를 한눈에', en: "Today's market at a glance" })}
+          </p>
+        </div>
+      </div>
+
       <BenchmarkCards benchmarks={data.benchmarks} />
-      <MarketOverview data={data.marketOverview} />
-      <PortfolioAlert portfolios={data.portfolios} />
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <MarketOverview data={data.marketOverview} />
+        <PortfolioAlert portfolios={data.portfolios} />
+      </div>
     </div>
   );
 }

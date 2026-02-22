@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { BarChart3 } from 'lucide-react';
+import { PieChart, Briefcase } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/providers/AuthProvider';
@@ -76,25 +76,21 @@ export default function PortfolioPage() {
   }, [user, fetchData]);
 
   if (authLoading || (user && loading)) {
-    return (
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
-        <PortfolioSkeleton />
-      </main>
-    );
+    return <PortfolioSkeleton />;
   }
 
   if (!user) {
     return (
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 animate-fade-in">
+      <div className="animate-fade-in">
         <Card className="text-center py-16">
-          <BarChart3 className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
+          <PieChart className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.loginCta)}</h2>
           <p className="text-sm text-zinc-500 mt-2">{txt(t.portfolio.loginCtaSub)}</p>
           <Button variant="primary" size="lg" className="mt-6" onClick={() => router.push('/')}>
             {txt(t.common.login)}
           </Button>
         </Card>
-      </main>
+      </div>
     );
   }
 
@@ -103,20 +99,43 @@ export default function PortfolioPage() {
     : null;
 
   return (
-    <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6 animate-fade-in">
-      {/* Title + tab */}
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.title)}</h1>
+        <div className="flex items-center gap-2">
+          <PieChart className="h-5 w-5 text-gold" />
+          <div>
+            <h1 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.title)}</h1>
+            <p className="text-xs text-zinc-500">
+              {txt({ ko: '내 투자의 전체 리스크를 진단하세요', en: 'Diagnose your total investment risk' })}
+            </p>
+          </div>
+        </div>
         <PortfolioTabSelector active={tab} onChange={setTab} />
       </div>
 
-      {/* Metrics */}
       <MetricsCards analysis={analysis} />
 
-      {/* Holdings */}
-      {detail && <HoldingsList portfolio={detail} onRefresh={fetchData} />}
+      {detail ? (
+        detail.holdings.length > 0 ? (
+          <HoldingsList portfolio={detail} onRefresh={fetchData} />
+        ) : (
+          <Card className="text-center py-12">
+            <Briefcase className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
+            <p className="text-sm text-zinc-600">
+              {txt({ ko: '보유 종목을 등록하면 리스크 분석을 시작할 수 있어요', en: 'Register holdings to start risk analysis' })}
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              className="mt-4"
+              onClick={() => router.push('/screener')}
+            >
+              {txt({ ko: '종목 찾기', en: 'Find stocks' })}
+            </Button>
+          </Card>
+        )
+      ) : null}
 
-      {/* Charts row */}
       {activePortfolio && (
         <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
           <DiversificationChart data={diversData} />
@@ -124,8 +143,7 @@ export default function PortfolioPage() {
         </div>
       )}
 
-      {/* AI */}
       {activePortfolio && <AiDiagnosisSection portfolioId={activePortfolio.id} />}
-    </main>
+    </div>
   );
 }

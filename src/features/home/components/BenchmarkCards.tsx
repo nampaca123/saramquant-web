@@ -18,12 +18,12 @@ interface BenchmarkCardsProps {
 
 export function BenchmarkCards({ benchmarks }: BenchmarkCardsProps) {
   return (
-    <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {benchmarks.map((b) => {
         const isUp = b.changePercent > 0;
         const isDown = b.changePercent < 0;
         return (
-          <Card key={b.benchmark} className="shrink-0 w-44">
+          <Card key={b.benchmark}>
             <p className="text-xs text-zinc-500 mb-1">
               {BENCHMARK_LABELS[b.benchmark] ?? b.benchmark}
             </p>

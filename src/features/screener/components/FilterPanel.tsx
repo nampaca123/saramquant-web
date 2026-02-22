@@ -1,20 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { useLanguage } from '@/providers/LanguageProvider';
+import { FlagIcon } from '@/components/common/FlagIcon';
 import { cn } from '@/lib/utils/cn';
 import { MARKET_OPTIONS, TIER_FILTER_OPTIONS, SORT_OPTIONS } from '../constants/screener.constants';
 import type { DashboardStocksParams } from '../types/screener.types';
+import type { Market } from '@/types';
 
 interface FilterPanelProps {
   params: DashboardStocksParams;
   onChange: (params: DashboardStocksParams) => void;
+  className?: string;
 }
 
-export function FilterPanel({ params, onChange }: FilterPanelProps) {
+export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
   const txt = useText();
   const { language } = useLanguage();
   const [sectors, setSectors] = useState<string[]>([]);
@@ -37,7 +41,7 @@ export function FilterPanel({ params, onChange }: FilterPanelProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={cn('flex flex-col gap-4', className)}>
       {/* Search */}
       <input
         value={params.query ?? ''}
@@ -46,20 +50,30 @@ export function FilterPanel({ params, onChange }: FilterPanelProps) {
         className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm placeholder:text-zinc-400 outline-none focus:border-gold focus:ring-1 focus:ring-gold"
       />
 
-      {/* Basic filters row */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Market */}
-        <select
-          value={params.market ?? ''}
-          onChange={(e) => update({ market: e.target.value || undefined, sector: undefined })}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm"
-        >
-          {MARKET_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label[language]}</option>
-          ))}
-        </select>
+      {/* Market tabs with flags */}
+      <div className="flex flex-wrap gap-1.5">
+        {MARKET_OPTIONS.map((o) => {
+          const active = (params.market ?? '') === o.value;
+          return (
+            <button
+              key={o.value}
+              onClick={() => update({ market: o.value || undefined, sector: undefined })}
+              className={cn(
+                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
+                active
+                  ? 'border-gold bg-gold-wash text-gold'
+                  : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
+              )}
+            >
+              {o.value && <FlagIcon market={o.value as Market} size={16} />}
+              {o.label[language]}
+            </button>
+          );
+        })}
+      </div>
 
-        {/* Tier chips */}
+      {/* Tier chips */}
+      <div className="flex flex-wrap gap-1.5">
         {TIER_FILTER_OPTIONS.map((o) => (
           <button
             key={o.value}
@@ -67,54 +81,56 @@ export function FilterPanel({ params, onChange }: FilterPanelProps) {
             className={cn(
               'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
               selectedTiers.includes(o.value)
-                ? 'border-gold bg-gold-wash text-gold'
+                ? o.value === 'STABLE' ? 'border-stable bg-stable-bg text-stable'
+                  : o.value === 'CAUTION' ? 'border-caution bg-caution-bg text-caution'
+                  : 'border-warning bg-warning-bg text-warning'
                 : 'border-zinc-200 text-zinc-500 hover:border-zinc-300',
             )}
           >
             {o.label[language]}
           </button>
         ))}
+      </div>
 
-        {/* Sector */}
-        {sectors.length > 0 && (
-          <select
-            value={params.sector ?? ''}
-            onChange={(e) => update({ sector: e.target.value || undefined })}
-            className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm"
-          >
-            <option value="">{txt(t.screener.allSectors)}</option>
-            {sectors.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        )}
-
-        {/* Sort */}
+      {/* Sector */}
+      {sectors.length > 0 && (
         <select
-          value={params.sort ?? 'name_asc'}
-          onChange={(e) => update({ sort: e.target.value })}
-          className="ml-auto rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm"
+          value={params.sector ?? ''}
+          onChange={(e) => update({ sector: e.target.value || undefined })}
+          className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm"
         >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label[language]}</option>
+          <option value="">{txt(t.screener.allSectors)}</option>
+          {sectors.map((s) => (
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
-      </div>
+      )}
+
+      {/* Sort */}
+      <select
+        value={params.sort ?? 'name_asc'}
+        onChange={(e) => update({ sort: e.target.value })}
+        className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-sm"
+      >
+        {SORT_OPTIONS.map((o) => (
+          <option key={o.value} value={o.value}>{o.label[language]}</option>
+        ))}
+      </select>
 
       {/* Advanced filters toggle */}
       <button
         onClick={() => setAdvancedOpen(!advancedOpen)}
-        className="flex items-center gap-1 self-start text-xs text-zinc-500 hover:text-zinc-700 transition-colors"
+        aria-expanded={advancedOpen}
+        className="flex items-center gap-1.5 self-start text-xs text-zinc-500 hover:text-zinc-700 transition-colors"
       >
-        <svg className={cn('h-3 w-3 transition-transform', advancedOpen && 'rotate-90')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
+        <SlidersHorizontal className="h-3.5 w-3.5" />
+        <ChevronRight className={cn('h-3 w-3 transition-transform', advancedOpen && 'rotate-90')} />
         {txt(t.screener.advancedFilters)}
       </button>
 
       {/* Advanced filters grid */}
       {advancedOpen && (
-        <div className="grid grid-cols-2 gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-4 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3 lg:grid-cols-1 sm:grid-cols-2">
           <RangeFilter label="Beta" minVal={params.betaMin} maxVal={params.betaMax}
             onMin={(v) => update({ betaMin: v })} onMax={(v) => update({ betaMax: v })} step={0.1} />
           <RangeFilter label="RSI" minVal={params.rsiMin} maxVal={params.rsiMax}

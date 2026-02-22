@@ -4,12 +4,14 @@ import { Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { FlagIcon } from '@/components/common/FlagIcon';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { formatCurrency } from '@/lib/utils/format-currency';
 import { formatPercent } from '@/lib/utils/format-percent';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
+import type { Market } from '@/types';
 import type { StockHeader as StockHeaderData, StockRiskBadge } from '../types/stock.types';
 
 interface StockHeaderProps {
@@ -31,6 +33,7 @@ export function StockHeader({ header, riskBadge, onAddPortfolio }: StockHeaderPr
       <div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-start">
         <div>
           <div className="flex items-center gap-2">
+            <FlagIcon market={header.market as Market} size={20} />
             <h1 className="text-xl font-bold text-zinc-900">{header.name}</h1>
             {riskBadge && <Badge tier={riskBadge.summaryTier} language={language} />}
           </div>
@@ -50,7 +53,10 @@ export function StockHeader({ header, riskBadge, onAddPortfolio }: StockHeaderPr
         </div>
       </div>
 
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex items-center justify-between">
+        <p className="text-xs text-zinc-400">
+          {txt({ ko: '이미 보유한 종목을 등록하면 포트폴리오 리스크 분석을 받을 수 있어요', en: 'Register holdings to get portfolio risk analysis' })}
+        </p>
         <Button variant="secondary" size="sm" onClick={onAddPortfolio}>
           <Plus className="h-4 w-4 mr-1" />
           {txt(t.stock.addToPortfolio)}

@@ -1,8 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
-import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils/cn';
 import { StockListItem } from './StockListItem';
 import type { DashboardPage } from '../types/screener.types';
 
@@ -34,28 +36,82 @@ export function StockList({ data, loading, onPageChange }: StockListProps) {
       </div>
 
       {data.totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={data.number === 0}
-            onClick={() => onPageChange(data.number - 1)}
-          >
-            ←
-          </Button>
-          <span className="text-sm text-zinc-500">
-            {data.number + 1} / {data.totalPages}
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={data.number >= data.totalPages - 1}
-            onClick={() => onPageChange(data.number + 1)}
-          >
-            →
-          </Button>
-        </div>
+        <Pagination
+          current={data.number}
+          total={data.totalPages}
+          onChange={onPageChange}
+        />
       )}
     </div>
+  );
+}
+
+function Pagination({ current, total, onChange }: { current: number; total: number; onChange: (p: number) => void }) {
+  const pages = useMemo(() => {
+    const result: (number | 'ellipsis')[] = [];
+    const range = 2;
+    const start = Math.max(0, current - range);
+    const end = Math.min(total - 1, current + range);
+
+    if (start > 0) {
+      result.push(0);
+      if (start > 1) result.push('ellipsis');
+    }
+    for (let i = start; i <= end; i++) result.push(i);
+    if (end < total - 1) {
+      if (end < total - 2) result.push('ellipsis');
+      result.push(total - 1);
+    }
+    return result;
+  }, [current, total]);
+
+  return (
+    <div className="mt-6 flex items-center justify-center gap-1">
+      <PageButton onClick={() => onChange(0)} disabled={current === 0} aria-label="First page">
+        <ChevronsLeft className="h-4 w-4" />
+      </PageButton>
+      <PageButton onClick={() => onChange(current - 1)} disabled={current === 0} aria-label="Previous page">
+        <ChevronLeft className="h-4 w-4" />
+      </PageButton>
+
+      {pages.map((p, i) =>
+        p === 'ellipsis' ? (
+          <span key={`e${i}`} className="px-1 text-zinc-400">…</span>
+        ) : (
+          <PageButton
+            key={p}
+            onClick={() => onChange(p)}
+            active={p === current}
+          >
+            {p + 1}
+          </PageButton>
+        ),
+      )}
+
+      <PageButton onClick={() => onChange(current + 1)} disabled={current >= total - 1} aria-label="Next page">
+        <ChevronRight className="h-4 w-4" />
+      </PageButton>
+      <PageButton onClick={() => onChange(total - 1)} disabled={current >= total - 1} aria-label="Last page">
+        <ChevronsRight className="h-4 w-4" />
+      </PageButton>
+    </div>
+  );
+}
+
+function PageButton({
+  active, disabled, children, ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+  return (
+    <button
+      disabled={disabled}
+      className={cn(
+        'inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm transition-colors',
+        active ? 'bg-gold text-white font-medium' : 'text-zinc-600 hover:bg-zinc-100',
+        disabled && 'pointer-events-none opacity-40',
+      )}
+      {...props}
+    >
+      {children}
+    </button>
   );
 }

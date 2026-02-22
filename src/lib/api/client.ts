@@ -19,6 +19,7 @@ async function tryRefresh(): Promise<boolean> {
   refreshPromise = fetch(`${env.gatewayUrl}/api/auth/refresh`, {
     method: 'POST',
     credentials: 'include',
+    headers: { 'X-Gateway-Auth-Key': env.gatewayAuthKey },
   })
     .then((r) => r.ok)
     .finally(() => {
@@ -46,7 +47,10 @@ function buildUrl(path: string, params?: RequestOptions['params']): string {
 export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const { body, params, headers: customHeaders, ...rest } = opts;
 
-  const headers: Record<string, string> = { ...customHeaders } as Record<string, string>;
+  const headers: Record<string, string> = {
+    'X-Gateway-Auth-Key': env.gatewayAuthKey,
+    ...customHeaders,
+  } as Record<string, string>;
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
   const res = await fetch(buildUrl(path, params), {

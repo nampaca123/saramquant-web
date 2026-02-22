@@ -1,20 +1,31 @@
+import type { LucideIcon } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 import type { LocalizedText } from '@/types';
 import { cn } from '@/lib/utils/cn';
 
 interface EmptyStateProps {
   message: LocalizedText | string;
   language: 'ko' | 'en';
+  icon?: LucideIcon;
+  description?: LocalizedText | string;
+  action?: React.ReactNode;
   className?: string;
 }
 
-export function EmptyState({ message, language, className }: EmptyStateProps) {
+export function EmptyState({ message, language, icon: Icon = Inbox, description, action, className }: EmptyStateProps) {
   const text = typeof message === 'string' ? message : message[language];
+  const desc = description
+    ? typeof description === 'string' ? description : description[language]
+    : undefined;
+
   return (
-    <div className={cn('flex flex-col items-center justify-center py-16 text-zinc-400', className)}>
-      <svg className="mb-3 h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
-      <p className="text-sm">{text}</p>
+    <div className={cn('flex flex-col items-center justify-center py-16 text-center', className)}>
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 mb-3">
+        <Icon className="h-6 w-6 text-zinc-400" />
+      </div>
+      <p className="text-sm font-medium text-zinc-600">{text}</p>
+      {desc && <p className="mt-1 text-xs text-zinc-400 max-w-xs">{desc}</p>}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

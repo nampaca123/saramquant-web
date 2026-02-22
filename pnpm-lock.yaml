@@ -23,6 +23,9 @@ importers:
       react:
         specifier: 19.2.4
         version: 19.2.4
+      react-circle-flags:
+        specifier: ^0.0.27
+        version: 0.0.27(react@19.2.4)
       react-dom:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
@@ -1805,6 +1808,12 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  react-circle-flags@0.0.27:
+    resolution: {integrity: sha512-34WtRgFX74DtmL4UiOZk+i+OmX5lHXevaRelF7zEUIBCrUAPyfJ1P3Oi8ebxcfysn8Z4+EZPKGvKcS9hqp5fCw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.0.0 || 17.x || 18.x || 19.x
 
   react-dom@19.2.4:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
@@ -3945,6 +3954,10 @@ snapshots:
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
+
+  react-circle-flags@0.0.27(react@19.2.4):
+    dependencies:
+      react: 19.2.4
 
   react-dom@19.2.4(react@19.2.4):
     dependencies:

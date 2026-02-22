@@ -8,6 +8,8 @@ import { StockHeader } from '@/features/stock/components/StockHeader';
 import { RiskReport } from '@/features/stock/components/RiskReport';
 import { AiAnalysisSection } from '@/features/stock/components/AiAnalysisSection';
 import { StockSimulationSection } from '@/features/stock/components/StockSimulationSection';
+import { SectorComparisonCard } from '@/features/stock/components/SectorComparisonCard';
+import { FactorExposureChart } from '@/features/stock/components/FactorExposureChart';
 import { AddToPortfolioButton } from '@/features/stock/components/AddToPortfolioButton';
 import { StockDetailSkeleton } from '@/features/stock/components/StockDetailSkeleton';
 import { useText } from '@/lib/i18n/use-text';
@@ -41,48 +43,67 @@ export default function StockDetailPage() {
 
   if (loading) {
     return (
-      <main className="max-w-3xl mx-auto px-4 md:px-6 py-6">
+      <div className="max-w-5xl mx-auto">
         <StockDetailSkeleton />
-      </main>
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <main className="max-w-3xl mx-auto px-4 md:px-6 py-6">
+      <div className="max-w-5xl mx-auto">
         <p className="text-sm text-warning">{error || txt(t.common.error)}</p>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 md:px-6 py-6 space-y-6 animate-fade-in">
+    <div className="max-w-5xl mx-auto animate-fade-in">
       <StockHeader
         header={data.header}
         riskBadge={data.riskBadge}
         onAddPortfolio={() => setModalOpen(true)}
       />
 
-      <PriceChart symbol={params.symbol} market={params.market} />
+      <div className="mt-6 flex flex-col gap-6 lg:flex-row">
+        {/* Left column: charts + risk report */}
+        <div className="flex-1 min-w-0 space-y-6">
+          <PriceChart symbol={params.symbol} market={params.market} />
 
-      <BenchmarkChart
-        symbol={params.symbol}
-        market={params.market}
-        stockName={data.header.name}
-      />
+          <BenchmarkChart
+            symbol={params.symbol}
+            market={params.market}
+            stockName={data.header.name}
+          />
 
-      <RiskReport riskBadge={data.riskBadge} />
+          <RiskReport riskBadge={data.riskBadge} />
+        </div>
 
-      <StockSimulationSection
-        symbol={params.symbol}
-        currentPrice={data.header.latestClose}
-      />
+        {/* Right column: AI + simulation + comparison + factors */}
+        <div className="w-full space-y-6 lg:w-80 lg:shrink-0 lg:sticky lg:top-20 lg:self-start">
+          <AiAnalysisSection
+            symbol={params.symbol}
+            market={params.market}
+            cachedAnalysis={data.llmAnalysis}
+          />
 
-      <AiAnalysisSection
-        symbol={params.symbol}
-        market={params.market}
-        cachedAnalysis={data.llmAnalysis}
-      />
+          <StockSimulationSection
+            symbol={params.symbol}
+            currentPrice={data.header.latestClose}
+          />
+
+          {data.sectorComparison && (
+            <SectorComparisonCard
+              comparison={data.sectorComparison}
+              fundamentals={data.fundamentals}
+            />
+          )}
+
+          {data.factorExposures && (
+            <FactorExposureChart exposures={data.factorExposures} />
+          )}
+        </div>
+      </div>
 
       <AddToPortfolioButton
         stockId={data.header.stockId}
@@ -91,6 +112,6 @@ export default function StockDetailPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
       />
-    </main>
+    </div>
   );
 }

@@ -11,6 +11,8 @@ export interface UserResponse {
 }
 
 export interface ProfileResponse {
+  nickname: string | null;
+  profileImageUrl: string | null;
   gender: Gender | null;
   birthYear: number | null;
   investmentExperience: InvestmentExperience | null;

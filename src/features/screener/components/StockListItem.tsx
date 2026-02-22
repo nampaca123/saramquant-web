@@ -4,15 +4,18 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { formatPercent } from '@/lib/utils/format-percent';
-import { formatNull } from '@/lib/utils/format-null';
 import { cn } from '@/lib/utils/cn';
 import type { DashboardStockItem } from '../types/screener.types';
 
-interface StockListItemProps {
-  item: DashboardStockItem;
-}
+const DIMENSION_ORDER = ['price_heat', 'volatility', 'trend', 'company_health', 'valuation'] as const;
 
-export function StockListItem({ item }: StockListItemProps) {
+const TIER_DOT_COLOR: Record<string, string> = {
+  STABLE: 'bg-stable',
+  CAUTION: 'bg-caution',
+  WARNING: 'bg-warning',
+};
+
+export function StockListItem({ item }: { item: DashboardStockItem }) {
   const { language } = useLanguage();
   const changeStr = formatPercent(item.priceChangePercent);
   const isUp = item.priceChangePercent != null && item.priceChangePercent > 0;
@@ -34,6 +37,21 @@ export function StockListItem({ item }: StockListItemProps) {
         </div>
       </div>
 
+      {/* 5-dimension mini dots */}
+      {item.dimensionTiers && (
+        <div className="hidden items-center gap-0.5 sm:flex" title="Risk dimensions">
+          {DIMENSION_ORDER.map((dim) => {
+            const tier = item.dimensionTiers?.[dim];
+            return (
+              <div
+                key={dim}
+                className={cn('h-2 w-2 rounded-full', tier ? TIER_DOT_COLOR[tier] : 'bg-zinc-200')}
+              />
+            );
+          })}
+        </div>
+      )}
+
       <div className="text-right shrink-0">
         <div className="text-sm font-mono text-zinc-900">
           {item.latestClose != null ? item.latestClose.toLocaleString() : '—'}
@@ -41,11 +59,6 @@ export function StockListItem({ item }: StockListItemProps) {
         <div className={cn('text-xs font-mono', isUp && 'text-up', isDown && 'text-down', !isUp && !isDown && 'text-zinc-400')}>
           {changeStr}
         </div>
-      </div>
-
-      <div className="hidden gap-3 text-xs text-zinc-500 font-mono sm:flex">
-        <span title="Beta">{formatNull(item.beta != null ? item.beta.toFixed(2) : null)}</span>
-        <span title="RSI">{formatNull(item.rsi14 != null ? item.rsi14.toFixed(1) : null)}</span>
       </div>
     </Link>
   );

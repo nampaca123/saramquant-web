@@ -8,10 +8,12 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   className?: string;
+  'aria-labelledby'?: string;
 }
 
-export function Modal({ open, onClose, children, className }: ModalProps) {
+export function Modal({ open, onClose, children, className, ...ariaProps }: ModalProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -19,6 +21,7 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handler);
+    contentRef.current?.focus();
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
@@ -33,10 +36,15 @@ export function Modal({ open, onClose, children, className }: ModalProps) {
       }}
     >
       <div
+        ref={contentRef}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
         className={cn(
-          'w-full max-w-md rounded-xl bg-white p-6 shadow-xl',
+          'w-full max-w-md rounded-xl bg-white p-6 shadow-xl outline-none',
           className,
         )}
+        {...ariaProps}
       >
         {children}
       </div>

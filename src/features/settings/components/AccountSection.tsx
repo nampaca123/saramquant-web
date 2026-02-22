@@ -33,13 +33,12 @@ export function AccountSection() {
   return (
     <>
       <Card className="border-warning/10">
-        <h3 className="text-sm font-medium text-zinc-700 mb-3">{txt(t.settings.account)}</h3>
-        <div className="space-y-2">
-          <Button variant="secondary" size="sm" onClick={handleLogoutAll}>
+        <div className="space-y-3">
+          <Button variant="secondary" size="sm" onClick={handleLogoutAll} className="w-full justify-start">
             <LogOut className="h-4 w-4 mr-2" />
             {txt(t.settings.logoutAll)}
           </Button>
-          <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)}>
+          <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)} className="w-full justify-start">
             <Trash2 className="h-4 w-4 mr-2" />
             {txt(t.settings.deleteAccount)}
           </Button>
