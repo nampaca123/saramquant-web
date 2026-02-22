@@ -1,8 +1,12 @@
+import type { LucideIcon } from 'lucide-react';
+import { Flame, Activity, TrendingUp, Building2, Scale } from 'lucide-react';
 import type { DimensionName, Direction, LocalizedText, RiskTier } from '@/types';
 
 interface DimensionMeta {
-  icon: string;
+  icon: LucideIcon;
   label: LocalizedText;
+  description: LocalizedText;
+  criteria: Array<LocalizedText>;
   interpretations: Record<
     RiskTier,
     (components: Record<string, number | null>, direction: Direction | null) => LocalizedText
@@ -13,8 +17,16 @@ const fmt = (v: number | null, dp = 1) => (v != null ? v.toFixed(dp) : '—');
 
 export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
   price_heat: {
-    icon: '🔥',
+    icon: Flame,
     label: { ko: '가격 과열도', en: 'Price Heat' },
+    description: {
+      ko: '현재 주가가 최근 흐름 대비 얼마나 비싼지/싼지를 측정해요. 점수가 높으면 단기 가격 조정 가능성이 있어요.',
+      en: 'Measures how expensive or cheap the current price is relative to recent trends. A high score suggests potential short-term price correction.',
+    },
+    criteria: [
+      { ko: 'RSI: 최근 14일간 상승/하락 비율', en: 'RSI: 14-day up/down ratio' },
+      { ko: '볼린저밴드: 가격의 통계적 위치', en: 'Bollinger Band: statistical price position' },
+    ],
     interpretations: {
       STABLE: () => ({
         ko: '가격이 적정 수준이에요',
@@ -49,8 +61,16 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
   },
 
   volatility: {
-    icon: '📊',
+    icon: Activity,
     label: { ko: '변동성', en: 'Volatility' },
+    description: {
+      ko: '이 종목이 시장 전체에 비해 얼마나 출렁이는지를 측정해요. 점수가 높으면 가격이 크게 움직일 수 있어요.',
+      en: 'Measures how much this stock swings relative to the overall market. A high score means bigger price movements.',
+    },
+    criteria: [
+      { ko: '베타: 시장 대비 가격 민감도', en: 'Beta: price sensitivity vs. market' },
+      { ko: '변동성 Z-score: 통계적 변동 폭', en: 'Volatility Z-score: statistical deviation' },
+    ],
     interpretations: {
       STABLE: () => ({
         ko: '시장 평균보다 안정적이에요',
@@ -76,8 +96,16 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
   },
 
   trend: {
-    icon: '📈',
+    icon: TrendingUp,
     label: { ko: '추세', en: 'Trend' },
+    description: {
+      ko: '지금 뚜렷한 추세(상승/하락)가 있는지, 얼마나 강한지를 측정해요. 강한 하락 추세는 위험, 강한 상승은 상대적으로 덜 위험해요.',
+      en: 'Measures whether there is a clear trend (up/down) and how strong it is. Strong downtrend = risky, strong uptrend = relatively safer.',
+    },
+    criteria: [
+      { ko: 'ADX: 추세 강도 지표', en: 'ADX: trend strength indicator' },
+      { ko: '+DI/-DI: 방향성 지표', en: '+DI/-DI: directional indicators' },
+    ],
     interpretations: {
       STABLE: (_c, d) =>
         d === 'UPTREND'
@@ -101,8 +129,17 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
   },
 
   company_health: {
-    icon: '🏢',
+    icon: Building2,
     label: { ko: '기업 건전성', en: 'Company Health' },
+    description: {
+      ko: '이 회사가 재무적으로 건강한지를 측정해요. 부채비율, ROE, 영업이익률을 같은 업종 회사들의 중간값과 비교해서 판정해요.',
+      en: 'Measures the financial health of this company by comparing debt ratio, ROE, and operating margin against sector peers.',
+    },
+    criteria: [
+      { ko: '부채비율: 빌린 돈 대비 자기 자본', en: 'Debt ratio: borrowed vs. equity' },
+      { ko: 'ROE: 자기자본이익률', en: 'ROE: return on equity' },
+      { ko: '영업이익률: 매출 대비 이익', en: 'Operating margin: profit vs. revenue' },
+    ],
     interpretations: {
       STABLE: () => ({
         ko: '같은 업종 대비 재무상태가 건강해요',
@@ -120,8 +157,16 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
   },
 
   valuation: {
-    icon: '💰',
+    icon: Scale,
     label: { ko: '가치 평가', en: 'Valuation' },
+    description: {
+      ko: '주가가 실적 대비 비싼지 싼지를 측정해요. PER과 PBR을 같은 업종과 비교해서 판정. 점수가 높으면 실적에 비해 주가가 많이 높은 상태예요.',
+      en: 'Measures whether the stock is expensive or cheap relative to earnings. Compares PER and PBR against sector peers.',
+    },
+    criteria: [
+      { ko: 'PER: 주가 ÷ 주당순이익', en: 'PER: price / earnings per share' },
+      { ko: 'PBR: 주가 ÷ 주당순자산', en: 'PBR: price / book value per share' },
+    ],
     interpretations: {
       STABLE: () => ({
         ko: '업종 대비 적정하거나 저평가된 수준이에요',

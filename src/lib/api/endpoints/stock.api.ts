@@ -3,6 +3,7 @@ import type {
   StockDetailResponse,
   PriceSeriesResponse,
   BenchmarkComparisonResponse,
+  StockSimulationResponse,
 } from '@/features/stock/types/stock.types';
 import type { PricePeriod } from '@/types';
 
@@ -17,5 +18,5 @@ export const stockApi = {
     api<BenchmarkComparisonResponse>(`/api/stocks/${symbol}/benchmark`, { params: { market, period } }),
 
   simulation: (symbol: string, params: Record<string, string | number>) =>
-    api<Record<string, unknown>>(`/api/stocks/${symbol}/simulation`, { params }),
+    api<StockSimulationResponse>(`/api/stocks/${symbol}/simulation`, { params }),
 } as const;

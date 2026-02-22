@@ -5,6 +5,7 @@ import type {
   BuyRequest,
   HoldingDetail,
   PortfolioAnalysisResponse,
+  PortfolioSimulationResponse,
 } from '@/features/portfolio/types/portfolio.types';
 
 export const portfolioApi = {
@@ -28,5 +29,5 @@ export const portfolioApi = {
     api<PortfolioAnalysisResponse>(`/api/portfolios/${id}/analysis`),
 
   simulation: (id: number, params: Record<string, string | number>) =>
-    api<Record<string, unknown>>(`/api/portfolios/${id}/simulation`, { method: 'POST', params }),
+    api<PortfolioSimulationResponse>(`/api/portfolios/${id}/simulation`, { method: 'POST', params }),
 } as const;

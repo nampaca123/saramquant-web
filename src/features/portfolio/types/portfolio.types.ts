@@ -1,4 +1,4 @@
-import type { MarketGroup, RiskTier } from '@/types';
+import type { MarketGroup, PathPercentilePoint, RiskTier } from '@/types';
 
 export interface PortfolioSummary {
   id: number;
@@ -71,6 +71,34 @@ export interface DiversificationResult {
 
 export interface PortfolioAnalysisResponse {
   risk_score: RiskScoreResult | null;
-  risk_decomposition: RiskDecompositionResult | null;
-  diversification: DiversificationResult | null;
+  risk_decomposition: RiskDecompositionResult | { error: string } | null;
+  diversification: DiversificationResult | { error: string } | null;
+}
+
+export interface PortfolioSimulationResponse {
+  target: {
+    type: 'portfolio';
+    portfolio_id: number;
+    market_group: string;
+    holdings_count: number;
+    current_value: number;
+  };
+  simulation_days: number;
+  num_simulations: number;
+  method: 'bootstrap' | 'gbm';
+  confidence: number;
+  results: {
+    expected_return: number;
+    var: number;
+    cvar: number;
+    final_value_percentiles: Record<string, number>;
+    path_percentiles: PathPercentilePoint[];
+  };
+  parameters: {
+    lookback_days: number;
+    effective_lookback_days: number;
+    min_data_points: number;
+  };
+  data_coverage: 'FULL' | 'PARTIAL';
+  excluded_stocks: Array<{ stock_id: number; symbol: string }>;
 }

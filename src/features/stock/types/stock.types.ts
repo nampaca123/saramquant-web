@@ -1,4 +1,4 @@
-import type { RiskBadgeDimensions, RiskTier } from '@/types';
+import type { PathPercentilePoint, RiskBadgeDimensions, RiskTier } from '@/types';
 
 export interface StockHeader {
   stockId: number;
@@ -118,4 +118,24 @@ export interface BenchmarkComparisonResponse {
   period: string;
   stockSeries: BenchmarkSeriesPoint[];
   benchmarkSeries: BenchmarkSeriesPoint[];
+}
+
+export interface StockSimulationResponse {
+  symbol: string;
+  name: string;
+  current_price: number;
+  simulation_days: number;
+  num_simulations: number;
+  method: 'gbm' | 'bootstrap';
+  confidence: number;
+  expected_return: number;
+  var: number;
+  cvar: number;
+  final_price_percentiles: Record<string, number>;
+  path_percentiles: PathPercentilePoint[];
+  parameters: {
+    mu_daily: number;
+    sigma_daily: number;
+    lookback_days: number;
+  };
 }
