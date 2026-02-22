@@ -18,9 +18,11 @@ function isProfileComplete(user: UserResponse): boolean {
   const p = user.profile;
   if (!p) return false;
   return (
-    p.preferredMarkets.length > 0 &&
+    !!p.nickname &&
     p.birthYear != null &&
-    p.gender != null
+    p.gender != null &&
+    p.preferredMarkets.length > 0 &&
+    p.investmentExperience != null
   );
 }
 

@@ -103,7 +103,7 @@ export const t = {
       ko: '경험에 맞는 분석과 설명을 제공해드려요',
       en: "We'll tailor explanations to your level",
     } satisfies LocalizedText,
-    nicknameLabel: { ko: '닉네임 (선택)', en: 'Nickname (optional)' } satisfies LocalizedText,
+    nicknameLabel: { ko: '닉네임', en: 'Nickname' } satisfies LocalizedText,
     nicknamePlaceholder: { ko: '어떻게 불러드릴까요?', en: 'What should we call you?' } satisfies LocalizedText,
     stepPersonal: { ko: '기본 정보를 알려주세요', en: 'Tell us about yourself' } satisfies LocalizedText,
     stepPersonalDesc: {

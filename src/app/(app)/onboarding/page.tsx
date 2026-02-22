@@ -60,6 +60,7 @@ export default function OnboardingPage() {
     const errs: Record<string, boolean> = {};
 
     if (step === 1) {
+      if (!nickname.trim()) errs.nickname = true;
       if (!birthYear || Number(birthYear) < 1900 || Number(birthYear) > 2010) errs.birthYear = true;
       if (!gender) errs.gender = true;
     }
@@ -75,7 +76,7 @@ export default function OnboardingPage() {
     setSaving(true);
     try {
       await userApi.updateProfile({
-        ...(nickname.trim() && { nickname: nickname.trim() }),
+        nickname: nickname.trim(),
         birthYear: Number(birthYear),
         gender: gender!,
         preferredMarkets: markets,
@@ -193,16 +194,24 @@ export default function OnboardingPage() {
 
               <div>
                 <label className="text-sm font-medium text-zinc-700 mb-1 block">
-                  {txt(t.onboarding.nicknameLabel)}
+                  {txt({ ko: '닉네임', en: 'Nickname' })} <span className="text-warning">*</span>
                 </label>
                 <input
                   type="text"
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  onChange={(e) => { setNickname(e.target.value); setErrors((p) => ({ ...p, nickname: false })); }}
                   placeholder={txt(t.onboarding.nicknamePlaceholder)}
                   maxLength={20}
-                  className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
+                  className={cn(
+                    'w-full rounded-lg border px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-1',
+                    errors.nickname
+                      ? 'border-warning focus:border-warning focus:ring-warning'
+                      : 'border-zinc-200 focus:border-gold focus:ring-gold',
+                  )}
                 />
+                {errors.nickname && (
+                  <p className="text-xs text-warning mt-1">{txt(t.onboarding.required)}</p>
+                )}
               </div>
             </div>
           </div>
