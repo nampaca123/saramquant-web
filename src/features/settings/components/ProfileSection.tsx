@@ -16,7 +16,7 @@ export function ProfileSection() {
   const { user, refresh } = useAuth();
   const profile = user?.profile;
 
-  const [name, setName] = useState(user?.name ?? '');
+  const [name, setName] = useState(profile?.nickname ?? user?.name ?? '');
   const [gender, setGender] = useState<Gender>(profile?.gender ?? 'UNSPECIFIED');
   const [birthYear, setBirthYear] = useState(profile?.birthYear?.toString() ?? '');
   const [experience, setExperience] = useState<InvestmentExperience>(profile?.investmentExperience ?? 'BEGINNER');
@@ -27,7 +27,7 @@ export function ProfileSection() {
     setLoading(true);
     try {
       await userApi.updateProfile({
-        name: name || undefined,
+        nickname: name || undefined,
         gender,
         birthYear: birthYear ? Number(birthYear) : undefined,
         investmentExperience: experience,
@@ -56,7 +56,7 @@ export function ProfileSection() {
       <h3 className="text-sm font-medium text-zinc-700 mb-3">{txt(t.settings.profile)}</h3>
       <div className="space-y-3">
         <div>
-          <label className="text-sm font-medium text-zinc-700 mb-1 block">{txt(t.settings.name)}</label>
+          <label className="text-sm font-medium text-zinc-700 mb-1 block">{txt(t.onboarding.nicknameLabel)}</label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div>

@@ -53,11 +53,11 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
       {/* Market tabs with flags */}
       <div className="flex flex-wrap gap-1.5">
         {MARKET_OPTIONS.map((o) => {
-          const active = (params.market ?? '') === o.value;
+          const active = params.market === o.value;
           return (
             <button
               key={o.value}
-              onClick={() => update({ market: o.value || undefined, sector: undefined })}
+              onClick={() => update({ market: o.value, sector: undefined })}
               className={cn(
                 'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
                 active
@@ -65,7 +65,7 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
                   : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
               )}
             >
-              {o.value && <FlagIcon market={o.value as Market} size={16} />}
+              <FlagIcon market={o.value as Market} size={16} />
               {o.label[language]}
             </button>
           );

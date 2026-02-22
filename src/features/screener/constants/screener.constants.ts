@@ -26,7 +26,6 @@ export const SORT_OPTIONS: { value: string; label: LocalizedText }[] = [
 ];
 
 export const MARKET_OPTIONS: { value: string; label: LocalizedText }[] = [
-  { value: '', label: { ko: '전체 시장', en: 'All Markets' } },
   { value: 'KR_KOSPI', label: { ko: 'KOSPI', en: 'KOSPI' } },
   { value: 'KR_KOSDAQ', label: { ko: 'KOSDAQ', en: 'KOSDAQ' } },
   { value: 'US_NYSE', label: { ko: 'NYSE', en: 'NYSE' } },

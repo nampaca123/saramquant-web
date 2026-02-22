@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, MessageSquareText } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Disclaimer } from '@/components/common/Disclaimer';
@@ -71,6 +71,14 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
         )}
       </div>
 
+      <p className="text-xs text-zinc-500 mb-3">
+        {txt({
+          ko: 'AI가 이 종목의 리스크와 상태를 쉬운 말로 분석해드려요.',
+          en: "AI analyzes this stock's risk and status in plain language.",
+        })}
+      </p>
+
+      {/* Preset selector -- always visible */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         {PRESETS.map((p) => (
           <button
@@ -91,34 +99,66 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
         ))}
       </div>
 
+      {/* Analyze button */}
+      <div className="mb-3">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleAnalyze}
+          disabled={!user || loading}
+          className="w-full"
+        >
+          {loading ? txt(t.common.loading) : txt(t.stock.requestAnalysis)}
+        </Button>
+      </div>
+
+      {/* Output area */}
       {!result ? (
-        <div className="rounded-lg bg-zinc-50 p-6 text-center">
-          <Sparkles className="mx-auto h-8 w-8 text-zinc-300 mb-2" />
-          <p className="text-sm text-zinc-600 mb-3">
-            {txt({ ko: 'AI가 이 종목의 리스크를 쉬운 말로 분석해드려요', en: 'AI analyzes this stock\'s risk in plain language' })}
-          </p>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleAnalyze}
-            disabled={!user || loading}
-          >
-            {loading ? txt(t.common.loading) : txt(t.stock.requestAnalysis)}
-          </Button>
-        </div>
+        <AnalysisPreview txt={txt} preset={preset} />
       ) : (
         <div>
-          <div className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap mb-3">
-            {result}
+          <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 mb-3">
+            <div className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap">
+              {result}
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            {disclaimer && <Disclaimer text={disclaimer} variant="inline" />}
-            <Button variant="ghost" size="sm" onClick={handleAnalyze} disabled={loading}>
-              {loading ? txt(t.common.loading) : txt(t.stock.requestAnalysis)}
-            </Button>
-          </div>
+          {disclaimer && <Disclaimer text={disclaimer} variant="inline" />}
         </div>
       )}
     </Card>
+  );
+}
+
+function AnalysisPreview({ txt, preset }: { txt: (v: any) => string; preset: string }) {
+  const presetObj = PRESETS.find((p) => p.key === preset);
+  const presetLabel = presetObj ? txt(presetObj.label) : '';
+
+  return (
+    <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 p-4">
+      <div className="flex items-start gap-3">
+        <div className="shrink-0 rounded-full bg-gold-wash p-2">
+          <MessageSquareText className="h-4 w-4 text-gold" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-zinc-500">AI</span>
+            <span className="text-[10px] text-zinc-400">·</span>
+            <span className="text-[10px] text-zinc-400">{presetLabel}</span>
+          </div>
+          <div className="space-y-1.5">
+            <div className="h-3 w-4/5 rounded bg-zinc-200/60" />
+            <div className="h-3 w-3/5 rounded bg-zinc-200/60" />
+            <div className="h-3 w-full rounded bg-zinc-200/60" />
+            <div className="h-3 w-2/3 rounded bg-zinc-200/60" />
+          </div>
+          <p className="text-[11px] text-zinc-400 mt-3">
+            {txt({
+              ko: '위 버튼을 눌러 분석을 요청하면 여기에 AI 분석 결과가 표시돼요',
+              en: 'Press the button above to request analysis — results will appear here',
+            })}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

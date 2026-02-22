@@ -20,7 +20,7 @@ export interface ProfileResponse {
 }
 
 export interface ProfileUpdateRequest {
-  name?: string;
+  nickname?: string;
   gender?: Gender;
   birthYear?: number;
   investmentExperience?: InvestmentExperience;

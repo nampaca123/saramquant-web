@@ -15,7 +15,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function isProfileComplete(user: UserResponse): boolean {
-  return (user.profile?.preferredMarkets?.length ?? 0) > 0;
+  const p = user.profile;
+  if (!p) return false;
+  return (
+    p.preferredMarkets.length > 0 &&
+    p.birthYear != null &&
+    p.gender != null
+  );
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

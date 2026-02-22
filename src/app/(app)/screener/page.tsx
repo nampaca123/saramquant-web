@@ -12,6 +12,7 @@ import type { DashboardStocksParams, DashboardPage } from '@/features/screener/t
 import { DEFAULT_PAGE_SIZE } from '@/features/screener/constants/screener.constants';
 
 const INITIAL_PARAMS: DashboardStocksParams = {
+  market: 'KR_KOSPI',
   sort: 'name_asc',
   page: 0,
   size: DEFAULT_PAGE_SIZE,

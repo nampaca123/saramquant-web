@@ -1,22 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, User, Globe, Languages, Shield } from 'lucide-react';
+import { Settings, User, Globe, Languages, Shield, Check } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/providers/AuthProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { t } from '@/lib/i18n/translations';
+import { cn } from '@/lib/utils/cn';
 import { ProfileSection } from '@/features/settings/components/ProfileSection';
 import { PreferredMarkets } from '@/features/settings/components/PreferredMarkets';
 import { AccountSection } from '@/features/settings/components/AccountSection';
+import type { Language } from '@/types';
 
 export default function SettingsPage() {
   const txt = useText();
   const { user, loading } = useAuth();
   const router = useRouter();
-  const { language, toggleLanguage } = useLanguage();
 
   if (loading) return null;
 
@@ -76,26 +78,7 @@ export default function SettingsPage() {
         {/* Right column */}
         <div className="space-y-4">
           <SectionHeader icon={Languages} title={txt(t.settings.language)} />
-          <Card>
-            <div className="flex gap-2">
-              <Button
-                variant={language === 'ko' ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => language !== 'ko' && toggleLanguage()}
-                className="flex-1"
-              >
-                한국어
-              </Button>
-              <Button
-                variant={language === 'en' ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => language !== 'en' && toggleLanguage()}
-                className="flex-1"
-              >
-                English
-              </Button>
-            </div>
-          </Card>
+          <LanguageCard />
 
           <SectionHeader icon={Shield} title={txt(t.settings.account)} />
           <AccountSection />
@@ -111,5 +94,57 @@ function SectionHeader({ icon: Icon, title }: { icon: typeof User; title: string
       <Icon className="h-4 w-4 text-zinc-400" />
       <h2 className="text-sm font-semibold text-zinc-600">{title}</h2>
     </div>
+  );
+}
+
+function LanguageCard() {
+  const txt = useText();
+  const { language, setLanguage } = useLanguage();
+  const [selected, setSelected] = useState<Language>(language);
+  const [saved, setSaved] = useState(false);
+  const changed = selected !== language;
+
+  const handleSave = () => {
+    setLanguage(selected);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  };
+
+  return (
+    <Card>
+      <p className="text-xs text-zinc-500 mb-3">
+        {txt({ ko: '앱에 표시되는 언어를 선택하세요', en: 'Choose the language displayed in the app' })}
+      </p>
+      <div className="flex gap-2 mb-3">
+        {([['ko', '한국어'], ['en', 'English']] as const).map(([val, label]) => (
+          <button
+            key={val}
+            onClick={() => { setSelected(val); setSaved(false); }}
+            className={cn(
+              'flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-all',
+              selected === val
+                ? 'border-gold bg-gold-wash text-gold'
+                : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-end">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleSave}
+          disabled={!changed && !saved}
+        >
+          {saved ? (
+            <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5" />{txt(t.settings.saved)}</span>
+          ) : (
+            txt(t.common.save)
+          )}
+        </Button>
+      </div>
+    </Card>
   );
 }
