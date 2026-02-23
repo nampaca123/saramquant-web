@@ -1,5 +1,4 @@
 import { api } from '../client';
-import { env } from '@/lib/config/env';
 
 interface SignupRequest {
   email: string;
@@ -24,5 +23,5 @@ export const authApi = {
   logoutAll: () => api<void>('/api/auth/logout-all', { method: 'POST' }),
 
   oauthUrl: (provider: 'google' | 'kakao') =>
-    `${env.gatewayUrl}/oauth2/authorization/${provider}`,
+    `/oauth2/authorization/${provider}`,
 } as const;

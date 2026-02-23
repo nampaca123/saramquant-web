@@ -11,7 +11,7 @@ export const userApi = {
   uploadProfileImage: async (file: File): Promise<{ profileImageUrl: string }> => {
     const form = new FormData();
     form.append('file', file);
-    const res = await fetch(`${env.gatewayUrl}/api/user/profile/image`, {
+    const res = await fetch('/api/user/profile/image', {
       method: 'POST',
       credentials: 'include',
       headers: { 'X-Gateway-Auth-Key': env.gatewayAuthKey },

@@ -16,7 +16,7 @@ let refreshPromise: Promise<boolean> | null = null;
 async function tryRefresh(): Promise<boolean> {
   if (isRefreshing && refreshPromise) return refreshPromise;
   isRefreshing = true;
-  refreshPromise = fetch(`${env.gatewayUrl}/api/auth/refresh`, {
+  refreshPromise = fetch('/api/auth/refresh', {
     method: 'POST',
     credentials: 'include',
     headers: { 'X-Gateway-Auth-Key': env.gatewayAuthKey },
@@ -35,7 +35,7 @@ type RequestOptions = Omit<RequestInit, 'body'> & {
 };
 
 function buildUrl(path: string, params?: RequestOptions['params']): string {
-  const url = new URL(path, env.gatewayUrl);
+  const url = new URL(path, window.location.origin);
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       if (v != null && v !== '') url.searchParams.set(k, String(v));
