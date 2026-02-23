@@ -146,10 +146,17 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
   const [results, setResults] = useState<StockSearchResult[]>([]);
   const [selected, setSelected] = useState<StockSearchResult | null>(null);
   const [shares, setShares] = useState('');
+  const [price, setPrice] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [priceHint, setPriceHint] = useState<{ high?: number; low?: number; close?: number } | null>(null);
+  const [priceWarning, setPriceWarning] = useState('');
+  const [noTrading, setNoTrading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const priceFetchRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const currency = marketFilter[0]?.startsWith('KR') ? 'KRW' : 'USD' as const;
 
   useEffect(() => {
     if (query.length < 1) { setResults([]); return; }
@@ -165,8 +172,42 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
     return () => clearTimeout(debounceRef.current);
   }, [query, marketFilter]);
 
+  useEffect(() => {
+    if (!selected || !date) { setPriceHint(null); setNoTrading(false); return; }
+    clearTimeout(priceFetchRef.current);
+    priceFetchRef.current = setTimeout(async () => {
+      try {
+        const res = await portfolioApi.priceLookup(selected.stockId, date);
+        if (res.found && res.close != null) {
+          setPriceHint({ high: res.high, low: res.low, close: res.close });
+          setPrice(String(res.close));
+          setNoTrading(false);
+          setPriceWarning('');
+        } else {
+          setPriceHint(null);
+          setPrice('');
+          setNoTrading(true);
+        }
+      } catch {
+        setPriceHint(null);
+        setNoTrading(true);
+      }
+    }, 400);
+    return () => clearTimeout(priceFetchRef.current);
+  }, [selected, date]);
+
+  useEffect(() => {
+    if (!price || !priceHint?.high || !priceHint?.low) { setPriceWarning(''); return; }
+    const p = Number(price);
+    if (p < priceHint.low || p > priceHint.high) {
+      setPriceWarning(txt(t.portfolio.priceOutOfRange));
+    } else {
+      setPriceWarning('');
+    }
+  }, [price, priceHint]);
+
   const handleSubmit = async () => {
-    if (!selected || !shares) return;
+    if (!selected || !shares || !price) return;
     setLoading(true);
     setError('');
     try {
@@ -174,6 +215,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
         stockId: selected.stockId,
         purchasedAt: date,
         shares: Number(shares),
+        manualPrice: Number(price),
       });
       onSuccess();
       onClose();
@@ -208,12 +250,59 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
             ))}
           </ul>
         )}
-        <Input type="number" min="1" placeholder={txt(t.stock.shares)} value={shares} onChange={(e) => setShares(e.target.value)} />
-        <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+
+        <div>
+          <label className="text-xs font-medium text-zinc-500 mb-1 block">{txt(t.portfolio.buyDate)}</label>
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-zinc-500 mb-1 block">{txt(t.portfolio.buyShares)}</label>
+          <Input type="number" min="1" placeholder="0" value={shares} onChange={(e) => setShares(e.target.value)} />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-zinc-500 mb-1 block">{txt(t.portfolio.buyPrice)}</label>
+          <Input
+            type="number"
+            min="0"
+            step="any"
+            placeholder={txt(t.portfolio.buyPricePlaceholder)}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+          {priceHint && (
+            <div className="flex gap-3 mt-1.5">
+              {priceHint.high != null && (
+                <span className="text-[11px] text-zinc-400">
+                  {txt(t.portfolio.dayHigh)} <span className="font-mono text-warning">{formatCurrency(priceHint.high, currency)}</span>
+                </span>
+              )}
+              {priceHint.low != null && (
+                <span className="text-[11px] text-zinc-400">
+                  {txt(t.portfolio.dayLow)} <span className="font-mono text-stable">{formatCurrency(priceHint.low, currency)}</span>
+                </span>
+              )}
+              <span className="text-[11px] text-zinc-400">
+                {txt(t.portfolio.dayClose)} <span className="font-mono text-zinc-700">{formatCurrency(priceHint.close!, currency)}</span>
+              </span>
+            </div>
+          )}
+          {priceHint && !priceWarning && (
+            <p className="text-[11px] text-zinc-400 mt-1">{txt(t.portfolio.priceAutoFilled)}</p>
+          )}
+          {noTrading && (
+            <p className="text-[11px] text-caution mt-1">{txt(t.portfolio.noTradingDay)}</p>
+          )}
+          {priceWarning && (
+            <p className="text-[11px] text-caution mt-1">{priceWarning}</p>
+          )}
+        </div>
+
         {error && <p className="text-sm text-warning">{error}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>{txt(t.common.cancel)}</Button>
-          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading || !selected || !shares}>
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading || !selected || !shares || !price}>
             {loading ? txt(t.common.loading) : txt(t.common.confirm)}
           </Button>
         </div>

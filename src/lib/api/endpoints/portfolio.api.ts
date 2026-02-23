@@ -6,6 +6,8 @@ import type {
   HoldingDetail,
   PortfolioAnalysisResponse,
   PortfolioSimulationResponse,
+  PortfolioLlmHistory,
+  PriceLookupResponse,
 } from '@/features/portfolio/types/portfolio.types';
 
 export const portfolioApi = {
@@ -30,4 +32,10 @@ export const portfolioApi = {
 
   simulation: (id: number, params: Record<string, string | number>) =>
     api<PortfolioSimulationResponse>(`/api/portfolios/${id}/simulation`, { method: 'POST', params }),
+
+  llmHistory: (id: number) =>
+    api<PortfolioLlmHistory[]>(`/api/portfolios/${id}/llm-history`),
+
+  priceLookup: (stockId: number, date: string) =>
+    api<PriceLookupResponse>(`/api/portfolios/price-lookup?stock_id=${stockId}&date=${date}`),
 } as const;

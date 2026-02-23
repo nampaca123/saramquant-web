@@ -32,6 +32,10 @@ const SimulationChart = dynamic(
   () => import('@/features/portfolio/components/SimulationChart').then((m) => ({ default: m.SimulationChart })),
   { ssr: false },
 );
+const AnalysisHistory = dynamic(
+  () => import('@/features/portfolio/components/AnalysisHistory').then((m) => ({ default: m.AnalysisHistory })),
+  { ssr: false },
+);
 
 export default function PortfolioPage() {
   const txt = useText();
@@ -153,6 +157,7 @@ export default function PortfolioPage() {
             <SimulationChart portfolioId={activePortfolio.id} />
           </div>
           <AiDiagnosisSection portfolioId={activePortfolio.id} />
+          <AnalysisHistory portfolioId={activePortfolio.id} />
         </>
       )}
     </div>

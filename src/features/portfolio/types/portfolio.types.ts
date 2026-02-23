@@ -102,3 +102,25 @@ export interface PortfolioSimulationResponse {
   data_coverage: 'FULL' | 'PARTIAL';
   excluded_stocks: Array<{ stock_id: number; symbol: string }>;
 }
+
+export interface PortfolioLlmHistory {
+  id: number;
+  date: string;
+  preset: string;
+  lang: string;
+  analysis: string;
+  model: string;
+  created_at: string;
+}
+
+export interface PriceLookupResponse {
+  found: boolean;
+  close?: number;
+  high?: number;
+  low?: number;
+  open?: number;
+  date?: string;
+  source?: string;
+  fx_rate?: number;
+  message?: string;
+}

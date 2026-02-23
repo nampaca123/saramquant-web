@@ -74,4 +74,22 @@ export const portfolioTexts = {
   presetSubOutlook: { ko: '좋은 장·나쁜 장 시나리오 분석', en: 'What happens if the market goes up or down' } satisfies LocalizedText,
   presetSubAggressive: { ko: '수익률 높이려면 어떻게 바꿀까', en: 'How to adjust your portfolio for more growth' } satisfies LocalizedText,
   presetSubWeakness: { ko: '재무 건전성이 약한 종목 찾기', en: 'Which companies have weak financials' } satisfies LocalizedText,
+
+  // Buy modal
+  buyPrice: { ko: '매수가', en: 'Purchase price' } satisfies LocalizedText,
+  buyPricePlaceholder: { ko: '매수한 가격을 입력하세요', en: 'Enter the price you paid' } satisfies LocalizedText,
+  buyDate: { ko: '매수일', en: 'Purchase date' } satisfies LocalizedText,
+  buyShares: { ko: '수량', en: 'Shares' } satisfies LocalizedText,
+  dayHigh: { ko: '고가', en: 'High' } satisfies LocalizedText,
+  dayLow: { ko: '저가', en: 'Low' } satisfies LocalizedText,
+  dayClose: { ko: '종가', en: 'Close' } satisfies LocalizedText,
+  priceAutoFilled: { ko: '종가로 자동 입력됐어요. 실제 매수가가 다르면 수정하세요.', en: 'Auto-filled with closing price. Edit if your actual price was different.' } satisfies LocalizedText,
+  noTradingDay: { ko: '이 날은 거래일이 아니에요. 매수가를 직접 입력해주세요.', en: "No trading data for this date. Please enter your price manually." } satisfies LocalizedText,
+  priceOutOfRange: { ko: '그날의 고가·저가 범위를 벗어났어요. 확인해주세요.', en: "This price is outside the day's high-low range. Please double-check." } satisfies LocalizedText,
+
+  // History section
+  historyTitle: { ko: '지난 분석 기록', en: 'Past Analyses' } satisfies LocalizedText,
+  historyDesc: { ko: '이전에 받은 AI 진단을 다시 볼 수 있어요', en: 'Review your previous AI checkups' } satisfies LocalizedText,
+  historyEmpty: { ko: '아직 분석 기록이 없어요', en: 'No past analyses yet' } satisfies LocalizedText,
+  historyEmptySub: { ko: 'AI 진단을 한 번 받으면 여기에 기록이 남아요', en: 'Run an AI checkup above and it will appear here' } satisfies LocalizedText,
 } as const;
