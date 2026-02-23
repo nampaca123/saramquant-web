@@ -38,6 +38,7 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
   const [priceHint, setPriceHint] = useState<{ high?: number; low?: number; close?: number } | null>(null);
   const [priceWarning, setPriceWarning] = useState('');
   const [noTrading, setNoTrading] = useState(false);
+  const [priceFetching, setPriceFetching] = useState(false);
   const priceFetchRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -50,7 +51,15 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
   }, [open, user, marketGroup]);
 
   useEffect(() => {
-    if (!open || !stockId || !date) { setPriceHint(null); setNoTrading(false); return; }
+    if (!open || !stockId || !date) {
+      setPriceHint(null); setNoTrading(false); setPriceFetching(false);
+      return;
+    }
+    setPrice('');
+    setPriceHint(null);
+    setPriceWarning('');
+    setNoTrading(false);
+    setPriceFetching(true);
     clearTimeout(priceFetchRef.current);
     priceFetchRef.current = setTimeout(async () => {
       try {
@@ -58,16 +67,13 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
         if (res.found && res.close != null) {
           setPriceHint({ high: res.high, low: res.low, close: res.close });
           setPrice(String(res.close));
-          setNoTrading(false);
-          setPriceWarning('');
         } else {
-          setPriceHint(null);
-          setPrice('');
           setNoTrading(true);
         }
       } catch {
-        setPriceHint(null);
         setNoTrading(true);
+      } finally {
+        setPriceFetching(false);
       }
     }, 400);
     return () => clearTimeout(priceFetchRef.current);
@@ -83,7 +89,7 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
   const priceNum = Number(price);
   const isFutureDate = date > today();
   const isInvalidShares = shares !== '' && (sharesNum <= 0 || !Number.isInteger(sharesNum));
-  const canSubmit = selectedId && shares && sharesNum > 0 && Number.isInteger(sharesNum) && price && priceNum > 0 && !isFutureDate;
+  const canSubmit = selectedId && shares && sharesNum > 0 && Number.isInteger(sharesNum) && price && priceNum > 0 && !isFutureDate && !priceFetching;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -168,10 +174,14 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
               type="number"
               min="0"
               step="any"
-              placeholder={txt(t.portfolio.buyPricePlaceholder)}
+              placeholder={priceFetching ? txt(t.portfolio.priceFetching) : txt(t.portfolio.buyPricePlaceholder)}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              disabled={priceFetching}
             />
+            {priceFetching && (
+              <p className="text-[11px] text-zinc-400 mt-1 animate-pulse">{txt(t.portfolio.priceFetching)}</p>
+            )}
             {priceHint && (
               <div className="flex gap-3 mt-1.5">
                 {priceHint.high != null && (

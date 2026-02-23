@@ -277,6 +277,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
   const [priceHint, setPriceHint] = useState<{ high?: number; low?: number; close?: number } | null>(null);
   const [priceWarning, setPriceWarning] = useState('');
   const [noTrading, setNoTrading] = useState(false);
+  const [priceFetching, setPriceFetching] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const priceFetchRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -297,7 +298,15 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
   }, [query, marketFilter]);
 
   useEffect(() => {
-    if (!selected || !date) { setPriceHint(null); setNoTrading(false); return; }
+    if (!selected || !date) {
+      setPriceHint(null); setNoTrading(false); setPriceFetching(false);
+      return;
+    }
+    setPrice('');
+    setPriceHint(null);
+    setPriceWarning('');
+    setNoTrading(false);
+    setPriceFetching(true);
     clearTimeout(priceFetchRef.current);
     priceFetchRef.current = setTimeout(async () => {
       try {
@@ -305,16 +314,13 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
         if (res.found && res.close != null) {
           setPriceHint({ high: res.high, low: res.low, close: res.close });
           setPrice(String(res.close));
-          setNoTrading(false);
-          setPriceWarning('');
         } else {
-          setPriceHint(null);
-          setPrice('');
           setNoTrading(true);
         }
       } catch {
-        setPriceHint(null);
         setNoTrading(true);
+      } finally {
+        setPriceFetching(false);
       }
     }, 400);
     return () => clearTimeout(priceFetchRef.current);
@@ -391,10 +397,14 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
             type="number"
             min="0"
             step="any"
-            placeholder={txt(t.portfolio.buyPricePlaceholder)}
+            placeholder={priceFetching ? txt(t.portfolio.priceFetching) : txt(t.portfolio.buyPricePlaceholder)}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            disabled={priceFetching}
           />
+          {priceFetching && (
+            <p className="text-[11px] text-zinc-400 mt-1 animate-pulse">{txt(t.portfolio.priceFetching)}</p>
+          )}
           {priceHint && (
             <div className="flex gap-3 mt-1.5">
               {priceHint.high != null && (
@@ -426,7 +436,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
         {error && <p className="text-sm text-warning">{error}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>{txt(t.common.cancel)}</Button>
-          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading || !selected || !shares || !price}>
+          <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading || priceFetching || !selected || !shares || !price}>
             {loading ? txt(t.common.loading) : txt(t.common.confirm)}
           </Button>
         </div>

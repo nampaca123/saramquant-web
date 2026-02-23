@@ -86,6 +86,7 @@ export const portfolioTexts = {
   priceAutoFilled: { ko: '종가로 자동 입력됐어요. 실제 매수가가 다르면 수정하세요.', en: 'Auto-filled with closing price. Edit if your actual price was different.' } satisfies LocalizedText,
   noTradingDay: { ko: '이 날은 거래일이 아니에요. 매수가를 직접 입력해주세요.', en: "No trading data for this date. Please enter your price manually." } satisfies LocalizedText,
   priceOutOfRange: { ko: '그날의 고가·저가 범위를 벗어났어요. 확인해주세요.', en: "This price is outside the day's high-low range. Please double-check." } satisfies LocalizedText,
+  priceFetching: { ko: '해당 날짜의 시세를 불러오는 중...', en: 'Fetching price for that date...' } satisfies LocalizedText,
 
   // History section
   historyTitle: { ko: '지난 분석 기록', en: 'Past Analyses' } satisfies LocalizedText,
