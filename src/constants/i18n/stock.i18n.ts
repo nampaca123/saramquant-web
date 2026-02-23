@@ -14,7 +14,7 @@ export const stockTexts = {
   aiUsage: { ko: '사용', en: 'used' } satisfies LocalizedText,
   requestAnalysis: { ko: '분석 요청', en: 'Ask AI' } satisfies LocalizedText,
   presetSummary: { ko: '요약', en: 'Quick Summary' } satisfies LocalizedText,
-  presetBeginner: { ko: '초보자용', en: 'Explain Like I\'m New' } satisfies LocalizedText,
+  presetBeginner: { ko: '초간단 설명', en: 'Even Like I\'m 5' } satisfies LocalizedText,
   presetRisk: { ko: '리스크 평가', en: 'What Could Go Wrong?' } satisfies LocalizedText,
   presetFinancial: { ko: '재무 분석', en: 'Is This Company Healthy?' } satisfies LocalizedText,
   presetSubSummary: { ko: '기술·재무·리스크·팩터 지표 종합', en: 'Tech, financials, risk & factors combined' } satisfies LocalizedText,
