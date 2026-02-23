@@ -17,7 +17,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'SaramQuant',
-  description: 'Translating risk into easy language, not numbers',
+  description: 'Translating quant investment into easy language, not wall street jargon',
+  icons: {
+    icon: '/image/logo/saramquant-logo.jpg',
+    apple: '/image/logo/saramquant-logo.jpg',
+  },
+  openGraph: {
+    title: 'SaramQuant',
+    description: 'Translating quant investment into easy language, not wall street jargon',
+    images: [{ url: '/image/logo/saramquant-logo.jpg' }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
