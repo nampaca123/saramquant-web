@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { LogOut, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useText } from '@/lib/i18n/use-text';
 import { useAuth } from '@/providers/AuthProvider';
-import { authApi, userApi } from '@/lib/api';
+import { userApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
 
 export function AccountSection() {
@@ -15,11 +15,6 @@ export function AccountSection() {
   const { clear } = useAuth();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleLogoutAll = async () => {
-    await authApi.logoutAll();
-    clear();
-  };
 
   const handleDeactivate = async () => {
     setLoading(true);
@@ -34,10 +29,6 @@ export function AccountSection() {
     <>
       <Card className="p-5">
         <div className="flex flex-wrap gap-3">
-          <Button variant="secondary" size="sm" onClick={handleLogoutAll}>
-            <LogOut className="h-4 w-4 mr-2" />
-            {txt(t.settings.logoutAll)}
-          </Button>
           <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)}>
             <Trash2 className="h-4 w-4 mr-2" />
             {txt(t.settings.deactivateAccount)}
