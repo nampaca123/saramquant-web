@@ -9,6 +9,7 @@ import { BenchmarkCards } from '@/features/home/components/BenchmarkCards';
 import { FilterPanel } from '@/features/screener/components/FilterPanel';
 import { StockList } from '@/features/screener/components/StockList';
 import { ScreenerSkeleton } from '@/features/screener/components/ScreenerSkeleton';
+import { DataFreshnessPopover } from '@/features/screener/components/DataFreshnessPopover';
 import type { BenchmarkSummary } from '@/features/home/types/home.types';
 import type { DashboardStocksParams, DashboardPage } from '@/features/screener/types/screener.types';
 import { DEFAULT_PAGE_SIZE } from '@/features/screener/constants/screener.constants';
@@ -49,14 +50,17 @@ export default function ScreenerPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-2">
-        <LayoutGrid className="h-5 w-5 text-gold" />
-        <div>
-          <h1 className="text-xl font-bold text-zinc-900">{txt(t.screener.title)}</h1>
-          <p className="text-xs text-zinc-500">
-            {txt(t.screener.subtitle)}
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="h-5 w-5 text-gold" />
+          <div>
+            <h1 className="text-xl font-bold text-zinc-900">{txt(t.screener.title)}</h1>
+            <p className="text-xs text-zinc-500">
+              {txt(t.screener.subtitle)}
+            </p>
+          </div>
         </div>
+        <DataFreshnessPopover />
       </div>
 
       {benchmarks.length > 0 && <BenchmarkCards benchmarks={benchmarks} />}

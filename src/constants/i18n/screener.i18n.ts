@@ -13,4 +13,12 @@ export const screenerTexts = {
   colStock: { ko: '종목', en: 'Stock' } satisfies LocalizedText,
   colRiskDimensions: { ko: '리스크 5대 지표', en: '5 Risk Signals' } satisfies LocalizedText,
   colPrice: { ko: '현재가', en: 'Price' } satisfies LocalizedText,
+  dataFreshness: { ko: '데이터 현황', en: 'Data Status' } satisfies LocalizedText,
+  krPrice: { ko: '🇰🇷 시세', en: '🇰🇷 Price' } satisfies LocalizedText,
+  usPrice: { ko: '🇺🇸 시세', en: '🇺🇸 Price' } satisfies LocalizedText,
+  krFinancial: { ko: '🇰🇷 재무제표', en: '🇰🇷 Financials' } satisfies LocalizedText,
+  usFinancial: { ko: '🇺🇸 재무제표', en: '🇺🇸 Financials' } satisfies LocalizedText,
+  dataDate: { ko: '기준일', en: 'Date' } satisfies LocalizedText,
+  collectedAt: { ko: '수집', en: 'Collected' } satisfies LocalizedText,
+  noData: { ko: '-', en: '-' } satisfies LocalizedText,
 } as const;

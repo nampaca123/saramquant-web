@@ -1,5 +1,5 @@
 import { api } from '../client';
-import type { DashboardPage, DashboardStocksParams, StockSearchResult } from '@/features/screener/types/screener.types';
+import type { DashboardPage, DashboardStocksParams, StockSearchResult, DataFreshness } from '@/features/screener/types/screener.types';
 
 export const dashboardApi = {
   stocks: (params: DashboardStocksParams) =>
@@ -10,4 +10,7 @@ export const dashboardApi = {
 
   sectors: (market?: string) =>
     api<string[]>('/api/dashboard/sectors', { params: { market } }),
+
+  freshness: () =>
+    api<DataFreshness>('/api/dashboard/data-freshness'),
 } as const;

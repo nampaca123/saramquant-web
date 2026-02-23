@@ -64,3 +64,12 @@ export interface StockSearchResult {
   market: string;
   sector: string | null;
 }
+
+export interface DataFreshness {
+  krPriceDate: string | null;
+  krPriceCollectedAt: string | null;
+  usPriceDate: string | null;
+  usPriceCollectedAt: string | null;
+  krFinancialCollectedAt: string | null;
+  usFinancialCollectedAt: string | null;
+}
