@@ -173,7 +173,7 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
                 })}
               </div>
 
-              {/* Row 3: Holdings meta — purchase info & value */}
+              {/* Row 3: Holdings meta — purchase info, value & P&L */}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[11px] text-zinc-400">
                 <span>{txt(t.portfolio.avgPrice)} <span className="font-mono text-zinc-600">{formatCurrency(h.avgPrice, currency)}</span></span>
                 <span>{h.shares} {txt(t.portfolio.sharesUnit)}</span>
@@ -181,6 +181,20 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
                   <span>{txt(t.portfolio.currentValue)} <span className="font-mono text-zinc-600">{formatCurrency(currentValue, currency)}</span></span>
                 )}
                 <span>{txt(t.portfolio.firstPurchaseDate)} <span className="text-zinc-600">{h.purchasedAt}</span></span>
+                {h.unrealizedPnl != null && (
+                  <span>
+                    {txt(t.portfolio.pnl)}{' '}
+                    <span className={cn(
+                      'font-mono font-medium',
+                      h.unrealizedPnl > 0 ? 'text-stable' : h.unrealizedPnl < 0 ? 'text-warning' : 'text-zinc-600',
+                    )}>
+                      {h.unrealizedPnl > 0 ? '+' : ''}{formatCurrency(h.unrealizedPnl, currency)}
+                      {h.unrealizedPnlPercent != null && (
+                        <> ({h.unrealizedPnlPercent > 0 ? '+' : ''}{h.unrealizedPnlPercent.toFixed(2)}%)</>
+                      )}
+                    </span>
+                  </span>
+                )}
               </div>
             </div>
           );

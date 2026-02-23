@@ -24,6 +24,10 @@ export interface HoldingDetail {
   priceChangePercent: number | null;
   summaryTier: string | null;
   dimensionTiers: Record<string, string> | null;
+  unrealizedPnl: number | null;
+  unrealizedPnlPercent: number | null;
+  currentValue: number | null;
+  costBasis: number | null;
 }
 
 export interface PortfolioDetail {
@@ -31,6 +35,10 @@ export interface PortfolioDetail {
   marketGroup: MarketGroup;
   holdings: HoldingDetail[];
   createdAt: string;
+  totalCost: number | null;
+  totalValue: number | null;
+  totalPnl: number | null;
+  totalPnlPercent: number | null;
 }
 
 export interface BuyRequest {

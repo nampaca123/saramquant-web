@@ -140,4 +140,15 @@ export const portfolioTexts = {
   currentValue: { ko: '보유 가치', en: 'Value' } satisfies LocalizedText,
   firstPurchaseDate: { ko: '최초 매수', en: 'First buy' } satisfies LocalizedText,
   currentPrice: { ko: '현재가', en: 'Current' } satisfies LocalizedText,
+
+  // P&L
+  totalPnl: { ko: '총 평가손익', en: 'Total P&L' } satisfies LocalizedText,
+  totalPnlInfo: {
+    ko: '보유 종목 전체의 평가손익이에요.\n\n평가 가치 = 각 종목의 (현재가 × 수량) 합계\n투자 원금 = 각 종목의 (평균단가 × 수량) 합계\n평가손익 = 평가 가치 − 투자 원금\n\n실현 손익(매도 확정분)이 아닌 미실현 손익이에요.',
+    en: 'Unrealized P&L across all your holdings.\n\nMarket value = sum of (current price × shares)\nCost basis = sum of (avg price × shares)\nP&L = market value − cost basis\n\nThis is unrealized — not locked in until you sell.',
+  } satisfies LocalizedText,
+  invested: { ko: '투자 원금', en: 'Invested' } satisfies LocalizedText,
+  marketValue: { ko: '평가 가치', en: 'Market value' } satisfies LocalizedText,
+  pnl: { ko: '손익', en: 'P&L' } satisfies LocalizedText,
+  costBasis: { ko: '원금', en: 'Cost' } satisfies LocalizedText,
 } as const;

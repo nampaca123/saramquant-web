@@ -13,6 +13,7 @@ import { t } from '@/lib/i18n/translations';
 import { isError } from '@/lib/utils/is-error';
 import { PortfolioTabSelector } from '@/features/portfolio/components/PortfolioTabSelector';
 import { MetricsCards } from '@/features/portfolio/components/MetricsCards';
+import { PnlSummary } from '@/features/portfolio/components/PnlSummary';
 import { HoldingsList } from '@/features/portfolio/components/HoldingsList';
 import { AiDiagnosisSection } from '@/features/portfolio/components/AiDiagnosisSection';
 import { PortfolioSkeleton } from '@/features/portfolio/components/PortfolioSkeleton';
@@ -136,6 +137,10 @@ export default function PortfolioPage() {
       </div>
 
       <MetricsCards analysis={analysis} />
+
+      {detail && detail.holdings.length > 0 && detail.totalPnl != null && (
+        <PnlSummary portfolio={detail} />
+      )}
 
       {detail ? (
         detail.holdings.length > 0 ? (
