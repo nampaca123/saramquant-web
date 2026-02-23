@@ -4,16 +4,17 @@ import { useState, useEffect, useRef } from 'react';
 import { Clock } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { t } from '@/lib/i18n/translations';
 import { FlagIcon } from '@/components/common/FlagIcon';
 import type { DataFreshness } from '../types/screener.types';
 
-function toKST(pg: string | null): string {
+function toKST(pg: string | null, locale: string): string {
   if (!pg) return '-';
   const iso = pg.includes('+') ? pg : pg.replace(' ', 'T') + 'Z';
   const d = new Date(iso);
   if (isNaN(d.getTime())) return '-';
-  return d.toLocaleString('ko-KR', {
+  return d.toLocaleString(locale, {
     timeZone: 'Asia/Seoul',
     month: 'numeric',
     day: 'numeric',
@@ -24,6 +25,8 @@ function toKST(pg: string | null): string {
 
 export function DataFreshnessPopover() {
   const txt = useText();
+  const { language } = useLanguage();
+  const locale = language === 'ko' ? 'ko-KR' : 'en-US';
   const [data, setData] = useState<DataFreshness | null>(null);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -44,10 +47,10 @@ export function DataFreshnessPopover() {
   if (!data) return null;
 
   const rows: { flag: 'KR' | 'US'; label: string; time: string }[] = [
-    { flag: 'KR', label: txt(t.screener.krPrice), time: toKST(data.krPriceUpdatedAt) },
-    { flag: 'US', label: txt(t.screener.usPrice), time: toKST(data.usPriceUpdatedAt) },
-    { flag: 'KR', label: txt(t.screener.krFinancial), time: toKST(data.krFinancialUpdatedAt) },
-    { flag: 'US', label: txt(t.screener.usFinancial), time: toKST(data.usFinancialUpdatedAt) },
+    { flag: 'KR', label: txt(t.screener.krPrice), time: toKST(data.krPriceUpdatedAt, locale) },
+    { flag: 'US', label: txt(t.screener.usPrice), time: toKST(data.usPriceUpdatedAt, locale) },
+    { flag: 'KR', label: txt(t.screener.krFinancial), time: toKST(data.krFinancialUpdatedAt, locale) },
+    { flag: 'US', label: txt(t.screener.usFinancial), time: toKST(data.usFinancialUpdatedAt, locale) },
   ];
 
   return (
@@ -67,6 +70,7 @@ export function DataFreshnessPopover() {
           className="absolute right-0 top-full mt-1.5 z-50 w-56 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg"
         >
           <div className="flex flex-col gap-1.5 text-[11px]">
+            <span className="text-[10px] text-zinc-400 text-right">KST (UTC+9)</span>
             {rows.map((r) => (
               <div key={r.label} className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 text-zinc-500">
