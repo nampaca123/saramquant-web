@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, LayoutGrid, PieChart, Settings } from 'lucide-react';
+import { Search, LayoutGrid, PieChart, Settings, User } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { authApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { t } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils/cn';
 import { LanguageToggle } from './LanguageToggle';
@@ -17,19 +18,26 @@ import { MobileSearchOverlay } from './MobileSearchOverlay';
 const NAV_ITEMS = [
   { href: '/screener', label: t.nav.screener, icon: LayoutGrid },
   { href: '/portfolio', label: t.nav.portfolio, icon: PieChart },
-  { href: '/settings', label: t.nav.settings, icon: Settings },
 ] as const;
 
 export function Header() {
   const txt = useText();
+  const { language } = useLanguage();
   const pathname = usePathname();
   const { user } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleLogout = async () => {
     try { await authApi.logout(); } catch { /* noop */ }
     window.location.href = '/';
   };
+
+  const displayName = user?.profile?.nickname ?? user?.name ?? '';
+  const avatarUrl = user?.profile?.profileImageUrl;
+  const greetingText = language === 'ko'
+    ? `${txt(t.common.greeting)} ${displayName}님!`
+    : `${txt(t.common.greeting)}, ${displayName}!`;
 
   return (
     <>
@@ -65,7 +73,7 @@ export function Header() {
 
           <SearchCombobox className="hidden flex-1 max-w-xs md:block" />
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-3">
             <button
               className="md:hidden p-1.5 text-zinc-500 hover:text-zinc-700"
               onClick={() => setSearchOpen(true)}
@@ -73,14 +81,59 @@ export function Header() {
             >
               <Search className="h-5 w-5" />
             </button>
+
             <LanguageToggle />
+
             {user ? (
-              <button
-                onClick={handleLogout}
-                className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
-              >
-                {txt(t.common.logout)}
-              </button>
+              <>
+                <Link
+                  href="/settings"
+                  className={cn(
+                    'hidden md:flex items-center justify-center h-8 w-8 rounded-full transition-colors',
+                    pathname.startsWith('/settings')
+                      ? 'bg-gold-wash text-gold'
+                      : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600',
+                  )}
+                  aria-label={txt(t.nav.settings)}
+                >
+                  <Settings className="h-4 w-4" />
+                </Link>
+
+                <div className="hidden md:flex items-center gap-2 border-l border-zinc-200 pl-3">
+                  <Link href="/settings" className="flex items-center gap-2 group">
+                    <span className="relative h-7 w-7 shrink-0 rounded-full bg-zinc-100 ring-1 ring-zinc-200 overflow-hidden">
+                      {avatarUrl && !imgError ? (
+                        <Image
+                          src={avatarUrl}
+                          alt=""
+                          fill
+                          unoptimized
+                          className="rounded-full object-cover"
+                          onError={() => setImgError(true)}
+                        />
+                      ) : (
+                        <User className="absolute inset-0 m-auto h-4 w-4 text-zinc-400" />
+                      )}
+                    </span>
+                    <span className="text-sm font-medium text-zinc-700 group-hover:text-zinc-900 transition-colors whitespace-nowrap">
+                      {greetingText}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-xs text-zinc-300 hover:text-zinc-500 transition-colors whitespace-nowrap"
+                  >
+                    {txt(t.common.logout)}
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="md:hidden text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+                >
+                  {txt(t.common.logout)}
+                </button>
+              </>
             ) : (
               <Link href="/" className="text-sm font-medium text-gold hover:text-gold/80 transition-colors">
                 {txt(t.common.login)}

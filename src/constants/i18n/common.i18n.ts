@@ -16,6 +16,7 @@ export const commonTexts = {
   close: { ko: '닫기', en: 'Close' } satisfies LocalizedText,
   showMore: { ko: '상세 보기', en: 'Show details' } satisfies LocalizedText,
   showLess: { ko: '접기', en: 'Hide details' } satisfies LocalizedText,
+  greeting: { ko: '안녕하세요', en: 'Hello' } satisfies LocalizedText,
 } as const;
 
 export const navTexts = {
