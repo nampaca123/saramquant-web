@@ -62,7 +62,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
 
   volatility: {
     icon: Activity,
-    label: { ko: '변동성', en: 'Wild Swings' },
+    label: { ko: '변동성', en: 'Volatility' },
     description: {
       ko: '이 종목이 시장 전체에 비해 얼마나 출렁이는지를 측정해요. 점수가 높으면 가격이 크게 움직일 수 있어요.',
       en: "How much this stock jumps around compared to the overall market. A high score means expect a bumpy ride.",
@@ -158,7 +158,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
 
   valuation: {
     icon: Scale,
-    label: { ko: '가치 평가', en: 'Price Tag' },
+    label: { ko: '가치 평가', en: 'Valuation' },
     description: {
       ko: '주가가 실적 대비 비싼지 싼지를 측정해요. PER과 PBR을 같은 업종과 비교해서 판정. 점수가 높으면 실적에 비해 주가가 많이 높은 상태예요.',
       en: "Is the stock price fair for what the company actually earns? We compare it to similar companies. A high score means you might be paying too much.",

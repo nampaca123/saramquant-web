@@ -125,7 +125,7 @@ export const RISK_DIMENSION_LABELS: Record<string, { label: LocalizedText; quest
     question: { ko: '지금 가격이 과열됐나요?', en: 'Has the price run up too fast?' },
   },
   volatility: {
-    label: { ko: '변동성', en: 'Wild Swings' },
+    label: { ko: '변동성', en: 'Volatility' },
     question: { ko: '가격이 얼마나 출렁이나요?', en: 'How much does the price jump around?' },
   },
   trend: {
@@ -137,7 +137,7 @@ export const RISK_DIMENSION_LABELS: Record<string, { label: LocalizedText; quest
     question: { ko: '이 회사 재정이 튼튼한가요?', en: "Is this company's money situation solid?" },
   },
   valuation: {
-    label: { ko: '가격 수준', en: 'Price Tag' },
+    label: { ko: '가격 수준', en: 'Valuation' },
     question: { ko: '지금 주가가 비싼 편인가요?', en: 'Am I paying too much for this stock?' },
   },
 };
@@ -149,7 +149,7 @@ export const FACTOR_LABELS: Record<string, { label: LocalizedText; positive: Loc
     negative: { ko: '중소기업 성향', en: 'Smaller company' },
   },
   valueZ: {
-    label: { ko: '가격 매력', en: 'Deal or No Deal' },
+    label: { ko: '가격 매력', en: 'Value' },
     positive: { ko: '저평가 성향', en: 'Looks like a deal' },
     negative: { ko: '고평가 성향', en: 'Might be overpriced' },
   },
@@ -159,12 +159,12 @@ export const FACTOR_LABELS: Record<string, { label: LocalizedText; positive: Loc
     negative: { ko: '최근 하락세', en: 'Been going down' },
   },
   volatilityZ: {
-    label: { ko: '가격 변동 크기', en: 'How Wild It Gets' },
+    label: { ko: '가격 변동 크기', en: 'Volatility' },
     positive: { ko: '많이 흔들리는 편', en: 'Bumpy ride' },
     negative: { ko: '안정적인 편', en: 'Smooth ride' },
   },
   qualityZ: {
-    label: { ko: '기업 경영 상태', en: 'How Well It\'s Run' },
+    label: { ko: '기업 경영 상태', en: 'Company Quality' },
     positive: { ko: '경영 우수', en: 'Well-run company' },
     negative: { ko: '경영 개선 필요', en: 'Could be run better' },
   },
