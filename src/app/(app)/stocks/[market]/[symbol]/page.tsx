@@ -89,7 +89,7 @@ export default function StockDetailPage() {
           stockName={data.header.name}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <AiAnalysisSection
             symbol={params.symbol}
             market={params.market}

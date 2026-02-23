@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Sparkles, MessageSquareText, HelpCircle, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -30,16 +31,22 @@ const PRESETS: { key: string; label: LocalizedText; subtitle: LocalizedText }[] 
   { key: 'financial', label: t.stock.presetFinancial, subtitle: t.stock.presetSubFinancial },
 ];
 
+interface PresetResult { analysis: string; disclaimer: string }
+
 export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysisSectionProps) {
   const txt = useText();
   const { language } = useLanguage();
   const { user } = useAuth();
   const [preset, setPreset] = useState<string>(PRESETS[0].key);
-  const [result, setResult] = useState(cachedAnalysis?.analysis ?? '');
-  const [disclaimer, setDisclaimer] = useState(cachedAnalysis ? '' : '');
+  const [results, setResults] = useState<Record<string, PresetResult>>(() => {
+    if (!cachedAnalysis) return {};
+    return { [cachedAnalysis.preset]: { analysis: cachedAnalysis.analysis, disclaimer: '' } };
+  });
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+
+  const currentResult = results[preset];
 
   useEffect(() => {
     if (user) {
@@ -51,11 +58,10 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
     setLoading(true);
     try {
       const res = await llmApi.analyzeStock({ symbol, market, preset, lang: language });
-      setResult(res.analysis);
-      setDisclaimer(res.disclaimer);
+      setResults((prev) => ({ ...prev, [preset]: { analysis: res.analysis, disclaimer: res.disclaimer } }));
       if (usage) setUsage({ ...usage, used: usage.used + 1 });
     } catch {
-      setResult(txt(t.common.error));
+      setResults((prev) => ({ ...prev, [preset]: { analysis: txt(t.common.error), disclaimer: '' } }));
     } finally {
       setLoading(false);
     }
@@ -106,7 +112,6 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
         {txt(t.stock.aiDesc)}
       </p>
 
-      {/* Preset selector -- always visible */}
       <div className="grid grid-cols-2 gap-2 mb-3">
         {PRESETS.map((p) => (
           <button
@@ -127,7 +132,6 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
         ))}
       </div>
 
-      {/* Analyze button */}
       <div className="mb-3">
         <Button
           variant="primary"
@@ -140,23 +144,30 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
         </Button>
       </div>
 
-      {/* Output area */}
       {loading ? (
         <AnalysisLoadingOverlay
           icon={<Sparkles className="h-5 w-5 text-gold" />}
           stages={AI_LOADING_STAGES}
           maxWaitText={t.stock.aiMaxWait}
         />
-      ) : !result ? (
+      ) : !currentResult ? (
         <AnalysisPreview txt={txt} preset={preset} />
       ) : (
         <div>
-          <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 mb-3">
-            <div className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap">
-              {result}
+          <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 mb-3 max-h-[420px] overflow-y-auto">
+            <div className="prose prose-sm prose-zinc max-w-none
+              prose-headings:text-zinc-800 prose-headings:font-bold
+              prose-h2:text-base prose-h2:mt-4 prose-h2:mb-2
+              prose-h3:text-sm prose-h3:mt-3 prose-h3:mb-1.5
+              prose-p:text-zinc-700 prose-p:leading-relaxed prose-p:my-1.5
+              prose-li:text-zinc-700 prose-li:my-0.5
+              prose-strong:text-zinc-900
+              prose-hr:my-3"
+            >
+              <ReactMarkdown>{currentResult.analysis}</ReactMarkdown>
             </div>
           </div>
-          {disclaimer && <Disclaimer text={disclaimer} variant="inline" />}
+          {currentResult.disclaimer && <Disclaimer text={currentResult.disclaimer} variant="inline" />}
         </div>
       )}
     </Card>
