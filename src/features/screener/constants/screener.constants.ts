@@ -3,12 +3,12 @@ import type { LocalizedText } from '@/types';
 export const DEFAULT_PAGE_SIZE = 20;
 
 export const SORT_OPTIONS: { value: string; label: LocalizedText }[] = [
-  { value: 'name_asc', label: { ko: '이름 (오름차순)', en: 'Name (A→Z)' } },
-  { value: 'name_desc', label: { ko: '이름 (내림차순)', en: 'Name (Z→A)' } },
-  { value: 'beta_asc', label: { ko: '베타 (낮은순)', en: 'Beta (Low→High)' } },
-  { value: 'beta_desc', label: { ko: '베타 (높은순)', en: 'Beta (High→Low)' } },
-  { value: 'sharpe_asc', label: { ko: '샤프 (낮은순)', en: 'Sharpe (Low→High)' } },
-  { value: 'sharpe_desc', label: { ko: '샤프 (높은순)', en: 'Sharpe (High→Low)' } },
+  { value: 'name_asc', label: { ko: '이름 (ㄱ→ㅎ)', en: 'Name (A→Z)' } },
+  { value: 'name_desc', label: { ko: '이름 (ㅎ→ㄱ)', en: 'Name (Z→A)' } },
+  { value: 'beta_asc', label: { ko: 'Beta (낮은순)', en: 'Beta (Low→High)' } },
+  { value: 'beta_desc', label: { ko: 'Beta (높은순)', en: 'Beta (High→Low)' } },
+  { value: 'sharpe_asc', label: { ko: 'Sharpe (낮은순)', en: 'Sharpe (Low→High)' } },
+  { value: 'sharpe_desc', label: { ko: 'Sharpe (높은순)', en: 'Sharpe (High→Low)' } },
   { value: 'rsi_asc', label: { ko: 'RSI (낮은순)', en: 'RSI (Low→High)' } },
   { value: 'rsi_desc', label: { ko: 'RSI (높은순)', en: 'RSI (High→Low)' } },
   { value: 'atr_asc', label: { ko: 'ATR (낮은순)', en: 'ATR (Low→High)' } },
@@ -32,8 +32,24 @@ export const MARKET_OPTIONS: { value: string; label: LocalizedText }[] = [
   { value: 'US_NASDAQ', label: { ko: 'NASDAQ', en: 'NASDAQ' } },
 ];
 
-export const TIER_FILTER_OPTIONS: { value: string; label: LocalizedText }[] = [
-  { value: 'STABLE', label: { ko: '안정', en: 'Stable' } },
-  { value: 'CAUTION', label: { ko: '주의', en: 'Caution' } },
-  { value: 'WARNING', label: { ko: '경고', en: 'Warning' } },
+export const TIER_FILTER_OPTIONS: {
+  value: string;
+  label: LocalizedText;
+  description: LocalizedText;
+}[] = [
+  {
+    value: 'STABLE',
+    label: { ko: '안정', en: 'Stable' },
+    description: { ko: '위험이 낮아요', en: 'Low risk' },
+  },
+  {
+    value: 'CAUTION',
+    label: { ko: '주의', en: 'Caution' },
+    description: { ko: '주의가 필요해요', en: 'Some risk' },
+  },
+  {
+    value: 'WARNING',
+    label: { ko: '경고', en: 'Warning' },
+    description: { ko: '위험이 높아요', en: 'High risk' },
+  },
 ];

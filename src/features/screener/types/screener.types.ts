@@ -66,10 +66,8 @@ export interface StockSearchResult {
 }
 
 export interface DataFreshness {
-  krPriceDate: string | null;
-  krPriceCollectedAt: string | null;
-  usPriceDate: string | null;
-  usPriceCollectedAt: string | null;
-  krFinancialCollectedAt: string | null;
-  usFinancialCollectedAt: string | null;
+  krPriceUpdatedAt: string | null;
+  usPriceUpdatedAt: string | null;
+  krFinancialUpdatedAt: string | null;
+  usFinancialUpdatedAt: string | null;
 }
