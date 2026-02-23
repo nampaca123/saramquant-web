@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'SaramQuant | 사람퀀트',
-    title: 'SaramQuant | 사람퀀트 - 쉬운 퀀트 투자',
+    title: 'SaramQuant',
     description:
       '사회초년생도 안심하고 시작하는 퀀트 투자, 사람퀀트',
     url: 'https://www.saramquant.com',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SaramQuant | 사람퀀트',
+    title: 'SaramQuant',
     description:
       '사회초년생도 안심하고 시작하는 퀀트 투자, 사람퀀트',
     images: ['/image/logo/saramquant-logo.jpg'],
