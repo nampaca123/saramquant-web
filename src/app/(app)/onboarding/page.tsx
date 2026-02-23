@@ -83,7 +83,7 @@ export default function OnboardingPage() {
         investmentExperience: experience,
       });
       await refresh();
-      router.replace('/home');
+      router.replace('/screener');
     } catch {
       setSaving(false);
     }

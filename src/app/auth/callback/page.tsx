@@ -10,7 +10,7 @@ function CallbackHandler() {
 
   useEffect(() => {
     if (!error) {
-      router.replace('/home');
+      router.replace('/screener');
       return;
     }
     const timeout = setTimeout(() => router.replace('/'), 3000);

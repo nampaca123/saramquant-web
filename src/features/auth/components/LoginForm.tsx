@@ -27,7 +27,7 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
     setLoading(true);
     try {
       await authApi.login({ email, password });
-      router.push('/home');
+      router.push('/screener');
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.status === 401 ? '이메일 또는 비밀번호가 맞지 않아요' : '로그인에 실패했어요');

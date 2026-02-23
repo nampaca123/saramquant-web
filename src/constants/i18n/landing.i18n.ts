@@ -12,4 +12,5 @@ export const landingTexts = {
   featureAiDesc: { ko: 'AI가 종목별 위험 요인을 쉬운 말로 분석', en: 'AI explains stock risk factors in plain language' } satisfies LocalizedText,
   featurePortfolioTitle: { ko: '포트폴리오 진단', en: 'Portfolio Diagnosis' } satisfies LocalizedText,
   featurePortfolioDesc: { ko: '내 보유 종목의 전체 리스크를 한눈에 확인', en: 'See your total portfolio risk at a glance' } satisfies LocalizedText,
+  exploreFirst: { ko: '먼저 둘러볼게요', en: 'Explore first' } satisfies LocalizedText,
 } as const;

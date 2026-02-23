@@ -2,13 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, LayoutGrid, PieChart, Settings } from 'lucide-react';
+import { LayoutGrid, PieChart, Settings } from 'lucide-react';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils/cn';
 
 const TABS = [
-  { href: '/home', label: t.nav.home, icon: Home },
   { href: '/screener', label: t.nav.screener, icon: LayoutGrid },
   { href: '/portfolio', label: t.nav.portfolio, icon: PieChart },
   { href: '/settings', label: t.nav.settings, icon: Settings },

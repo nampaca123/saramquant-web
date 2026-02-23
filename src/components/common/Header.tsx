@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Search, Home, LayoutGrid, PieChart, Settings } from 'lucide-react';
+import { Search, LayoutGrid, PieChart, Settings } from 'lucide-react';
 import { useAuth } from '@/providers/AuthProvider';
 import { authApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
@@ -15,7 +15,6 @@ import { SearchCombobox } from './SearchCombobox';
 import { MobileSearchOverlay } from './MobileSearchOverlay';
 
 const NAV_ITEMS = [
-  { href: '/home', label: t.nav.home, icon: Home },
   { href: '/screener', label: t.nav.screener, icon: LayoutGrid },
   { href: '/portfolio', label: t.nav.portfolio, icon: PieChart },
   { href: '/settings', label: t.nav.settings, icon: Settings },
@@ -36,7 +35,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-zinc-100 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4">
-          <Link href="/home" className="flex items-center gap-2 shrink-0">
+          <Link href="/screener" className="flex items-center gap-2 shrink-0">
             <Image src="/image/logo/saramquant-logo.jpg" alt="SaramQuant" width={28} height={28} className="rounded-md" />
             <span className="hidden text-sm font-bold text-zinc-900 sm:inline">SaramQuant</span>
           </Link>

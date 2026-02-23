@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { LayoutGrid } from 'lucide-react';
-import { dashboardApi } from '@/lib/api';
+import { dashboardApi, homeApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
+import { BenchmarkCards } from '@/features/home/components/BenchmarkCards';
 import { FilterPanel } from '@/features/screener/components/FilterPanel';
 import { StockList } from '@/features/screener/components/StockList';
 import { ScreenerSkeleton } from '@/features/screener/components/ScreenerSkeleton';
+import type { BenchmarkSummary } from '@/features/home/types/home.types';
 import type { DashboardStocksParams, DashboardPage } from '@/features/screener/types/screener.types';
 import { DEFAULT_PAGE_SIZE } from '@/features/screener/constants/screener.constants';
 
@@ -22,6 +24,7 @@ export default function ScreenerPage() {
   const txt = useText();
   const [params, setParams] = useState<DashboardStocksParams>(INITIAL_PARAMS);
   const [data, setData] = useState<DashboardPage | null>(null);
+  const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async (p: DashboardStocksParams) => {
@@ -40,6 +43,10 @@ export default function ScreenerPage() {
     fetchData(params);
   }, [params, fetchData]);
 
+  useEffect(() => {
+    homeApi.summary().then((s) => setBenchmarks(s.benchmarks)).catch(() => {});
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
@@ -51,6 +58,8 @@ export default function ScreenerPage() {
           </p>
         </div>
       </div>
+
+      {benchmarks.length > 0 && <BenchmarkCards benchmarks={benchmarks} />}
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <FilterPanel params={params} onChange={setParams} className="lg:w-64 lg:shrink-0" />

@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Shield, Sparkles, PieChart } from 'lucide-react';
+import { userApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { LanguageToggle } from '@/components/common/LanguageToggle';
@@ -20,7 +23,12 @@ const FEATURES = [
 
 export default function LandingPage() {
   const txt = useText();
+  const router = useRouter();
   const [view, setView] = useState<AuthView>('main');
+
+  useEffect(() => {
+    userApi.me().then(() => router.replace('/screener')).catch(() => {});
+  }, [router]);
 
   return (
     <div className="min-h-dvh bg-white">
@@ -127,6 +135,13 @@ export default function LandingPage() {
                 ← {txt(t.common.cancel)}
               </button>
             )}
+
+            <Link
+              href="/screener"
+              className="mt-6 block w-full text-center text-sm text-zinc-400 underline underline-offset-2 transition-colors hover:text-zinc-600"
+            >
+              {txt(t.landing.exploreFirst)}
+            </Link>
           </div>
         </div>
       </div>
