@@ -5,16 +5,13 @@ import { Card } from '@/components/ui/Card';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { formatPercent } from '@/lib/utils/format-percent';
+import { isError } from '@/lib/utils/is-error';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
 import type { PortfolioAnalysisResponse } from '../types/portfolio.types';
 
 interface MetricsCardsProps {
   analysis: PortfolioAnalysisResponse | null;
-}
-
-function isError(val: unknown): val is { error: string } {
-  return val != null && typeof val === 'object' && 'error' in val;
 }
 
 export function MetricsCards({ analysis }: MetricsCardsProps) {
@@ -30,7 +27,6 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
 
   return (
     <div className="flex overflow-x-auto gap-3 scrollbar-none md:grid md:grid-cols-4 md:gap-3">
-      {/* Risk Score */}
       <Card className="min-w-[140px] flex-shrink-0">
         <p className="text-xs text-zinc-500 mb-1">{txt(t.portfolio.riskScore)}</p>
         {riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
@@ -48,7 +44,6 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         )}
       </Card>
 
-      {/* Volatility */}
       <Card className="min-w-[140px] flex-shrink-0">
         <p className="text-xs text-zinc-500 mb-1">{txt(t.portfolio.volatility)}</p>
         {hasDecomp ? (
@@ -70,7 +65,6 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         )}
       </Card>
 
-      {/* Diversification */}
       <Card className="min-w-[140px] flex-shrink-0">
         <p className="text-xs text-zinc-500 mb-1">{txt(t.portfolio.diversification)}</p>
         {hasDivers ? (
@@ -88,7 +82,6 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         )}
       </Card>
 
-      {/* Max Weight */}
       <Card className="min-w-[140px] flex-shrink-0">
         <p className="text-xs text-zinc-500 mb-1">{txt(t.portfolio.maxWeight)}</p>
         {hasDivers ? (

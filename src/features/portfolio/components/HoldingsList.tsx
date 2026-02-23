@@ -57,10 +57,14 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
                 <span className="font-mono text-sm text-zinc-700">{h.symbol}</span>
                 <span className="text-sm font-medium">{h.name}</span>
               </div>
-              <span className="text-xs text-zinc-400">{txt(t.portfolio.avgPrice)} {formatCurrency(h.avgPrice, currency)}</span>
+              <span className="text-xs text-zinc-400">
+                {txt(t.portfolio.avgPrice)} {formatCurrency(h.avgPrice, currency)}
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-zinc-500">{h.shares}주</span>
+              <span className="font-mono text-xs text-zinc-500">
+                {h.shares} {txt(t.portfolio.sharesUnit)}
+              </span>
               <div className="relative" ref={menuOpen === h.id ? menuRef : undefined}>
                 <button onClick={() => setMenuOpen(menuOpen === h.id ? null : h.id)}>
                   <MoreVertical className="h-4 w-4 text-zinc-400" />
@@ -97,7 +101,6 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
         {txt(t.portfolio.addStock)}
       </Button>
 
-      {/* Buy Modal */}
       <BuyModal
         open={modalType === 'buy'}
         onClose={() => setModalType(null)}
@@ -106,7 +109,6 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
         onSuccess={onRefresh}
       />
 
-      {/* Sell Modal */}
       {selectedHolding && (
         <SellModal
           open={modalType === 'sell'}
@@ -117,7 +119,6 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
         />
       )}
 
-      {/* Delete Modal */}
       {selectedHolding && (
         <DeleteModal
           open={modalType === 'delete'}
@@ -147,6 +148,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
   const [shares, setShares] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -166,6 +168,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
   const handleSubmit = async () => {
     if (!selected || !shares) return;
     setLoading(true);
+    setError('');
     try {
       await portfolioApi.buy(portfolioId, {
         stockId: selected.stockId,
@@ -174,7 +177,9 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
       });
       onSuccess();
       onClose();
-    } catch { /* handled by global error */ }
+    } catch {
+      setError(txt(t.common.error));
+    }
     setLoading(false);
   };
 
@@ -205,6 +210,7 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
         )}
         <Input type="number" min="1" placeholder={txt(t.stock.shares)} value={shares} onChange={(e) => setShares(e.target.value)} />
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        {error && <p className="text-sm text-warning">{error}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>{txt(t.common.cancel)}</Button>
           <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading || !selected || !shares}>
@@ -228,16 +234,20 @@ function SellModal({ open, onClose, portfolioId, holding, onSuccess }: {
   const [sellShares, setSellShares] = useState('');
   const [sellAll, setSellAll] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async () => {
     const qty = sellAll ? holding.shares : Number(sellShares);
     if (!qty || qty <= 0) return;
     setLoading(true);
+    setError('');
     try {
       await portfolioApi.sell(portfolioId, holding.id, { sellShares: qty });
       onSuccess();
       onClose();
-    } catch { /* handled */ }
+    } catch {
+      setError(txt(t.common.error));
+    }
     setLoading(false);
   };
 
@@ -252,7 +262,9 @@ function SellModal({ open, onClose, portfolioId, holding, onSuccess }: {
             onChange={(e) => setSellAll(e.target.checked)}
             className="accent-gold"
           />
-          <span className="text-sm text-zinc-700">{txt(t.portfolio.sellAll)} ({holding.shares})</span>
+          <span className="text-sm text-zinc-700">
+            {txt(t.portfolio.sellAll)} ({holding.shares} {txt(t.portfolio.sharesUnit)})
+          </span>
         </div>
         {!sellAll && (
           <Input
@@ -264,6 +276,7 @@ function SellModal({ open, onClose, portfolioId, holding, onSuccess }: {
             placeholder={String(holding.shares)}
           />
         )}
+        {error && <p className="text-sm text-warning">{error}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={onClose}>{txt(t.common.cancel)}</Button>
           <Button variant="primary" size="sm" onClick={handleSubmit} disabled={loading}>
@@ -286,14 +299,18 @@ function DeleteModal({ open, onClose, portfolioId, holdingId, holdingName, onSuc
 }) {
   const txt = useText();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleDelete = async () => {
     setLoading(true);
+    setError('');
     try {
       await portfolioApi.deleteHolding(portfolioId, holdingId);
       onSuccess();
       onClose();
-    } catch { /* handled */ }
+    } catch {
+      setError(txt(t.common.error));
+    }
     setLoading(false);
   };
 
@@ -301,6 +318,7 @@ function DeleteModal({ open, onClose, portfolioId, holdingId, holdingName, onSuc
     <Modal open={open} onClose={onClose}>
       <h3 className="text-lg font-bold text-zinc-900 mb-2">{txt(t.portfolio.deleteHolding)}</h3>
       <p className="text-sm text-zinc-600 mb-4">{txt(t.portfolio.deleteConfirm)} ({holdingName})</p>
+      {error && <p className="text-sm text-warning mb-3">{error}</p>}
       <div className="flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={onClose}>{txt(t.common.cancel)}</Button>
         <Button variant="danger" size="sm" onClick={handleDelete} disabled={loading}>

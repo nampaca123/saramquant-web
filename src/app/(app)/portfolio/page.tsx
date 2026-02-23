@@ -10,6 +10,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { portfolioApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
+import { isError } from '@/lib/utils/is-error';
 import { PortfolioTabSelector } from '@/features/portfolio/components/PortfolioTabSelector';
 import { MetricsCards } from '@/features/portfolio/components/MetricsCards';
 import { HoldingsList } from '@/features/portfolio/components/HoldingsList';
@@ -32,10 +33,6 @@ const SimulationChart = dynamic(
   { ssr: false },
 );
 
-function isError(val: unknown): val is { error: string } {
-  return val != null && typeof val === 'object' && 'error' in val;
-}
-
 export default function PortfolioPage() {
   const txt = useText();
   const { user, loading: authLoading } = useAuth();
@@ -46,11 +43,13 @@ export default function PortfolioPage() {
   const [detail, setDetail] = useState<PortfolioDetail | null>(null);
   const [analysis, setAnalysis] = useState<PortfolioAnalysisResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const activePortfolio = summaries.find((s) => s.marketGroup === tab);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError('');
     try {
       const list = await portfolioApi.list();
       setSummaries(list);
@@ -66,7 +65,9 @@ export default function PortfolioPage() {
         setDetail(null);
         setAnalysis(null);
       }
-    } catch { /* handled */ }
+    } catch {
+      setError(txt(t.portfolio.errorMessage));
+    }
     setLoading(false);
   }, [tab]);
 
@@ -94,6 +95,19 @@ export default function PortfolioPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="animate-fade-in">
+        <Card className="text-center py-16">
+          <p className="text-sm text-warning mb-4">{error}</p>
+          <Button variant="primary" size="sm" onClick={fetchData}>
+            {txt(t.common.retry)}
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   const diversData = analysis?.diversification && !isError(analysis.diversification)
     ? analysis.diversification as DiversificationResult
     : null;
@@ -105,9 +119,7 @@ export default function PortfolioPage() {
           <PieChart className="h-5 w-5 text-gold" />
           <div>
             <h1 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.title)}</h1>
-            <p className="text-xs text-zinc-500">
-              {txt(t.portfolio.subtitle)}
-            </p>
+            <p className="text-xs text-zinc-500">{txt(t.portfolio.subtitle)}</p>
           </div>
         </div>
         <PortfolioTabSelector active={tab} onChange={setTab} />
@@ -121,9 +133,7 @@ export default function PortfolioPage() {
         ) : (
           <Card className="text-center py-12">
             <Briefcase className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
-            <p className="text-sm text-zinc-600">
-              {txt(t.portfolio.emptyMessage)}
-            </p>
+            <p className="text-sm text-zinc-600">{txt(t.portfolio.emptyMessage)}</p>
             <Button
               variant="primary"
               size="sm"
@@ -136,14 +146,15 @@ export default function PortfolioPage() {
         )
       ) : null}
 
-      {activePortfolio && (
-        <div className="md:grid md:grid-cols-2 md:gap-6 space-y-6 md:space-y-0">
-          <DiversificationChart data={diversData} />
-          <SimulationChart portfolioId={activePortfolio.id} />
-        </div>
+      {activePortfolio && detail && detail.holdings.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <DiversificationChart data={diversData} />
+            <SimulationChart portfolioId={activePortfolio.id} />
+          </div>
+          <AiDiagnosisSection portfolioId={activePortfolio.id} />
+        </>
       )}
-
-      {activePortfolio && <AiDiagnosisSection portfolioId={activePortfolio.id} />}
     </div>
   );
 }
