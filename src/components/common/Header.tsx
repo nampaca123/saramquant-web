@@ -121,7 +121,7 @@ export function Header() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="text-xs text-zinc-300 hover:text-zinc-500 transition-colors whitespace-nowrap"
+                    className="ml-2 rounded-full border border-zinc-200 px-2.5 py-0.5 text-xs text-zinc-300 hover:border-zinc-300 hover:text-zinc-500 transition-colors whitespace-nowrap"
                   >
                     {txt(t.common.logout)}
                   </button>
