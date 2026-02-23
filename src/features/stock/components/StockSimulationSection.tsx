@@ -213,10 +213,13 @@ export function StockSimulationSection({ symbol, market, currentPrice }: StockSi
 
 function InfoPopover({ onClose, children, className }: { onClose: () => void; children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn(
-      'absolute z-50 w-64 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in',
-      className ?? 'right-0 top-7',
-    )}>
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className={cn(
+        'absolute z-50 w-64 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in',
+        className ?? 'right-0 top-7',
+      )}
+    >
       <button onClick={onClose} className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600">
         <X className="h-3 w-3" />
       </button>
