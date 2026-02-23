@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal, ChevronDown, ShieldCheck, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Search, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
@@ -12,20 +12,18 @@ import { MARKET_OPTIONS, TIER_FILTER_OPTIONS, SORT_OPTIONS } from '../constants/
 import type { DashboardStocksParams } from '../types/screener.types';
 import type { Market } from '@/types';
 
-const TIER_ICON = { STABLE: ShieldCheck, CAUTION: AlertTriangle, WARNING: ShieldAlert } as const;
-
-const TIER_STYLE: Record<string, { active: string; icon: string }> = {
+const TIER_CHIP: Record<string, { idle: string; active: string }> = {
   STABLE: {
-    active: 'border-stable bg-stable-bg text-stable ring-2 ring-stable/20',
-    icon: 'text-stable',
+    idle: 'border-stable/30 text-stable/70 hover:border-stable/50',
+    active: 'border-stable bg-stable-bg text-stable',
   },
   CAUTION: {
-    active: 'border-caution bg-caution-bg text-caution ring-2 ring-caution/20',
-    icon: 'text-caution',
+    idle: 'border-caution/30 text-caution/70 hover:border-caution/50',
+    active: 'border-caution bg-caution-bg text-caution',
   },
   WARNING: {
-    active: 'border-warning bg-warning-bg text-warning ring-2 ring-warning/20',
-    icon: 'text-warning',
+    idle: 'border-warning/30 text-warning/70 hover:border-warning/50',
+    active: 'border-warning bg-warning-bg text-warning',
   },
 };
 
@@ -57,8 +55,18 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
     update({ tier: next.length > 0 ? next.join(',') : undefined });
   };
 
+  const sectorOptions = [
+    { value: '', label: txt(t.screener.allSectors) },
+    ...sectors.map((s) => ({ value: s, label: s })),
+  ];
+
+  const sortOptions = SORT_OPTIONS.map((o) => ({
+    value: o.value,
+    label: o.label[language],
+  }));
+
   return (
-    <div className={cn('flex flex-col gap-5', className)}>
+    <div className={cn('flex flex-col gap-4', className)}>
       {/* Search */}
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
@@ -66,12 +74,12 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
           value={params.query ?? ''}
           onChange={(e) => update({ query: e.target.value || undefined })}
           placeholder={txt(t.screener.searchPlaceholder)}
-          className="w-full rounded-xl border border-zinc-200 bg-zinc-50 py-2.5 pl-10 pr-4 text-sm outline-none placeholder:text-zinc-400 transition-all focus:border-gold focus:ring-2 focus:ring-gold/20"
+          className="w-full rounded-lg border border-zinc-200 bg-zinc-50 py-2 pl-9 pr-3 text-sm outline-none placeholder:text-zinc-400 focus:border-gold focus:ring-1 focus:ring-gold"
         />
       </div>
 
       {/* Market tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {MARKET_OPTIONS.map((o) => {
           const active = params.market === o.value;
           return (
@@ -79,10 +87,10 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
               key={o.value}
               onClick={() => update({ market: o.value, sector: undefined })}
               className={cn(
-                'flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-all',
+                'flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
                 active
-                  ? 'border-gold bg-gold-wash text-gold shadow-sm'
-                  : 'border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:bg-zinc-50',
+                  ? 'border-gold bg-gold-wash text-gold'
+                  : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
               )}
             >
               <FlagIcon market={o.value as Market} size={16} />
@@ -92,89 +100,65 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
         })}
       </div>
 
-      {/* Risk Level - the hero element */}
-      <div>
-        <p className="mb-2.5 text-sm font-semibold text-zinc-700">
-          {txt(t.screener.riskLevel)}
-        </p>
-        <div className="grid grid-cols-3 gap-2.5">
-          {TIER_FILTER_OPTIONS.map((o) => {
-            const active = selectedTiers.includes(o.value);
-            const Icon = TIER_ICON[o.value as keyof typeof TIER_ICON];
-            const style = TIER_STYLE[o.value];
-            return (
-              <button
-                key={o.value}
-                onClick={() => toggleTier(o.value)}
-                className={cn(
-                  'flex flex-col items-center gap-1.5 rounded-xl border-2 px-2 py-3.5 transition-all sm:py-4',
-                  active
-                    ? style.active
-                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:bg-zinc-50',
-                )}
-              >
-                <Icon className={cn('h-5 w-5', active ? '' : style.icon)} />
-                <span className="text-sm font-bold">{o.label[language]}</span>
-                <span className="text-[11px] leading-tight opacity-70">
-                  {o.description[language]}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Tier chips — subtle tint when idle, full color when active */}
+      <div className="flex flex-wrap gap-1.5">
+        {TIER_FILTER_OPTIONS.map((o) => {
+          const chip = TIER_CHIP[o.value];
+          return (
+            <button
+              key={o.value}
+              onClick={() => toggleTier(o.value)}
+              className={cn(
+                'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                selectedTiers.includes(o.value) ? chip.active : chip.idle,
+              )}
+            >
+              {o.label[language]}
+            </button>
+          );
+        })}
       </div>
 
       {/* Sector */}
       {sectors.length > 0 && (
-        <select
+        <ExpandSelect
           value={params.sector ?? ''}
-          onChange={(e) => update({ sector: e.target.value || undefined })}
-          className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm"
-        >
-          <option value="">{txt(t.screener.allSectors)}</option>
-          {sectors.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+          options={sectorOptions}
+          onSelect={(v) => update({ sector: v || undefined })}
+        />
       )}
 
-      {/* Advanced filters toggle */}
+      {/* Advanced toggle */}
       <button
         onClick={() => setAdvancedOpen((prev) => !prev)}
         aria-expanded={advancedOpen}
         className={cn(
-          'flex items-center gap-2 self-start rounded-xl px-3 py-2 text-xs font-medium transition-all',
-          advancedOpen
-            ? 'bg-zinc-100 text-zinc-700'
-            : 'text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600',
+          'flex items-center gap-1.5 self-start text-xs transition-colors',
+          advancedOpen ? 'font-medium text-zinc-700' : 'text-zinc-400 hover:text-zinc-600',
         )}
       >
         <SlidersHorizontal className="h-3.5 w-3.5" />
         {txt(t.screener.expertFilters)}
-        <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', advancedOpen && 'rotate-180')} />
+        <ChevronDown className={cn('h-3 w-3 transition-transform', advancedOpen && 'rotate-180')} />
       </button>
 
-      {/* Advanced filters panel */}
+      {/* Advanced panel */}
       {advancedOpen && (
-        <div className="space-y-4 rounded-xl border border-zinc-200 bg-zinc-50/50 p-4">
-          <p className="text-xs text-zinc-400">{txt(t.screener.expertFiltersDesc)}</p>
+        <div className="space-y-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3">
+          <p className="text-[11px] text-zinc-400">{txt(t.screener.expertFiltersDesc)}</p>
 
           <div>
             <span className="mb-1 block text-xs font-medium text-zinc-600">
               {txt(t.screener.sortBy)}
             </span>
-            <select
+            <ExpandSelect
               value={params.sort ?? 'name_asc'}
-              onChange={(e) => update({ sort: e.target.value })}
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label[language]}</option>
-              ))}
-            </select>
+              options={sortOptions}
+              onSelect={(v) => update({ sort: v })}
+            />
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
             <RangeFilter label="Beta" minVal={params.betaMin} maxVal={params.betaMax}
               onMin={(v) => update({ betaMin: v })} onMax={(v) => update({ betaMax: v })} step={0.1} />
             <RangeFilter label="RSI" minVal={params.rsiMin} maxVal={params.rsiMax}
@@ -201,6 +185,78 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
   );
 }
 
+/* ── Expanding-box select ── */
+
+function ExpandSelect({
+  value, options, onSelect, className,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onSelect: (value: string) => void;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const close = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, close]);
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <div ref={ref} className={cn('relative', className)}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          'flex w-full items-center justify-between border bg-white px-3 py-1.5 text-sm transition-colors',
+          open
+            ? 'rounded-t-lg border-zinc-300 border-b-zinc-100'
+            : 'rounded-lg border-zinc-200 hover:border-zinc-300',
+        )}
+      >
+        <span className="truncate text-zinc-900">{selected?.label ?? ''}</span>
+        <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 text-zinc-400 transition-transform', open && 'rotate-180')} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 right-0 top-full z-20 -mt-px max-h-60 overflow-y-auto overscroll-contain rounded-b-lg border border-t-0 border-zinc-300 bg-white shadow-lg">
+          {options.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              onClick={() => { onSelect(o.value); close(); }}
+              className={cn(
+                'flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm transition-colors',
+                o.value === value
+                  ? 'bg-gold-wash font-medium text-gold'
+                  : 'text-zinc-700 hover:bg-zinc-50',
+              )}
+            >
+              {o.value === value && <Check className="h-3 w-3 shrink-0" />}
+              <span className="truncate">{o.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Range input pair ── */
+
 function RangeFilter({
   label, minVal, maxVal, onMin, onMax, step = 1,
 }: {
@@ -216,23 +272,13 @@ function RangeFilter({
     <div className="flex flex-col gap-1">
       <span className="text-xs font-medium text-zinc-600">{label}</span>
       <div className="flex items-center gap-1">
-        <input
-          type="number"
-          step={step}
-          value={minVal ?? ''}
-          onChange={(e) => onMin(parse(e.target.value))}
-          placeholder="Min"
-          className="w-full rounded border border-zinc-200 bg-white px-2 py-1 text-xs outline-none focus:border-gold"
-        />
+        <input type="number" step={step} value={minVal ?? ''}
+          onChange={(e) => onMin(parse(e.target.value))} placeholder="Min"
+          className="w-full rounded border border-zinc-200 bg-white px-2 py-1 text-xs outline-none focus:border-gold" />
         <span className="text-zinc-300">–</span>
-        <input
-          type="number"
-          step={step}
-          value={maxVal ?? ''}
-          onChange={(e) => onMax(parse(e.target.value))}
-          placeholder="Max"
-          className="w-full rounded border border-zinc-200 bg-white px-2 py-1 text-xs outline-none focus:border-gold"
-        />
+        <input type="number" step={step} value={maxVal ?? ''}
+          onChange={(e) => onMax(parse(e.target.value))} placeholder="Max"
+          className="w-full rounded border border-zinc-200 bg-white px-2 py-1 text-xs outline-none focus:border-gold" />
       </div>
     </div>
   );

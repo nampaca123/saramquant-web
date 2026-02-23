@@ -65,17 +65,21 @@ export default function ScreenerPage() {
 
       {benchmarks.length > 0 && <BenchmarkCards benchmarks={benchmarks} />}
 
-      <FilterPanel params={params} onChange={setParams} />
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <FilterPanel params={params} onChange={setParams} className="lg:w-64 lg:shrink-0" />
 
-      {loading ? (
-        <ScreenerSkeleton />
-      ) : (
-        <StockList
-          data={data}
-          loading={loading}
-          onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
-        />
-      )}
+        <div className="min-w-0 flex-1">
+          {loading ? (
+            <ScreenerSkeleton />
+          ) : (
+            <StockList
+              data={data}
+              loading={loading}
+              onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
