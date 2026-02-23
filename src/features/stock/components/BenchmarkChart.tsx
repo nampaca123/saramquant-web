@@ -5,6 +5,7 @@ import { createChart, LineSeries, type IChartApi, type LineData, type Time } fro
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { stockApi } from '@/lib/api';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 
@@ -16,6 +17,7 @@ interface BenchmarkChartProps {
 
 export function BenchmarkChart({ symbol, market, stockName }: BenchmarkChartProps) {
   const txt = useText();
+  const { language } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,7 @@ export function BenchmarkChart({ symbol, market, stockName }: BenchmarkChartProp
       grid: { vertLines: { color: '#f4f4f5' }, horzLines: { color: '#f4f4f5' } },
       rightPriceScale: { borderVisible: false },
       timeScale: { borderVisible: false },
+      localization: { locale: language === 'ko' ? 'ko-KR' : 'en-US' },
     });
     chartRef.current = chart;
 
@@ -63,7 +66,7 @@ export function BenchmarkChart({ symbol, market, stockName }: BenchmarkChartProp
       window.removeEventListener('resize', onResize);
       chart.remove();
     };
-  }, [symbol, market]);
+  }, [symbol, market, language]);
 
   return (
     <Card>

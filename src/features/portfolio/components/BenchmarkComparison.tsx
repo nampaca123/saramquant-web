@@ -6,6 +6,7 @@ import { HelpCircle } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Popover } from '@/components/ui/Popover';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils/cn';
@@ -19,6 +20,7 @@ interface BenchmarkComparisonProps {
 
 export function BenchmarkComparison({ data, chartData }: BenchmarkComparisonProps) {
   const txt = useText();
+  const { language } = useLanguage();
   const [infoOpen, setInfoOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -38,6 +40,7 @@ export function BenchmarkComparison({ data, chartData }: BenchmarkComparisonProp
       grid: { vertLines: { color: '#f4f4f5' }, horzLines: { color: '#f4f4f5' } },
       rightPriceScale: { borderVisible: false },
       timeScale: { borderVisible: false },
+      localization: { locale: language === 'ko' ? 'ko-KR' : 'en-US' },
     });
     chartRef.current = c;
 
@@ -56,7 +59,7 @@ export function BenchmarkComparison({ data, chartData }: BenchmarkComparisonProp
     };
     window.addEventListener('resize', onResize);
     return () => { window.removeEventListener('resize', onResize); c.remove(); };
-  }, [chart]);
+  }, [chart, language]);
 
   if (!hasChart && !hasData) return null;
 

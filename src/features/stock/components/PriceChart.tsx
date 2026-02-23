@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/lib/utils/cn';
 import { stockApi } from '@/lib/api';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import type { PricePeriod } from '@/types';
@@ -25,6 +26,7 @@ const PERIODS: { value: PricePeriod; label: string }[] = [
 
 export function PriceChart({ symbol, market }: PriceChartProps) {
   const txt = useText();
+  const { language } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const [period, setPeriod] = useState<PricePeriod>('1Y');
@@ -40,6 +42,7 @@ export function PriceChart({ symbol, market }: PriceChartProps) {
       grid: { vertLines: { color: '#f4f4f5' }, horzLines: { color: '#f4f4f5' } },
       rightPriceScale: { borderVisible: false },
       timeScale: { borderVisible: false },
+      localization: { locale: language === 'ko' ? 'ko-KR' : 'en-US' },
     });
     chartRef.current = chart;
 
@@ -78,7 +81,7 @@ export function PriceChart({ symbol, market }: PriceChartProps) {
       window.removeEventListener('resize', onResize);
       chart.remove();
     };
-  }, [symbol, market, period]);
+  }, [symbol, market, period, language]);
 
   return (
     <Card>

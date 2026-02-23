@@ -7,6 +7,7 @@ import { PieChart, Briefcase } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/providers/AuthProvider';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { portfolioApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
@@ -44,6 +45,7 @@ const AnalysisHistory = dynamic(
 
 export default function PortfolioPage() {
   const txt = useText();
+  const { language } = useLanguage();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -130,7 +132,11 @@ export default function PortfolioPage() {
         <div className="flex items-center gap-2">
           <PieChart className="h-5 w-5 text-gold" />
           <div>
-            <h1 className="text-xl font-bold text-zinc-900">{txt(t.portfolio.title)}</h1>
+            <h1 className="text-xl font-bold text-zinc-900">
+              {user.profile?.nickname
+                ? language === 'ko' ? `${user.profile.nickname}님의 포트폴리오` : `${user.profile.nickname}'s Portfolio`
+                : txt(t.portfolio.title)}
+            </h1>
             <p className="text-xs text-zinc-500">{txt(t.portfolio.subtitle)}</p>
           </div>
         </div>
