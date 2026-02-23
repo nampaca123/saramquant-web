@@ -1,19 +1,26 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Settings, User, Globe, Languages, Shield, Check } from 'lucide-react';
+import { Settings, User, Globe, Languages, Shield, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/providers/AuthProvider';
 import { useText } from '@/lib/i18n/use-text';
-import { useLanguage } from '@/providers/LanguageProvider';
 import { t } from '@/lib/i18n/translations';
-import { cn } from '@/lib/utils/cn';
+import { AccountOverview } from '@/features/settings/components/AccountOverview';
 import { ProfileSection } from '@/features/settings/components/ProfileSection';
-import { PreferredMarkets } from '@/features/settings/components/PreferredMarkets';
+import { LlmUsageCard } from '@/features/settings/components/LlmUsageCard';
+import { LanguageCard } from '@/features/settings/components/LanguageCard';
 import { AccountSection } from '@/features/settings/components/AccountSection';
-import type { Language } from '@/types';
+
+function SectionHeader({ icon: Icon, title }: { icon: typeof User; title: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="h-4 w-4 text-zinc-400" />
+      <h2 className="text-sm font-semibold text-zinc-600">{title}</h2>
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const txt = useText();
@@ -39,112 +46,37 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in">
+    <div className="max-w-5xl mx-auto animate-fade-in">
       <div className="flex items-center gap-2 mb-6">
         <Settings className="h-5 w-5 text-gold" />
         <div>
           <h1 className="text-xl font-bold text-zinc-900">{txt(t.settings.title)}</h1>
-          <p className="text-xs text-zinc-500">
-            {txt(t.settings.subtitle)}
-          </p>
+          <p className="text-xs text-zinc-500">{txt(t.settings.subtitle)}</p>
         </div>
       </div>
 
-      {/* Profile info banner */}
-      <Card className="mb-4">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-wash text-gold text-xl font-bold">
-            {user.profile?.nickname?.[0] ?? user.name?.[0] ?? user.email[0].toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <p className="text-base font-semibold text-zinc-900 truncate">
-              {user.profile?.nickname ?? user.name}
-            </p>
-            <p className="text-sm text-zinc-400 truncate">{user.email}</p>
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Left column */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Left column — identity & system info */}
         <div className="space-y-4">
-          <SectionHeader icon={User} title={txt(t.settings.profile)} />
-          <ProfileSection />
+          <SectionHeader icon={User} title={txt(t.settings.accountInfo)} />
+          <AccountOverview />
 
-          <SectionHeader icon={Globe} title={txt(t.settings.preferredMarkets)} />
-          <PreferredMarkets />
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-4">
-          <SectionHeader icon={Languages} title={txt(t.settings.language)} />
-          <LanguageCard />
+          <SectionHeader icon={Sparkles} title={txt(t.settings.llmUsage)} />
+          <LlmUsageCard />
 
           <SectionHeader icon={Shield} title={txt(t.settings.account)} />
           <AccountSection />
         </div>
+
+        {/* Right column — editable preferences */}
+        <div className="space-y-4">
+          <SectionHeader icon={Globe} title={txt(t.settings.profile)} />
+          <ProfileSection />
+
+          <SectionHeader icon={Languages} title={txt(t.settings.language)} />
+          <LanguageCard />
+        </div>
       </div>
     </div>
-  );
-}
-
-function SectionHeader({ icon: Icon, title }: { icon: typeof User; title: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <Icon className="h-4 w-4 text-zinc-400" />
-      <h2 className="text-sm font-semibold text-zinc-600">{title}</h2>
-    </div>
-  );
-}
-
-function LanguageCard() {
-  const txt = useText();
-  const { language, setLanguage } = useLanguage();
-  const [selected, setSelected] = useState<Language>(language);
-  const [saved, setSaved] = useState(false);
-  const changed = selected !== language;
-
-  const handleSave = () => {
-    setLanguage(selected);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
-  };
-
-  return (
-    <Card>
-      <p className="text-xs text-zinc-500 mb-3">
-        {txt(t.settings.languageDesc)}
-      </p>
-      <div className="flex gap-2 mb-3">
-        {([['ko', '한국어'], ['en', 'English']] as const).map(([val, label]) => (
-          <button
-            key={val}
-            onClick={() => { setSelected(val); setSaved(false); }}
-            className={cn(
-              'flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-all',
-              selected === val
-                ? 'border-gold bg-gold-wash text-gold'
-                : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className="flex justify-end">
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleSave}
-          disabled={!changed && !saved}
-        >
-          {saved ? (
-            <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5" />{txt(t.settings.saved)}</span>
-          ) : (
-            txt(t.common.save)
-          )}
-        </Button>
-      </div>
-    </Card>
   );
 }

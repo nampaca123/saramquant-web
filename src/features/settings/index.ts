@@ -1,3 +1,5 @@
+export { AccountOverview } from './components/AccountOverview';
 export { ProfileSection } from './components/ProfileSection';
-export { PreferredMarkets } from './components/PreferredMarkets';
+export { LlmUsageCard } from './components/LlmUsageCard';
+export { LanguageCard } from './components/LanguageCard';
 export { AccountSection } from './components/AccountSection';
