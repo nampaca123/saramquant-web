@@ -11,7 +11,6 @@ import { useAuth } from '@/providers/AuthProvider';
 import { portfolioApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
 import type { MarketGroup } from '@/types';
-import type { PortfolioSummary } from '@/features/portfolio/types/portfolio.types';
 
 interface AddToPortfolioButtonProps {
   stockId: number;
@@ -23,10 +22,10 @@ interface AddToPortfolioButtonProps {
 
 const today = () => new Date().toISOString().split('T')[0];
 
-export function AddToPortfolioButton({ stockId, open, onClose }: AddToPortfolioButtonProps) {
+export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPortfolioButtonProps) {
   const txt = useText();
   const { user } = useAuth();
-  const [portfolios, setPortfolios] = useState<PortfolioSummary[]>([]);
+  const marketGroup: MarketGroup = market.startsWith('KR') ? 'KR' : 'US';
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [shares, setShares] = useState('');
   const [date, setDate] = useState(today());
@@ -37,11 +36,11 @@ export function AddToPortfolioButton({ stockId, open, onClose }: AddToPortfolioB
   useEffect(() => {
     if (open && user) {
       portfolioApi.list().then((list) => {
-        setPortfolios(list);
-        if (list.length > 0) setSelectedId(list[0].id);
+        const match = list.find((p) => p.marketGroup === marketGroup);
+        if (match) setSelectedId(match.id);
       }).catch(() => {});
     }
-  }, [open, user]);
+  }, [open, user, marketGroup]);
 
   const sharesNum = Number(shares);
   const isFutureDate = date > today();
@@ -77,26 +76,10 @@ export function AddToPortfolioButton({ stockId, open, onClose }: AddToPortfolioB
         <p className="text-sm text-stable font-medium">{txt(t.stock.added)}</p>
       ) : (
         <div className="space-y-3">
-          {portfolios.length > 0 && (
-            <div>
-              <label className="text-sm font-medium text-zinc-700 mb-1 block">
-                {txt(t.stock.selectPortfolio)}
-              </label>
-              <div className="flex gap-2">
-                {portfolios.map((p) => (
-                  <Button
-                    key={p.id}
-                    variant={selectedId === p.id ? 'primary' : 'secondary'}
-                    size="sm"
-                    onClick={() => setSelectedId(p.id)}
-                  >
-                    <FlagIcon market={p.marketGroup as MarketGroup} size={14} className="mr-1" />
-                    {p.marketGroup}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-sm text-zinc-600">
+            <FlagIcon market={marketGroup} size={16} />
+            <span className="font-medium">{marketGroup} {txt(t.nav.portfolio)}</span>
+          </div>
 
           <div>
             <label className="text-sm font-medium text-zinc-700 mb-1 block">

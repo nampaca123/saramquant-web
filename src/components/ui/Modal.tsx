@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils/cn';
 
 interface ModalProps {
@@ -27,7 +28,7 @@ export function Modal({ open, onClose, children, className, ...ariaProps }: Moda
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div
       ref={backdropRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
@@ -48,6 +49,7 @@ export function Modal({ open, onClose, children, className, ...ariaProps }: Moda
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
