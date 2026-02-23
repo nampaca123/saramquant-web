@@ -26,7 +26,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     },
     criteria: [
       { ko: 'RSI (60%): 최근 14일간 상승/하락 비율', en: 'RSI (60%): 14-day momentum oscillator' },
-      { ko: '볼린저밴드 %B (40%): 가격의 통계적 위치', en: 'Bollinger %B (40%): statistical price position' },
+      { ko: '볼린저밴드 %B (40%): 최근 20일 가격 범위에서 현재 위치 (0=하단, 1=상단)', en: 'Bollinger %B (40%): where the price sits in its 20-day range (0=bottom, 1=top)' },
     ],
     methodology: {
       ko: '기술적 분석 오실레이터 기반 (RSI-14, BB %B-20)',
@@ -74,7 +74,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     },
     criteria: [
       { ko: 'CAPM 베타 (50%): 시장 대비 가격 민감도', en: 'CAPM Beta (50%): market sensitivity' },
-      { ko: '변동성 Z-score (50%): 횡단면 변동 폭', en: 'Volatility Z-score (50%): cross-sectional swing level' },
+      { ko: '변동성 Z-score (50%): 같은 시장 전체 종목 대비 얼마나 출렁이는지 (Barra 모델)', en: 'Volatility Z-score (50%): how much it swings vs. all stocks in the market (Barra model)' },
     ],
     methodology: {
       ko: 'CAPM 베타 + Barra(MSCI) 팩터 모델 기반',
@@ -113,7 +113,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     },
     criteria: [
       { ko: 'ADX-14: 추세 강도 지표', en: 'ADX-14: trend strength' },
-      { ko: '+DI / -DI: 방향성 지표 (상승 추세는 ×0.6 감쇄)', en: '+DI / -DI: direction (uptrend weighted ×0.6)' },
+      { ko: '+DI / -DI: 상승/하락 방향 판단 (상승 추세는 덜 위험하므로 점수 40% 감쇄)', en: '+DI / -DI: up/down direction (uptrend is less risky, so score reduced by 40%)' },
     ],
     methodology: {
       ko: 'Welles Wilder ADX 방향성 시스템 기반',
