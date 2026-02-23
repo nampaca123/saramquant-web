@@ -7,6 +7,7 @@ interface DimensionMeta {
   label: LocalizedText;
   description: LocalizedText;
   criteria: Array<LocalizedText>;
+  methodology: LocalizedText;
   interpretations: Record<
     RiskTier,
     (components: Record<string, number | null>, direction: Direction | null) => LocalizedText
@@ -20,13 +21,17 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     icon: Flame,
     label: { ko: '가격 과열도', en: 'Price Heat' },
     description: {
-      ko: '현재 주가가 최근 흐름 대비 얼마나 비싼지/싼지를 측정해요. 점수가 높으면 단기 가격 조정 가능성이 있어요.',
-      en: "Checks if the price has gone up (or down) too fast lately. A high score means it might cool off soon.",
+      ko: '현재 주가가 최근 흐름 대비 얼마나 안정적인지를 측정해요. 점수가 낮으면 과열이나 과매도 상태일 수 있어요.',
+      en: "Checks how normal the current price is vs. recent trends. A lower score means it may have moved too far, too fast.",
     },
     criteria: [
-      { ko: 'RSI: 최근 14일간 상승/하락 비율', en: 'RSI: has it risen or fallen too quickly?' },
-      { ko: '볼린저밴드: 가격의 통계적 위치', en: 'Bollinger Band: is the price unusually high or low?' },
+      { ko: 'RSI (60%): 최근 14일간 상승/하락 비율', en: 'RSI (60%): 14-day momentum oscillator' },
+      { ko: '볼린저밴드 %B (40%): 가격의 통계적 위치', en: 'Bollinger %B (40%): statistical price position' },
     ],
+    methodology: {
+      ko: '기술적 분석 오실레이터 기반 (RSI-14, BB %B-20)',
+      en: 'Based on standard technical oscillators (RSI-14, BB %B-20)',
+    },
     interpretations: {
       STABLE: () => ({
         ko: '가격이 적정 수준이에요',
@@ -64,13 +69,17 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     icon: Activity,
     label: { ko: '변동성', en: 'Volatility' },
     description: {
-      ko: '이 종목이 시장 전체에 비해 얼마나 출렁이는지를 측정해요. 점수가 높으면 가격이 크게 움직일 수 있어요.',
-      en: "How much this stock jumps around compared to the overall market. A high score means expect a bumpy ride.",
+      ko: '이 종목이 시장 전체에 비해 얼마나 안정적인지를 측정해요. 점수가 낮으면 가격이 크게 출렁일 수 있어요.',
+      en: "How stable this stock is compared to the overall market. A lower score means expect bigger swings.",
     },
     criteria: [
-      { ko: '베타: 시장 대비 가격 민감도', en: 'Beta: does it swing more or less than the market?' },
-      { ko: '변동성 Z-score: 통계적 변동 폭', en: 'How unusual are the price swings?' },
+      { ko: 'CAPM 베타 (50%): 시장 대비 가격 민감도', en: 'CAPM Beta (50%): market sensitivity' },
+      { ko: '변동성 Z-score (50%): 횡단면 변동 폭', en: 'Volatility Z-score (50%): cross-sectional swing level' },
     ],
+    methodology: {
+      ko: 'CAPM 베타 + Barra(MSCI) 팩터 모델 기반',
+      en: 'Based on CAPM beta + Barra (MSCI) factor model',
+    },
     interpretations: {
       STABLE: () => ({
         ko: '시장 평균보다 안정적이에요',
@@ -103,9 +112,13 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
       en: "Is the price clearly heading up or down? A strong drop is risky. A steady rise is usually less concerning.",
     },
     criteria: [
-      { ko: 'ADX: 추세 강도 지표', en: 'ADX: how strong is the direction?' },
-      { ko: '+DI/-DI: 방향성 지표', en: 'Is it heading up or down?' },
+      { ko: 'ADX-14: 추세 강도 지표', en: 'ADX-14: trend strength' },
+      { ko: '+DI / -DI: 방향성 지표 (상승 추세는 ×0.6 감쇄)', en: '+DI / -DI: direction (uptrend weighted ×0.6)' },
     ],
+    methodology: {
+      ko: 'Welles Wilder ADX 방향성 시스템 기반',
+      en: 'Based on Welles Wilder ADX directional system',
+    },
     interpretations: {
       STABLE: (_c, d) =>
         d === 'UPTREND'
@@ -136,10 +149,14 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
       en: "Is this company in good shape financially? We check how much debt it has, how well it makes money, and how it stacks up against similar companies.",
     },
     criteria: [
-      { ko: '부채비율: 빌린 돈 대비 자기 자본', en: 'Debt: how much does it owe vs. own?' },
-      { ko: 'ROE: 자기자본이익률', en: 'ROE: is it good at making profit?' },
-      { ko: '영업이익률: 매출 대비 이익', en: 'Margin: how much of sales turn into profit?' },
+      { ko: '부채비율 (40%): 빌린 돈 대비 자기 자본', en: 'Debt ratio (40%): how much does it owe vs. own?' },
+      { ko: 'ROE (30%): 자기자본이익률', en: 'ROE (30%): profit efficiency' },
+      { ko: '영업이익률 (30%): 매출 대비 이익', en: 'Operating margin (30%): how much of sales turn into profit?' },
     ],
+    methodology: {
+      ko: 'MSCI 섹터 상대 비교 방식 (섹터 중앙값 대비 평가)',
+      en: 'MSCI-style sector-relative comparison (vs. sector median)',
+    },
     interpretations: {
       STABLE: () => ({
         ko: '같은 업종 대비 재무상태가 건강해요',
@@ -160,13 +177,17 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
     icon: Scale,
     label: { ko: '가치 평가', en: 'Valuation' },
     description: {
-      ko: '주가가 실적 대비 비싼지 싼지를 측정해요. PER과 PBR을 같은 업종과 비교해서 판정. 점수가 높으면 실적에 비해 주가가 많이 높은 상태예요.',
-      en: "Is the stock price fair for what the company actually earns? We compare it to similar companies. A high score means you might be paying too much.",
+      ko: '주가가 실적 대비 적정한지를 측정해요. PER과 PBR을 같은 업종과 비교해서 판정해요. 점수가 낮으면 실적에 비해 주가가 많이 높은 상태예요.',
+      en: "Is the stock price fair for what the company actually earns? We compare it to similar companies. A lower score means you might be paying too much.",
     },
     criteria: [
-      { ko: 'PER: 주가 ÷ 주당순이익', en: 'PER: how many years to earn back what you paid?' },
-      { ko: 'PBR: 주가 ÷ 주당순자산', en: 'PBR: are you paying more than what the company owns?' },
+      { ko: 'PER (50%): 주가 ÷ 주당순이익', en: 'PER (50%): price vs. earnings' },
+      { ko: 'PBR (50%): 주가 ÷ 주당순자산', en: 'PBR (50%): price vs. assets' },
     ],
+    methodology: {
+      ko: 'MSCI 섹터 상대 비교 방식 (섹터 중앙값 대비 평가)',
+      en: 'MSCI-style sector-relative comparison (vs. sector median)',
+    },
     interpretations: {
       STABLE: () => ({
         ko: '업종 대비 적정하거나 저평가된 수준이에요',

@@ -8,7 +8,7 @@ export const stockTexts = {
   riskReport: { ko: '리스크 리포트', en: 'Risk Checkup' } satisfies LocalizedText,
   riskScore: { ko: '리스크 점수', en: 'Risk Score' } satisfies LocalizedText,
   riskScoreExplain: { ko: '이 점수는 어떻게 산정되나요?', en: 'How does this score work?' } satisfies LocalizedText,
-  scoreScale: { ko: '0점 = 안정 / 100점 = 위험', en: '0 = safe / 100 = risky' } satisfies LocalizedText,
+  scoreScale: { ko: '100점 = 안정 / 0점 = 위험', en: '100 = safe / 0 = risky' } satisfies LocalizedText,
   criteria: { ko: '측정 기준', en: 'What we look at' } satisfies LocalizedText,
   aiAnalysis: { ko: 'AI 분석', en: 'AI Breakdown' } satisfies LocalizedText,
   aiUsage: { ko: '사용', en: 'used' } satisfies LocalizedText,

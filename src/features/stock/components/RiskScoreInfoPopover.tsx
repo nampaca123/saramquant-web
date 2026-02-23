@@ -30,7 +30,8 @@ export function RiskScoreInfoPopover({ dimension, open, onClose }: RiskScoreInfo
           <li key={i} className="text-xs text-zinc-500">• {txt(c)}</li>
         ))}
       </ul>
-      <p className="text-xs font-mono text-zinc-400">{txt(t.stock.scoreScale)}</p>
+      <p className="text-xs font-mono text-zinc-400 mb-2">{txt(t.stock.scoreScale)}</p>
+      <p className="text-xs text-zinc-400 italic">{txt(meta.methodology)}</p>
     </Popover>
   );
 }
