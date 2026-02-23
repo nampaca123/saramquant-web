@@ -43,17 +43,20 @@ export function AccountOverview() {
   const { user, refresh } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(user?.profile?.profileImageUrl ?? null);
+  const [imgError, setImgError] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   if (!user) return null;
 
   const roleMeta = ROLE_META[user.role];
   const RoleIcon = roleMeta.icon;
-  const joinedDate = new Date(user.createdAt).toLocaleDateString();
+  const parsed = user.createdAt ? new Date(user.createdAt) : null;
+  const joinedDate = parsed && !isNaN(parsed.getTime()) ? parsed.toLocaleDateString() : '—';
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setImgError(false);
     setPreview(URL.createObjectURL(file));
     setUploading(true);
     try {
@@ -64,43 +67,54 @@ export function AccountOverview() {
   };
 
   return (
-    <Card>
-      {/* Avatar + identity */}
-      <div className="flex items-center gap-4 mb-5">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="group relative h-16 w-16 shrink-0 rounded-full bg-zinc-100 ring-2 ring-zinc-200 ring-offset-2 transition-all hover:ring-gold focus:outline-none focus:ring-gold disabled:opacity-50"
-        >
-          {preview ? (
-            <Image src={preview} alt="avatar" fill className="rounded-full object-cover" />
-          ) : (
-            <User className="mx-auto h-7 w-7 text-zinc-300" />
-          )}
-          <span className="absolute -bottom-0.5 -right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-white shadow transition-transform group-hover:scale-110">
-            <Camera className="h-3 w-3" />
-          </span>
-        </button>
-        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+    <Card className="p-6">
+      <div className="flex items-start justify-between mb-6">
+        {/* Avatar + name */}
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="group relative h-18 w-18 shrink-0 rounded-full bg-zinc-100 ring-2 ring-zinc-200 ring-offset-2 transition-all hover:ring-gold focus:outline-none focus:ring-gold disabled:opacity-50"
+          >
+            {preview && !imgError ? (
+              <Image
+                src={preview}
+                alt="avatar"
+                fill
+                unoptimized
+                className="rounded-full object-cover"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <User className="mx-auto h-8 w-8 text-zinc-300" />
+            )}
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-white shadow transition-transform group-hover:scale-110">
+              <Camera className="h-3 w-3" />
+            </span>
+          </button>
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
 
-        <div className="min-w-0">
-          <p className="text-base font-semibold text-zinc-900 truncate">
-            {user.profile?.nickname ?? user.name}
-          </p>
-          <p className="text-sm text-zinc-400 truncate">{user.email}</p>
-          <span className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${user.role === 'ADMIN' ? 'bg-amber-50 text-amber-600' : 'bg-zinc-100 text-zinc-500'}`}>
-            <RoleIcon className="h-3 w-3" />
-            {txt(t.settings[roleMeta.labelKey])}
-          </span>
+          <div className="min-w-0">
+            <p className="text-lg font-semibold text-zinc-900 truncate">
+              {user.profile?.nickname ?? user.name}
+            </p>
+            <p className="text-sm text-zinc-400 truncate">{user.email}</p>
+          </div>
         </div>
+
+        {/* Role badge — top right */}
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium shrink-0 ${user.role === 'ADMIN' ? 'bg-amber-50 text-amber-600' : 'bg-zinc-100 text-zinc-500'}`}>
+          <RoleIcon className="h-3.5 w-3.5" />
+          {txt(t.settings[roleMeta.labelKey])}
+        </span>
       </div>
 
-      {/* Read-only details */}
-      <div className="space-y-2.5 rounded-lg bg-zinc-50 p-3">
+      {/* Detail rows — 2-column grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 rounded-lg bg-zinc-50 px-5 py-4">
         <Row icon={<Mail className="h-4 w-4 text-zinc-400" />} label={txt(t.auth.email)} value={user.email} />
-        <Row icon={<User className="h-4 w-4 text-zinc-400" />} label={txt(t.auth.name)} value={user.name} />
         <Row icon={<ProviderIcon provider={user.provider} />} label={txt(t.settings.provider)} value={PROVIDER_META[user.provider].label} />
+        <Row icon={<User className="h-4 w-4 text-zinc-400" />} label={txt(t.auth.name)} value={user.name} />
         <Row icon={<Calendar className="h-4 w-4 text-zinc-400" />} label={txt(t.settings.joined)} value={joinedDate} />
       </div>
     </Card>
@@ -112,7 +126,7 @@ function Row({ icon, label, value }: { icon: React.ReactNode; label: string; val
     <div className="flex items-center gap-3 text-sm">
       <span className="shrink-0">{icon}</span>
       <span className="text-zinc-400 w-20 shrink-0">{label}</span>
-      <span className="text-zinc-600 truncate">{value}</span>
+      <span className="text-zinc-700 truncate">{value}</span>
     </div>
   );
 }

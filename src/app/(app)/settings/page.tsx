@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Settings, User, Globe, Languages, Shield, Sparkles } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/providers/AuthProvider';
@@ -13,13 +13,8 @@ import { LlmUsageCard } from '@/features/settings/components/LlmUsageCard';
 import { LanguageCard } from '@/features/settings/components/LanguageCard';
 import { AccountSection } from '@/features/settings/components/AccountSection';
 
-function SectionHeader({ icon: Icon, title }: { icon: typeof User; title: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <Icon className="h-4 w-4 text-zinc-400" />
-      <h2 className="text-sm font-semibold text-zinc-600">{title}</h2>
-    </div>
-  );
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">{children}</h2>;
 }
 
 export default function SettingsPage() {
@@ -31,8 +26,7 @@ export default function SettingsPage() {
 
   if (!user) {
     return (
-      <div className="max-w-2xl mx-auto animate-fade-in">
-        <h1 className="text-xl font-bold text-zinc-900 mb-6">{txt(t.settings.title)}</h1>
+      <div className="max-w-md mx-auto mt-20 animate-fade-in">
         <Card className="text-center py-16">
           <Settings className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-zinc-900">{txt(t.settings.loginRequired)}</h2>
@@ -46,37 +40,43 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
-      <div className="flex items-center gap-2 mb-6">
-        <Settings className="h-5 w-5 text-gold" />
-        <div>
-          <h1 className="text-xl font-bold text-zinc-900">{txt(t.settings.title)}</h1>
-          <p className="text-xs text-zinc-500">{txt(t.settings.subtitle)}</p>
-        </div>
+    <div className="animate-fade-in space-y-8">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold text-zinc-900">{txt(t.settings.title)}</h1>
+        <p className="text-sm text-zinc-500 mt-1">{txt(t.settings.subtitle)}</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Left column — identity & system info */}
-        <div className="space-y-4">
-          <SectionHeader icon={User} title={txt(t.settings.accountInfo)} />
-          <AccountOverview />
+      {/* Account card — full width */}
+      <section>
+        <SectionLabel>{txt(t.settings.accountInfo)}</SectionLabel>
+        <AccountOverview />
+      </section>
 
-          <SectionHeader icon={Sparkles} title={txt(t.settings.llmUsage)} />
-          <LlmUsageCard />
-
-          <SectionHeader icon={Shield} title={txt(t.settings.account)} />
-          <AccountSection />
-        </div>
-
-        {/* Right column — editable preferences */}
-        <div className="space-y-4">
-          <SectionHeader icon={Globe} title={txt(t.settings.profile)} />
+      {/* Two-column: Profile | Language + AI */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+        <section className="lg:col-span-3">
+          <SectionLabel>{txt(t.settings.profile)}</SectionLabel>
           <ProfileSection />
+        </section>
 
-          <SectionHeader icon={Languages} title={txt(t.settings.language)} />
-          <LanguageCard />
+        <div className="lg:col-span-2 space-y-8">
+          <section>
+            <SectionLabel>{txt(t.settings.language)}</SectionLabel>
+            <LanguageCard />
+          </section>
+          <section>
+            <SectionLabel>{txt(t.settings.llmUsage)}</SectionLabel>
+            <LlmUsageCard />
+          </section>
         </div>
       </div>
+
+      {/* Account management — full width, bottom */}
+      <section>
+        <SectionLabel>{txt(t.settings.account)}</SectionLabel>
+        <AccountSection />
+      </section>
     </div>
   );
 }

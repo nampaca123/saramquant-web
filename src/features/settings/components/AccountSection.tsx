@@ -32,13 +32,13 @@ export function AccountSection() {
 
   return (
     <>
-      <Card className="border-warning/10">
-        <div className="space-y-3">
-          <Button variant="secondary" size="sm" onClick={handleLogoutAll} className="w-full justify-start">
+      <Card className="p-5">
+        <div className="flex flex-wrap gap-3">
+          <Button variant="secondary" size="sm" onClick={handleLogoutAll}>
             <LogOut className="h-4 w-4 mr-2" />
             {txt(t.settings.logoutAll)}
           </Button>
-          <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)} className="w-full justify-start">
+          <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)}>
             <Trash2 className="h-4 w-4 mr-2" />
             {txt(t.settings.deleteAccount)}
           </Button>

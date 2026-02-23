@@ -53,6 +53,11 @@ export function ProfileSection() {
   const genderLabel = (g: Gender) => txt(t.settings[GENDER_OPTIONS.find((o) => o.value === g)!.labelKey]);
   const expLabel = (e: InvestmentExperience) => txt(t.settings[EXPERIENCE_OPTIONS.find((o) => o.value === e)!.labelKey]);
 
+  const marketLabel = (markets: Market[]) =>
+    markets.length > 0
+      ? markets.map((m) => MARKET_OPTIONS.find((o) => o.value === m)!.label).join(', ')
+      : '—';
+
   const handleCancel = () => {
     setForm(initial);
     setEditing(false);
@@ -85,69 +90,53 @@ export function ProfileSection() {
   /* ───── View mode ───── */
   if (!editing) {
     return (
-      <Card>
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-5">
           <h3 className="text-sm font-semibold text-zinc-700">{txt(t.settings.profile)}</h3>
           <button
             onClick={() => setEditing(true)}
-            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
+            className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700"
           >
             {saved ? <Check className="h-3.5 w-3.5 text-stable" /> : <Pencil className="h-3.5 w-3.5" />}
             {saved ? txt(t.settings.saved) : txt(t.settings.edit)}
           </button>
         </div>
 
-        <div className="space-y-3">
+        <dl className="space-y-4 text-sm">
           <ViewRow label={txt(t.onboarding.nicknameLabel)} value={initial.nickname} />
           <ViewRow label={txt(t.settings.birthYear)} value={initial.birthYear || '—'} />
           <ViewRow label={txt(t.settings.gender)} value={genderLabel(initial.gender)} />
           <ViewRow label={txt(t.settings.experience)} value={expLabel(initial.experience)} />
-          <div className="flex items-start gap-3 text-sm">
-            <span className="text-zinc-400 w-20 shrink-0 pt-0.5">{txt(t.settings.preferredMarkets)}</span>
-            <div className="flex flex-wrap gap-1.5">
-              {initial.markets.length > 0
-                ? initial.markets.map((m) => (
-                    <span key={m} className="inline-flex items-center gap-1 rounded-full bg-gold-wash px-2.5 py-0.5 text-xs font-medium text-gold">
-                      <FlagIcon market={m} size={12} />
-                      {MARKET_OPTIONS.find((o) => o.value === m)!.label}
-                    </span>
-                  ))
-                : <span className="text-zinc-300">—</span>}
-            </div>
-          </div>
-        </div>
+          <ViewRow label={txt(t.settings.preferredMarkets)} value={marketLabel(initial.markets)} />
+        </dl>
       </Card>
     );
   }
 
   /* ───── Edit mode ───── */
   return (
-    <Card className="ring-1 ring-gold/30">
-      <div className="flex items-center justify-between mb-4">
+    <Card className="p-6 ring-1 ring-gold/30">
+      <div className="flex items-center justify-between mb-5">
         <h3 className="text-sm font-semibold text-zinc-700">{txt(t.settings.profile)}</h3>
         <button
           onClick={handleCancel}
-          className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+          className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
         >
           <X className="h-3.5 w-3.5" />
           {txt(t.common.cancel)}
         </button>
       </div>
 
-      <div className="space-y-4">
-        {/* Nickname */}
-        <div>
-          <label className="text-xs font-medium text-zinc-500 mb-1 block">{txt(t.onboarding.nicknameLabel)}</label>
+      <div className="space-y-5">
+        <Field label={txt(t.onboarding.nicknameLabel)}>
           <Input
             value={form.nickname}
             onChange={(e) => setForm((p) => ({ ...p, nickname: e.target.value }))}
             maxLength={20}
           />
-        </div>
+        </Field>
 
-        {/* Birth year */}
-        <div>
-          <label className="text-xs font-medium text-zinc-500 mb-1 block">{txt(t.settings.birthYear)}</label>
+        <Field label={txt(t.settings.birthYear)}>
           <Input
             type="number"
             min={1900}
@@ -156,11 +145,9 @@ export function ProfileSection() {
             onChange={(e) => setForm((p) => ({ ...p, birthYear: e.target.value }))}
             placeholder="1995"
           />
-        </div>
+        </Field>
 
-        {/* Gender */}
-        <div>
-          <label className="text-xs font-medium text-zinc-500 mb-1.5 block">{txt(t.settings.gender)}</label>
+        <Field label={txt(t.settings.gender)}>
           <div className="grid grid-cols-3 gap-2">
             {GENDER_OPTIONS.map((opt) => (
               <button
@@ -168,7 +155,7 @@ export function ProfileSection() {
                 type="button"
                 onClick={() => setForm((p) => ({ ...p, gender: opt.value }))}
                 className={cn(
-                  'rounded-lg border-2 py-2 text-xs font-medium transition-all',
+                  'rounded-lg border-2 py-2.5 text-sm font-medium transition-all',
                   form.gender === opt.value
                     ? 'border-gold bg-gold-wash text-gold'
                     : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
@@ -178,11 +165,9 @@ export function ProfileSection() {
               </button>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* Experience */}
-        <div>
-          <label className="text-xs font-medium text-zinc-500 mb-1.5 block">{txt(t.settings.experience)}</label>
+        <Field label={txt(t.settings.experience)}>
           <div className="grid grid-cols-3 gap-2">
             {EXPERIENCE_OPTIONS.map((opt) => (
               <button
@@ -190,7 +175,7 @@ export function ProfileSection() {
                 type="button"
                 onClick={() => setForm((p) => ({ ...p, experience: opt.value }))}
                 className={cn(
-                  'rounded-lg border-2 py-2 text-xs font-medium transition-all',
+                  'rounded-lg border-2 py-2.5 text-sm font-medium transition-all',
                   form.experience === opt.value
                     ? 'border-gold bg-gold-wash text-gold'
                     : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
@@ -200,11 +185,9 @@ export function ProfileSection() {
               </button>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* Markets */}
-        <div>
-          <label className="text-xs font-medium text-zinc-500 mb-1.5 block">{txt(t.settings.preferredMarkets)}</label>
+        <Field label={txt(t.settings.preferredMarkets)}>
           <div className="grid grid-cols-2 gap-2">
             {MARKET_OPTIONS.map((opt) => (
               <button
@@ -212,21 +195,20 @@ export function ProfileSection() {
                 type="button"
                 onClick={() => toggleMarket(opt.value)}
                 className={cn(
-                  'flex items-center justify-center gap-1.5 rounded-lg border-2 py-2 text-xs font-medium transition-all',
+                  'flex items-center justify-center gap-2 rounded-lg border-2 py-2.5 text-sm font-medium transition-all',
                   form.markets.includes(opt.value)
                     ? 'border-gold bg-gold-wash text-gold'
                     : 'border-zinc-200 text-zinc-600 hover:border-zinc-300',
                 )}
               >
-                <FlagIcon market={opt.value} size={14} />
+                <FlagIcon market={opt.value} size={16} />
                 {opt.label}
               </button>
             ))}
           </div>
-        </div>
+        </Field>
 
-        {/* Save */}
-        <div className="flex justify-end pt-1">
+        <div className="flex justify-end pt-2">
           <Button variant="primary" size="sm" onClick={handleSave} disabled={loading}>
             {loading ? txt(t.common.loading) : txt(t.common.save)}
           </Button>
@@ -238,9 +220,18 @@ export function ProfileSection() {
 
 function ViewRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 text-sm">
-      <span className="text-zinc-400 w-20 shrink-0">{label}</span>
-      <span className="text-zinc-700">{value}</span>
+    <div className="flex items-baseline">
+      <dt className="text-zinc-400 w-24 shrink-0">{label}</dt>
+      <dd className="text-zinc-700">{value}</dd>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-xs font-medium text-zinc-500 mb-1.5 block">{label}</label>
+      {children}
     </div>
   );
 }
