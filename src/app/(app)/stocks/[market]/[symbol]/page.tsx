@@ -43,7 +43,7 @@ export default function StockDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <StockDetailSkeleton />
       </div>
     );
@@ -51,57 +51,54 @@ export default function StockDetailPage() {
 
   if (error || !data) {
     return (
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <p className="text-sm text-warning">{error || txt(t.common.error)}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto animate-fade-in">
+    <div className="max-w-6xl mx-auto animate-fade-in">
       <StockHeader
         header={data.header}
         riskBadge={data.riskBadge}
         onAddPortfolio={() => setModalOpen(true)}
       />
 
-      <div className="mt-6 flex flex-col gap-6 lg:flex-row">
-        {/* Left column: charts + risk report */}
-        <div className="flex-1 min-w-0 space-y-6">
-          <PriceChart symbol={params.symbol} market={params.market} />
+      <div className="mt-6 space-y-6">
+        <PriceChart symbol={params.symbol} market={params.market} />
 
-          <BenchmarkChart
-            symbol={params.symbol}
-            market={params.market}
-            stockName={data.header.name}
-          />
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RiskReport riskBadge={data.riskBadge} />
+          <div className="space-y-6">
+            {data.factorExposures && (
+              <FactorExposureChart exposures={data.factorExposures} />
+            )}
+            {data.sectorComparison && (
+              <SectorComparisonCard
+                comparison={data.sectorComparison}
+                fundamentals={data.fundamentals}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Right column: AI + simulation + comparison + factors */}
-        <div className="w-full space-y-6 lg:w-80 lg:shrink-0 lg:sticky lg:top-20 lg:self-start">
+        <BenchmarkChart
+          symbol={params.symbol}
+          market={params.market}
+          stockName={data.header.name}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AiAnalysisSection
             symbol={params.symbol}
             market={params.market}
             cachedAnalysis={data.llmAnalysis}
           />
-
           <StockSimulationSection
             symbol={params.symbol}
             currentPrice={data.header.latestClose}
           />
-
-          {data.sectorComparison && (
-            <SectorComparisonCard
-              comparison={data.sectorComparison}
-              fundamentals={data.fundamentals}
-            />
-          )}
-
-          {data.factorExposures && (
-            <FactorExposureChart exposures={data.factorExposures} />
-          )}
         </div>
       </div>
 

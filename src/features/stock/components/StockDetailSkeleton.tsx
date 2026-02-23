@@ -16,22 +16,34 @@ export function StockDetailSkeleton() {
           </div>
         </div>
       </div>
+
       {/* Price chart */}
       <Skeleton className="h-72 w-full rounded-xl" />
-      {/* Benchmark */}
-      <Skeleton className="h-56 w-full rounded-xl" />
-      {/* Risk summary */}
-      <Skeleton className="h-16 w-full rounded-xl" />
-      {/* Risk cards */}
-      <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-32 w-full rounded-xl" />
-        ))}
+
+      {/* Risk + Factor/Sector grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full rounded-xl" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-56 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
       </div>
-      {/* Simulation collapsed */}
-      <Skeleton className="h-12 w-full rounded-xl" />
-      {/* AI section */}
-      <Skeleton className="h-40 w-full rounded-xl" />
+
+      {/* Benchmark chart */}
+      <Skeleton className="h-56 w-full rounded-xl" />
+
+      {/* AI + Simulation grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
     </div>
   );
 }
