@@ -10,13 +10,14 @@ import { userApi } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils/cn';
+import { FlagIcon } from '@/components/common/FlagIcon';
 import type { Market, InvestmentExperience, Gender } from '@/types';
 
-const MARKET_OPTIONS: { value: Market; label: string; flag: string }[] = [
-  { value: 'KR_KOSPI', label: 'KOSPI', flag: '🇰🇷' },
-  { value: 'KR_KOSDAQ', label: 'KOSDAQ', flag: '🇰🇷' },
-  { value: 'US_NYSE', label: 'NYSE', flag: '🇺🇸' },
-  { value: 'US_NASDAQ', label: 'NASDAQ', flag: '🇺🇸' },
+const MARKET_OPTIONS: { value: Market; label: string }[] = [
+  { value: 'KR_KOSPI', label: 'KOSPI' },
+  { value: 'KR_KOSDAQ', label: 'KOSDAQ' },
+  { value: 'US_NYSE', label: 'NYSE' },
+  { value: 'US_NASDAQ', label: 'NASDAQ' },
 ];
 
 const GENDER_OPTIONS: { value: Gender; labelKey: 'genderMale' | 'genderFemale' | 'genderNone' }[] = [
@@ -167,7 +168,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
                   : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300',
               )}
             >
-              <span className="text-base leading-none">{opt.flag}</span>
+              <FlagIcon market={opt.value} size={18} />
               {opt.label}
             </button>
           ))}

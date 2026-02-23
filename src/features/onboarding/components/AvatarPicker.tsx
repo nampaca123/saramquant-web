@@ -15,11 +15,13 @@ export function AvatarPicker({ initialUrl, onFileSelect }: AvatarPickerProps) {
   const txt = useText();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(initialUrl);
+  const [imgError, setImgError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     onFileSelect(file);
+    setImgError(false);
     setPreview(URL.createObjectURL(file));
   };
 
@@ -30,8 +32,15 @@ export function AvatarPicker({ initialUrl, onFileSelect }: AvatarPickerProps) {
         onClick={() => fileInputRef.current?.click()}
         className="group relative h-24 w-24 rounded-full bg-zinc-100 ring-2 ring-zinc-200 ring-offset-2 transition-all hover:ring-gold focus:outline-none focus:ring-gold"
       >
-        {preview ? (
-          <Image src={preview} alt="avatar" fill className="rounded-full object-cover" />
+        {preview && !imgError ? (
+          <Image
+            src={preview}
+            alt="avatar"
+            fill
+            unoptimized
+            className="rounded-full object-cover"
+            onError={() => setImgError(true)}
+          />
         ) : (
           <User className="mx-auto h-10 w-10 text-zinc-300" />
         )}
