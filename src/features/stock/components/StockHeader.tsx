@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { FlagIcon } from '@/components/common/FlagIcon';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
-import { currencyPrefix, currencySuffix, formatAmount } from '@/lib/utils/format-currency';
+import { currencySymbol, formatAmount } from '@/lib/utils/format-currency';
 import { formatPercent } from '@/lib/utils/format-percent';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
@@ -45,9 +45,8 @@ export function StockHeader({ header, riskBadge, onAddPortfolio }: StockHeaderPr
 
         <div className="flex flex-col items-start md:items-end gap-1">
           <span className="text-2xl font-bold text-zinc-900">
-            {currencyPrefix(currency)}
+            <span style={{ fontFamily: 'system-ui, sans-serif' }}>{currencySymbol(currency)}</span>
             <span className="font-mono">{formatAmount(header.latestClose, currency)}</span>
-            {currencySuffix(currency)}
           </span>
           <span className={cn('text-sm font-mono', changeColor)}>
             {formatPercent(header.priceChangePercent)}
