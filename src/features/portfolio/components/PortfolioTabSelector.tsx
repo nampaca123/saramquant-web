@@ -1,20 +1,25 @@
 'use client';
 
 import { FlagIcon } from '@/components/common/FlagIcon';
+import { useText } from '@/lib/i18n/use-text';
+import { t } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils/cn';
 import type { MarketGroup } from '@/types';
+import type { LocalizedText } from '@/types';
 
 interface PortfolioTabSelectorProps {
   active: MarketGroup;
   onChange: (tab: MarketGroup) => void;
 }
 
-const TABS: { value: MarketGroup; label: string }[] = [
-  { value: 'KR', label: 'KR' },
-  { value: 'US', label: 'US' },
+const TABS: { value: MarketGroup; label: LocalizedText }[] = [
+  { value: 'KR', label: t.portfolio.marketKR },
+  { value: 'US', label: t.portfolio.marketUS },
 ];
 
 export function PortfolioTabSelector({ active, onChange }: PortfolioTabSelectorProps) {
+  const txt = useText();
+
   return (
     <div className="flex rounded-lg border border-zinc-200 p-0.5">
       {TABS.map((tab) => (
@@ -29,7 +34,7 @@ export function PortfolioTabSelector({ active, onChange }: PortfolioTabSelectorP
           )}
         >
           <FlagIcon market={tab.value} size={14} />
-          {tab.label}
+          {txt(tab.label)}
         </button>
       ))}
     </div>

@@ -92,4 +92,52 @@ export const portfolioTexts = {
   historyDesc: { ko: '이전에 받은 AI 진단을 다시 볼 수 있어요', en: 'Review your previous AI checkups' } satisfies LocalizedText,
   historyEmpty: { ko: '아직 분석 기록이 없어요', en: 'No past analyses yet' } satisfies LocalizedText,
   historyEmptySub: { ko: 'AI 진단을 한 번 받으면 여기에 기록이 남아요', en: 'Run an AI checkup above and it will appear here' } satisfies LocalizedText,
+
+  // Market tab labels
+  marketKR: { ko: '국장', en: 'KR Market' } satisfies LocalizedText,
+  marketUS: { ko: '미장', en: 'US Market' } satisfies LocalizedText,
+
+  // Metric tooltips
+  riskScoreInfo: {
+    ko: '포트폴리오 전체 변동성을 벤치마크(국장: KOSPI, 미장: S&P 500) 대비 비율로 환산한 점수예요.\n\n계산식: (포트폴리오 연간 변동성 ÷ 벤치마크 연간 변동성) × 50\n\n• 40점 이하: 안정 — 벤치마크보다 변동성이 낮아요\n• 40~70점: 주의 — 벤치마크와 비슷하거나 약간 높아요\n• 70점 초과: 경고 — 벤치마크보다 변동성이 크게 높아요\n\nMorningstar Portfolio Risk Score(MPRS) 방식을 간소화해 적용했어요.',
+    en: 'Measures total portfolio volatility relative to the benchmark (KR: KOSPI, US: S&P 500).\n\nFormula: (portfolio annual vol ÷ benchmark annual vol) × 50\n\n• ≤ 40: Stable — less volatile than the benchmark\n• 40–70: Caution — similar to or slightly above the benchmark\n• > 70: Warning — significantly more volatile\n\nSimplified adaptation of the Morningstar Portfolio Risk Score (MPRS).',
+  } satisfies LocalizedText,
+  volatilityInfo: {
+    ko: '최근 거래일 기준 포트폴리오 전체의 연간 변동성(annualized volatility)이에요.\n\n계산: 일일 수익률의 표준편차 × √252\n\n벤치마크 변동성과 비교하면 내 포트폴리오가 시장 평균보다 얼마나 흔들리는지 알 수 있어요.',
+    en: 'Annualized volatility of your entire portfolio based on recent trading days.\n\nFormula: standard deviation of daily returns × √252\n\nCompare with benchmark volatility to see how much your portfolio swings relative to the market.',
+  } satisfies LocalizedText,
+  diversificationInfo: {
+    ko: '종목이 얼마나 골고루 분산되어 있는지를 나타내는 지표예요.\n\n실질 분산 종목 수(Effective N) = 1 ÷ HHI\nHHI(허핀달-허쉬만 지수) = 각 종목 비중의 제곱의 합\n\n예시: 5종목 균등 분배 → Effective N = 5\n예시: 1종목에 90% 집중 → Effective N ≈ 1.2\n\n숫자가 높을수록 분산이 잘 되어 있다는 의미예요.',
+    en: 'Shows how evenly your holdings are spread.\n\nEffective N = 1 ÷ HHI\nHHI (Herfindahl-Hirschman Index) = sum of squared weights\n\nExample: 5 stocks equally weighted → Effective N = 5\nExample: 90% in one stock → Effective N ≈ 1.2\n\nHigher means better diversification.',
+  } satisfies LocalizedText,
+  maxWeightInfo: {
+    ko: '포트폴리오에서 가장 큰 비중을 차지하는 단일 종목의 비율이에요.\n\n이 값이 50%를 넘으면 특정 종목에 대한 쏠림이 크다는 뜻이에요. 해당 종목의 급락 시 포트폴리오 전체에 큰 영향을 줄 수 있어요.',
+    en: 'The weight of the single largest position in your portfolio.\n\nAbove 50% means heavy concentration in one stock. A sharp drop in that stock could significantly impact your entire portfolio.',
+  } satisfies LocalizedText,
+  sectorDiversificationInfo: {
+    ko: '보유 종목을 업종(섹터)별로 분류해 각 섹터가 차지하는 비중을 보여줘요.\n\n한 섹터에 집중되어 있으면 해당 산업 전체에 영향을 주는 이벤트(규제, 경기 변동 등)에 취약할 수 있어요.',
+    en: 'Shows how your holdings are distributed across industry sectors.\n\nHeavy concentration in one sector makes your portfolio vulnerable to industry-wide events like regulation changes or economic shifts.',
+  } satisfies LocalizedText,
+
+  // Diversification display
+  effectiveNLabel: { ko: '종목 분산', en: 'Stock spread' } satisfies LocalizedText,
+
+  // Pagination
+  pageOf: { ko: '/', en: ' / ' } satisfies LocalizedText,
+
+  // Benchmark comparison
+  benchmarkReturn: { ko: '벤치마크 대비 수익률', en: 'Return vs. Benchmark' } satisfies LocalizedText,
+  benchmarkReturnInfo: {
+    ko: '보유 종목의 매수 시점부터 현재까지의 수익률을 대표 벤치마크(국장: KOSPI, 미장: S&P 500)와 비교해요.\n\n양수면 벤치마크보다 좋은 성과를, 음수면 벤치마크 대비 저조한 성과를 의미해요.',
+    en: 'Compares your portfolio return from purchase dates to now against the benchmark (KR: KOSPI, US: S&P 500).\n\nPositive means you outperformed the benchmark; negative means underperformance.',
+  } satisfies LocalizedText,
+  portfolioReturn: { ko: '내 포트폴리오', en: 'My Portfolio' } satisfies LocalizedText,
+  benchmark: { ko: '벤치마크', en: 'Benchmark' } satisfies LocalizedText,
+  excess: { ko: '초과 수익', en: 'Excess return' } satisfies LocalizedText,
+  benchmarkName: { ko: '벤치마크', en: 'Benchmark' } satisfies LocalizedText,
+
+  // Enriched holdings display
+  currentValue: { ko: '보유 가치', en: 'Value' } satisfies LocalizedText,
+  firstPurchaseDate: { ko: '최초 매수', en: 'First buy' } satisfies LocalizedText,
+  currentPrice: { ko: '현재가', en: 'Current' } satisfies LocalizedText,
 } as const;

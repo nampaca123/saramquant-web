@@ -28,6 +28,10 @@ const DiversificationChart = dynamic(
   () => import('@/features/portfolio/components/DiversificationChart').then((m) => ({ default: m.DiversificationChart })),
   { ssr: false },
 );
+const BenchmarkComparison = dynamic(
+  () => import('@/features/portfolio/components/BenchmarkComparison').then((m) => ({ default: m.BenchmarkComparison })),
+  { ssr: false },
+);
 const SimulationChart = dynamic(
   () => import('@/features/portfolio/components/SimulationChart').then((m) => ({ default: m.SimulationChart })),
   { ssr: false },
@@ -116,6 +120,8 @@ export default function PortfolioPage() {
     ? analysis.diversification as DiversificationResult
     : null;
 
+  const benchmarkData = analysis?.benchmark_comparison ?? null;
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -154,8 +160,9 @@ export default function PortfolioPage() {
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <DiversificationChart data={diversData} />
-            <SimulationChart portfolioId={activePortfolio.id} />
+            <BenchmarkComparison data={benchmarkData} />
           </div>
+          <SimulationChart portfolioId={activePortfolio.id} />
           <AiDiagnosisSection portfolioId={activePortfolio.id} />
           <AnalysisHistory portfolioId={activePortfolio.id} />
         </>

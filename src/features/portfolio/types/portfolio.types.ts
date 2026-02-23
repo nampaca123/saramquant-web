@@ -12,12 +12,18 @@ export interface HoldingDetail {
   stockId: number;
   symbol: string;
   name: string;
+  market: string | null;
+  sector: string | null;
   shares: number;
   avgPrice: number;
   currency: 'KRW' | 'USD';
   purchasedAt: string;
   purchaseFxRate: number | null;
   priceSource: 'AUTO' | 'MANUAL';
+  latestClose: number | null;
+  priceChangePercent: number | null;
+  summaryTier: string | null;
+  dimensionTiers: Record<string, string> | null;
 }
 
 export interface PortfolioDetail {
@@ -69,10 +75,19 @@ export interface DiversificationResult {
   sector_hhi?: number;
 }
 
+export interface BenchmarkComparisonResult {
+  portfolio_return: number;
+  benchmark_return: number;
+  excess_return: number;
+  benchmark_name: string;
+  lookback_days: number;
+}
+
 export interface PortfolioAnalysisResponse {
   risk_score: RiskScoreResult | null;
   risk_decomposition: RiskDecompositionResult | { error: string } | null;
   diversification: DiversificationResult | { error: string } | null;
+  benchmark_comparison: BenchmarkComparisonResult | { error: string } | null;
 }
 
 export interface PortfolioSimulationResponse {
