@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { useState, useEffect, type ComponentPropsWithoutRef } from 'react';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import { Sparkles, MessageSquareText, HelpCircle, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +15,31 @@ import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
 import type { CachedLlmAnalysis } from '../types/stock.types';
 import type { LocalizedText } from '@/types';
+
+const mdComponents: Components = {
+  h2: (props: ComponentPropsWithoutRef<'h2'>) => (
+    <h2 className="text-[15px] font-bold text-zinc-900 mt-5 mb-2 first:mt-0 border-b border-zinc-100 pb-1.5" {...props} />
+  ),
+  h3: (props: ComponentPropsWithoutRef<'h3'>) => (
+    <h3 className="text-sm font-semibold text-zinc-800 mt-3.5 mb-1.5" {...props} />
+  ),
+  p: (props: ComponentPropsWithoutRef<'p'>) => (
+    <p className="text-[13px] leading-[1.75] text-zinc-600 my-1.5" {...props} />
+  ),
+  strong: (props: ComponentPropsWithoutRef<'strong'>) => (
+    <strong className="font-semibold text-zinc-800" {...props} />
+  ),
+  ul: (props: ComponentPropsWithoutRef<'ul'>) => (
+    <ul className="my-1.5 space-y-1 pl-1" {...props} />
+  ),
+  li: (props: ComponentPropsWithoutRef<'li'>) => (
+    <li className="flex gap-2 text-[13px] leading-[1.75] text-zinc-600">
+      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold/60" />
+      <span>{props.children}</span>
+    </li>
+  ),
+  hr: () => <hr className="my-3.5 border-zinc-100" />,
+};
 
 const AI_LOADING_STAGES = [t.stock.aiStage1, t.stock.aiStage2, t.stock.aiStage3, t.stock.aiStage4];
 
@@ -155,17 +180,9 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
       ) : (
         <div>
           <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 mb-3 max-h-[420px] overflow-y-auto">
-            <div className="prose prose-sm prose-zinc max-w-none
-              prose-headings:text-zinc-800 prose-headings:font-bold
-              prose-h2:text-base prose-h2:mt-4 prose-h2:mb-2
-              prose-h3:text-sm prose-h3:mt-3 prose-h3:mb-1.5
-              prose-p:text-zinc-700 prose-p:leading-relaxed prose-p:my-1.5
-              prose-li:text-zinc-700 prose-li:my-0.5
-              prose-strong:text-zinc-900
-              prose-hr:my-3"
-            >
-              <ReactMarkdown>{currentResult.analysis}</ReactMarkdown>
-            </div>
+            <ReactMarkdown components={mdComponents}>
+              {currentResult.analysis}
+            </ReactMarkdown>
           </div>
           {currentResult.disclaimer && <Disclaimer text={currentResult.disclaimer} variant="inline" />}
         </div>

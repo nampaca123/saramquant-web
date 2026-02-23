@@ -18,7 +18,7 @@ export const stockTexts = {
   presetRisk: { ko: '리스크 평가', en: 'What Could Go Wrong?' } satisfies LocalizedText,
   presetFinancial: { ko: '재무 분석', en: 'Is This Company Healthy?' } satisfies LocalizedText,
   presetSubSummary: { ko: '기술·재무·리스크·팩터 지표 종합', en: 'Tech, financials, risk & factors combined' } satisfies LocalizedText,
-  presetSubBeginner: { ko: '같은 분석을 전문 용어 없이 쉽게', en: 'Same depth, plain language' } satisfies LocalizedText,
+  presetSubBeginner: { ko: '같은 분석을 더더욱 쉽게', en: 'Even easier explanation' } satisfies LocalizedText,
   presetSubRisk: { ko: '변동성·과매수·재무 건전성 집중 점검', en: 'Volatility, overbought signals & health' } satisfies LocalizedText,
   presetSubFinancial: { ko: '재무제표 + 같은 업종 대비 비교', en: 'Financial statements vs sector peers' } satisfies LocalizedText,
   aiDesc: { ko: '가격 추이, 기술적 지표, 재무제표, 리스크 등급, 팩터 노출도를 AI가 종합 분석해요.', en: 'AI analyzes price trends, technical indicators, financials, risk scores, and factor exposure.' } satisfies LocalizedText,
