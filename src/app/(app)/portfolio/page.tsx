@@ -122,6 +122,7 @@ export default function PortfolioPage() {
     : null;
 
   const benchmarkData = analysis?.benchmark_comparison ?? null;
+  const benchmarkChartData = analysis?.benchmark_chart ?? null;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -165,7 +166,7 @@ export default function PortfolioPage() {
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <DiversificationChart data={diversData} />
-            <BenchmarkComparison data={benchmarkData} />
+            <BenchmarkComparison data={benchmarkData} chartData={benchmarkChartData} />
           </div>
           <SimulationChart portfolioId={activePortfolio.id} />
           <AiDiagnosisSection portfolioId={activePortfolio.id} />

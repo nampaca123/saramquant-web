@@ -31,33 +31,29 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
 
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      <MetricCard
-        label={txt(t.portfolio.riskScore)}
-        tooltip={t.portfolio.riskScoreInfo}
-      >
+      {/* Risk Score */}
+      <MetricCard label={txt(t.portfolio.riskScore)} tooltip={t.portfolio.riskScoreInfo}>
         {riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
-          <>
-            <Badge tier={riskScore.tier as 'STABLE' | 'CAUTION' | 'WARNING'} language={language} />
-            <p className="text-2xl font-mono font-bold text-zinc-900 mt-1">
-              {riskScore.score}<span className="text-sm font-normal text-zinc-500">{txt(t.risk.score)}</span>
-            </p>
-          </>
+          <div className="flex items-end gap-2 mt-auto">
+            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
+              {riskScore.score}
+            </span>
+            <Badge tier={riskScore.tier as 'STABLE' | 'CAUTION' | 'WARNING'} language={language} className="mb-0.5" />
+          </div>
         ) : (
           <EmptyValue />
         )}
       </MetricCard>
 
-      <MetricCard
-        label={txt(t.portfolio.volatility)}
-        tooltip={t.portfolio.volatilityInfo}
-      >
+      {/* Volatility */}
+      <MetricCard label={txt(t.portfolio.volatility)} tooltip={t.portfolio.volatilityInfo}>
         {hasDecomp ? (
           <>
-            <p className="text-2xl font-mono font-bold text-zinc-900">
+            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none mt-auto">
               {formatPercent(decomp.portfolio_vol * 100, { sign: false })}
-            </p>
+            </span>
             {riskScore?.benchmark_vol != null && (
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-[11px] text-zinc-400 mt-1">
                 {txt(t.portfolio.vsBenchmark)} {formatPercent(riskScore.benchmark_vol * 100, { sign: false })}
               </p>
             )}
@@ -67,36 +63,32 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         )}
       </MetricCard>
 
-      <MetricCard
-        label={txt(t.portfolio.diversification)}
-        tooltip={t.portfolio.diversificationInfo}
-      >
+      {/* Diversification */}
+      <MetricCard label={txt(t.portfolio.diversification)} tooltip={t.portfolio.diversificationInfo}>
         {hasDivers ? (
           <>
-            <p className={cn(
-              'text-2xl font-mono font-bold',
+            <span className={cn(
+              'text-2xl font-mono font-bold leading-none mt-auto',
               divers.hhi < 0.25 ? 'text-stable' : divers.hhi > 0.5 ? 'text-warning' : 'text-zinc-900',
             )}>
               {divers.effective_n}
-            </p>
-            <p className="text-xs text-zinc-400 mt-0.5">{txt(t.portfolio.effectiveNLabel)}</p>
+            </span>
+            <p className="text-[11px] text-zinc-400 mt-1">{txt(t.portfolio.effectiveNLabel)}</p>
           </>
         ) : (
           <EmptyValue />
         )}
       </MetricCard>
 
-      <MetricCard
-        label={txt(t.portfolio.maxWeight)}
-        tooltip={t.portfolio.maxWeightInfo}
-      >
+      {/* Max Weight */}
+      <MetricCard label={txt(t.portfolio.maxWeight)} tooltip={t.portfolio.maxWeightInfo}>
         {hasDivers ? (
-          <p className={cn(
-            'text-2xl font-mono font-bold',
+          <span className={cn(
+            'text-2xl font-mono font-bold leading-none mt-auto',
             divers.max_weight > 0.5 ? 'text-caution' : 'text-zinc-900',
           )}>
             {formatPercent(divers.max_weight * 100, { sign: false })}
-          </p>
+          </span>
         ) : (
           <EmptyValue />
         )}
@@ -108,10 +100,10 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
 function EmptyValue() {
   const txt = useText();
   return (
-    <>
-      <p className="text-xs text-zinc-400">{txt(t.portfolio.insufficientData)}</p>
-      <p className="text-2xl font-mono font-bold text-zinc-300 mt-1">—</p>
-    </>
+    <div className="mt-auto">
+      <span className="text-2xl font-mono font-bold text-zinc-300 leading-none">—</span>
+      <p className="text-[11px] text-zinc-400 mt-1">{txt(t.portfolio.insufficientData)}</p>
+    </div>
   );
 }
 
@@ -124,14 +116,16 @@ function MetricCard({ label, tooltip, children }: {
   const [open, setOpen] = useState(false);
 
   return (
-    <Card className="relative">
-      <div className="flex items-center justify-between mb-1.5">
-        <p className="text-xs text-zinc-500">{label}</p>
+    <Card className="relative flex flex-col min-h-[100px]">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs text-zinc-500 leading-none">{label}</p>
         <button onClick={() => setOpen(!open)}>
           <HelpCircle className="h-3.5 w-3.5 text-zinc-300 hover:text-zinc-500 transition-colors" />
         </button>
       </div>
-      {children}
+      <div className="flex flex-col flex-1 justify-end">
+        {children}
+      </div>
       <Popover open={open} onClose={() => setOpen(false)} className="top-8 right-0 w-72 z-50">
         <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line pr-4">
           {txt(tooltip)}

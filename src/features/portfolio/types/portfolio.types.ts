@@ -91,11 +91,18 @@ export interface BenchmarkComparisonResult {
   lookback_days: number;
 }
 
+export interface BenchmarkChartData {
+  benchmark_name: string;
+  portfolio_series: Array<{ date: string; value: number }>;
+  benchmark_series: Array<{ date: string; value: number }>;
+}
+
 export interface PortfolioAnalysisResponse {
   risk_score: RiskScoreResult | null;
   risk_decomposition: RiskDecompositionResult | { error: string } | null;
   diversification: DiversificationResult | { error: string } | null;
   benchmark_comparison: BenchmarkComparisonResult | { error: string } | null;
+  benchmark_chart: BenchmarkChartData | { error: string } | null;
 }
 
 export interface PortfolioSimulationResponse {

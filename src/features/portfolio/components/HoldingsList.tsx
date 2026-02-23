@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
-import { formatCurrency } from '@/lib/utils/format-currency';
+import { CurrencyValue } from '@/components/common/CurrencyValue';
 import { formatPercent } from '@/lib/utils/format-percent';
 import { dashboardApi, portfolioApi } from '@/lib/api';
 import { t } from '@/lib/i18n/translations';
@@ -175,24 +175,32 @@ export function HoldingsList({ portfolio, onRefresh }: HoldingsListProps) {
 
               {/* Row 3: Holdings meta — purchase info, value & P&L */}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[11px] text-zinc-400">
-                <span>{txt(t.portfolio.avgPrice)} <span className="font-mono text-zinc-600">{formatCurrency(h.avgPrice, currency)}</span></span>
+                <span>{txt(t.portfolio.avgPrice)} <CurrencyValue value={h.avgPrice} currency={currency} className="text-zinc-600 text-[11px]" /></span>
                 <span>{h.shares} {txt(t.portfolio.sharesUnit)}</span>
                 {currentValue != null && (
-                  <span>{txt(t.portfolio.currentValue)} <span className="font-mono text-zinc-600">{formatCurrency(currentValue, currency)}</span></span>
+                  <span>{txt(t.portfolio.currentValue)} <CurrencyValue value={currentValue} currency={currency} className="text-zinc-600 text-[11px]" /></span>
                 )}
                 <span>{txt(t.portfolio.firstPurchaseDate)} <span className="text-zinc-600">{h.purchasedAt}</span></span>
                 {h.unrealizedPnl != null && (
-                  <span>
-                    {txt(t.portfolio.pnl)}{' '}
-                    <span className={cn(
-                      'font-mono font-medium',
-                      h.unrealizedPnl > 0 ? 'text-stable' : h.unrealizedPnl < 0 ? 'text-warning' : 'text-zinc-600',
-                    )}>
-                      {h.unrealizedPnl > 0 ? '+' : ''}{formatCurrency(h.unrealizedPnl, currency)}
-                      {h.unrealizedPnlPercent != null && (
-                        <> ({h.unrealizedPnlPercent > 0 ? '+' : ''}{h.unrealizedPnlPercent.toFixed(2)}%)</>
+                  <span className="flex items-center gap-1">
+                    {txt(t.portfolio.pnl)}
+                    <CurrencyValue
+                      value={h.unrealizedPnl}
+                      currency={currency}
+                      sign
+                      className={cn(
+                        'font-medium text-[11px]',
+                        h.unrealizedPnl > 0 ? 'text-stable' : h.unrealizedPnl < 0 ? 'text-warning' : 'text-zinc-600',
                       )}
-                    </span>
+                    />
+                    {h.unrealizedPnlPercent != null && (
+                      <span className={cn(
+                        'font-mono',
+                        h.unrealizedPnl > 0 ? 'text-stable' : h.unrealizedPnl < 0 ? 'text-warning' : 'text-zinc-600',
+                      )}>
+                        ({h.unrealizedPnlPercent > 0 ? '+' : ''}{h.unrealizedPnlPercent.toFixed(2)}%)
+                      </span>
+                    )}
                   </span>
                 )}
               </div>
@@ -391,16 +399,16 @@ function BuyModal({ open, onClose, portfolioId, marketFilter, onSuccess }: {
             <div className="flex gap-3 mt-1.5">
               {priceHint.high != null && (
                 <span className="text-[11px] text-zinc-400">
-                  {txt(t.portfolio.dayHigh)} <span className="font-mono text-warning">{formatCurrency(priceHint.high, currency)}</span>
+                  {txt(t.portfolio.dayHigh)} <CurrencyValue value={priceHint.high} currency={currency} className="text-[11px] text-warning" />
                 </span>
               )}
               {priceHint.low != null && (
                 <span className="text-[11px] text-zinc-400">
-                  {txt(t.portfolio.dayLow)} <span className="font-mono text-stable">{formatCurrency(priceHint.low, currency)}</span>
+                  {txt(t.portfolio.dayLow)} <CurrencyValue value={priceHint.low} currency={currency} className="text-[11px] text-stable" />
                 </span>
               )}
               <span className="text-[11px] text-zinc-400">
-                {txt(t.portfolio.dayClose)} <span className="font-mono text-zinc-700">{formatCurrency(priceHint.close!, currency)}</span>
+                {txt(t.portfolio.dayClose)} <CurrencyValue value={priceHint.close!} currency={currency} className="text-[11px] text-zinc-700" />
               </span>
             </div>
           )}
