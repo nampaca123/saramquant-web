@@ -4,7 +4,7 @@ export const stockTexts = {
   title: { ko: '종목 상세', en: 'About This Stock' } satisfies LocalizedText,
   addToPortfolio: { ko: '보유 종목으로 등록', en: 'Add to My Stocks' } satisfies LocalizedText,
   priceChart: { ko: '가격 차트', en: 'Price Chart' } satisfies LocalizedText,
-  benchmark: { ko: '벤치마크 비교', en: 'How It Compares to the Market' } satisfies LocalizedText,
+  benchmark: { ko: '시장 지수 비교', en: 'How It Compares to the Market' } satisfies LocalizedText,
   riskReport: { ko: '리스크 리포트', en: 'Risk Checkup' } satisfies LocalizedText,
   riskScore: { ko: '리스크 점수', en: 'Risk Score' } satisfies LocalizedText,
   riskScoreExplain: { ko: '이 점수는 어떻게 산정되나요?', en: 'How does this score work?' } satisfies LocalizedText,

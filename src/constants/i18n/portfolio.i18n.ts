@@ -20,7 +20,7 @@ export const portfolioTexts = {
   sectorDiversification: { ko: '섹터 분산', en: 'Industry mix' } satisfies LocalizedText,
   insufficientData: { ko: '데이터 부족', en: 'Not enough data' } satisfies LocalizedText,
   noDataValue: { ko: '—', en: '—' } satisfies LocalizedText,
-  vsBenchmark: { ko: '벤치마크 대비', en: 'vs. market' } satisfies LocalizedText,
+  vsBenchmark: { ko: '시장 대비', en: 'vs. market' } satisfies LocalizedText,
   stocksDiversified: { ko: '종목 분산', en: 'stocks spread across' } satisfies LocalizedText,
   emptyMessage: { ko: '보유 종목을 등록하면 리스크 분석을 시작할 수 있어요', en: 'Add the stocks you own and we\'ll check your risk' } satisfies LocalizedText,
   findStocks: { ko: '종목 찾기', en: 'Find stocks' } satisfies LocalizedText,
@@ -55,7 +55,7 @@ export const portfolioTexts = {
   } satisfies LocalizedText,
   aiHowItWorks: { ko: '이 기능은 뭔가요?', en: "What's this?" } satisfies LocalizedText,
   aiHowItWorksDetail: {
-    ko: '사람퀀트가 계산한 포트폴리오 데이터를 AI에게 전달해서 진단 보고서를 만들어요.\n\nAI가 받는 데이터:\n• 보유 종목 목록 — 종목명, 비중, 섹터, 리스크 등급\n• 포트폴리오 리스크 점수 — 벤치마크 대비 변동성\n• 리스크 기여도 — 어떤 종목이 전체 위험에 얼마나 영향을 주는지\n• 분산 지표 — 종목 쏠림도, 실질 분산 종목 수, 섹터 집중도\n• 개별 재무 지표 — 부채비율, ROE, 영업이익률 등 (일부 프리셋)\n\n외부 뉴스나 추측은 사용하지 않아요. 내 포트폴리오 실제 데이터 기반 분석이에요.',
+    ko: '사람퀀트가 계산한 포트폴리오 데이터를 AI에게 전달해서 진단 보고서를 만들어요.\n\nAI가 받는 데이터:\n• 보유 종목 목록 — 종목명, 비중, 섹터, 리스크 등급\n• 포트폴리오 리스크 점수 — 시장 지수 대비 변동성\n• 리스크 기여도 — 어떤 종목이 전체 위험에 얼마나 영향을 주는지\n• 분산 지표 — 종목 쏠림도, 실질 분산 종목 수, 섹터 집중도\n• 개별 재무 지표 — 부채비율, ROE, 영업이익률 등 (일부 프리셋)\n\n외부 뉴스나 추측은 사용하지 않아요. 내 포트폴리오 실제 데이터 기반 분석이에요.',
     en: 'We feed your actual portfolio data from SaramQuant\'s calculations to the AI.\n\nData the AI receives:\n• Your holdings — name, weight, sector, and risk tier for each stock\n• Portfolio risk score — how volatile your portfolio is vs. the market\n• Risk contributions — which stocks add the most risk\n• Diversification metrics — concentration, effective number of stocks, sector spread\n• Individual financials — debt ratio, ROE, operating margin, etc. (some presets)\n\nNo outside news or speculation. It\'s based entirely on your portfolio\'s real numbers.',
   } satisfies LocalizedText,
   aiPreview: { ko: '위 버튼을 눌러 진단을 요청하면 여기에 AI 분석 결과가 표시돼요', en: 'Tap the button above and AI will diagnose your portfolio right here' } satisfies LocalizedText,
@@ -100,24 +100,24 @@ export const portfolioTexts = {
 
   // Metric tooltips
   riskScoreInfo: {
-    ko: '포트폴리오 전체 변동성을 벤치마크(국장: KOSPI, 미장: S&P 500) 대비 비율로 환산한 점수예요.\n\n계산식: (포트폴리오 연간 변동성 ÷ 벤치마크 연간 변동성) × 50\n\n• 40점 이하: 안정 — 벤치마크보다 변동성이 낮아요\n• 40~70점: 주의 — 벤치마크와 비슷하거나 약간 높아요\n• 70점 초과: 경고 — 벤치마크보다 변동성이 크게 높아요\n\nMorningstar Portfolio Risk Score(MPRS) 방식을 간소화해 적용했어요.',
-    en: 'Measures total portfolio volatility relative to the benchmark (KR: KOSPI, US: S&P 500).\n\nFormula: (portfolio annual vol ÷ benchmark annual vol) × 50\n\n• ≤ 40: Stable — less volatile than the benchmark\n• 40–70: Caution — similar to or slightly above the benchmark\n• > 70: Warning — significantly more volatile\n\nSimplified adaptation of the Morningstar Portfolio Risk Score (MPRS).',
+    ko: '내 주식들이 시장 전체에 비해 얼마나 요동치는지를 0~100 사이 점수로 보여줘요.\n\n내 주식들의 가격 출렁임 폭(연간 변동성)을 시장 대표 지수(한국: KOSPI, 미국: S&P 500)의 출렁임 폭으로 나눈 뒤 50을 곱해서 점수를 매겨요. 50점이면 시장과 출렁임이 같고, 높을수록 더 많이 흔들리는 거예요.\n\nMorningstar의 포트폴리오 리스크 점수(MPRS) 방식을 참고했어요.',
+    en: 'Shows how much your stocks shake compared to the overall market, on a 0–100 scale.\n\nWe take how much your stocks swing (annualized volatility) and divide it by how much the market index swings (KR: KOSPI, US: S&P 500), then multiply by 50. A score of 50 means you swing the same as the market — higher means more.\n\nInspired by Morningstar\'s Portfolio Risk Score (MPRS).',
   } satisfies LocalizedText,
   volatilityInfo: {
-    ko: '최근 거래일 기준 포트폴리오 전체의 연간 변동성(annualized volatility)이에요.\n\n계산: 일일 수익률의 표준편차 × √252\n\n벤치마크 변동성과 비교하면 내 포트폴리오가 시장 평균보다 얼마나 흔들리는지 알 수 있어요.',
-    en: 'Annualized volatility of your entire portfolio based on recent trading days.\n\nFormula: standard deviation of daily returns × √252\n\nCompare with benchmark volatility to see how much your portfolio swings relative to the market.',
+    ko: '내 주식들의 가격이 하루하루 얼마나 오르내리는지를 1년 기준으로 환산한 수치예요.\n\n일별 수익률의 표준편차를 구한 뒤 √252를 곱해 연간 수치로 변환해요. 숫자가 클수록 가격이 많이 출렁인다는 뜻이에요.',
+    en: 'How much your stocks\' prices jump around day to day, scaled to a yearly number.\n\nWe calculate the standard deviation of daily returns and multiply by √252 to annualize it. Bigger number = more ups and downs.',
   } satisfies LocalizedText,
   diversificationInfo: {
-    ko: '종목이 얼마나 골고루 분산되어 있는지를 나타내는 지표예요.\n\n실질 분산 종목 수(Effective N) = 1 ÷ HHI\nHHI(허핀달-허쉬만 지수) = 각 종목 비중의 제곱의 합\n\n예시: 5종목 균등 분배 → Effective N = 5\n예시: 1종목에 90% 집중 → Effective N ≈ 1.2\n\n숫자가 높을수록 분산이 잘 되어 있다는 의미예요.',
-    en: 'Shows how evenly your holdings are spread.\n\nEffective N = 1 ÷ HHI\nHHI (Herfindahl-Hirschman Index) = sum of squared weights\n\nExample: 5 stocks equally weighted → Effective N = 5\nExample: 90% in one stock → Effective N ≈ 1.2\n\nHigher means better diversification.',
+    ko: '내 돈이 여러 종목에 얼마나 골고루 나눠져 있는지를 나타내요.\n\n각 종목 비중의 제곱을 모두 더한 값(HHI)의 역수로 계산해요. 5종목에 똑같이 나눴으면 5, 한 종목에 거의 다 넣었으면 1에 가까운 숫자가 나와요. 높을수록 골고루 분산된 거예요.',
+    en: 'Shows whether your money is spread evenly across stocks or piled into a few.\n\nCalculated as the inverse of HHI (sum of each stock\'s weight squared). Split equally among 5 stocks → 5. Almost everything in one stock → close to 1. Higher = better spread.',
   } satisfies LocalizedText,
   maxWeightInfo: {
-    ko: '포트폴리오에서 가장 큰 비중을 차지하는 단일 종목의 비율이에요.\n\n이 값이 50%를 넘으면 특정 종목에 대한 쏠림이 크다는 뜻이에요. 해당 종목의 급락 시 포트폴리오 전체에 큰 영향을 줄 수 있어요.',
-    en: 'The weight of the single largest position in your portfolio.\n\nAbove 50% means heavy concentration in one stock. A sharp drop in that stock could significantly impact your entire portfolio.',
+    ko: '내 전체 투자금 중 가장 많이 들어간 종목 하나의 비율이에요. 이 비율이 높으면 그 종목에 쏠려 있다는 뜻이고, 그 종목이 크게 떨어지면 전체 투자에 타격이 커요.',
+    en: 'The percentage of your total investment in your single biggest stock. If this is high, you\'re heavily concentrated — a big drop in that stock hits your whole portfolio hard.',
   } satisfies LocalizedText,
   sectorDiversificationInfo: {
-    ko: '보유 종목을 업종(섹터)별로 분류해 각 섹터가 차지하는 비중을 보여줘요.\n\n한 섹터에 집중되어 있으면 해당 산업 전체에 영향을 주는 이벤트(규제, 경기 변동 등)에 취약할 수 있어요.',
-    en: 'Shows how your holdings are distributed across industry sectors.\n\nHeavy concentration in one sector makes your portfolio vulnerable to industry-wide events like regulation changes or economic shifts.',
+    ko: '보유 종목을 업종(예: IT, 금융, 헬스케어)별로 나눠서, 각 업종에 돈이 얼마나 들어가 있는지 보여줘요. 한 업종에만 몰려 있으면, 그 업종이 전체적으로 안 좋아질 때 내 투자도 같이 흔들릴 수 있어요.',
+    en: 'Groups your stocks by industry (e.g. tech, finance, healthcare) and shows how much money is in each. If most is in one industry, a downturn there could drag down your whole portfolio.',
   } satisfies LocalizedText,
 
   // Diversification display
@@ -127,15 +127,15 @@ export const portfolioTexts = {
   pageOf: { ko: '/', en: ' / ' } satisfies LocalizedText,
 
   // Benchmark comparison
-  benchmarkReturn: { ko: '벤치마크 대비 수익률', en: 'Return vs. Benchmark' } satisfies LocalizedText,
+  benchmarkReturn: { ko: '시장 대비 수익률', en: 'Return vs. Market' } satisfies LocalizedText,
   benchmarkReturnInfo: {
-    ko: '보유 종목의 매수 시점부터 현재까지의 수익률을 대표 벤치마크(국장: KOSPI, 미장: S&P 500)와 비교해요.\n\n양수면 벤치마크보다 좋은 성과를, 음수면 벤치마크 대비 저조한 성과를 의미해요.',
-    en: 'Compares your portfolio return from purchase dates to now against the benchmark (KR: KOSPI, US: S&P 500).\n\nPositive means you outperformed the benchmark; negative means underperformance.',
+    ko: '같은 기간 동안 내 수익률과 시장 대표 지수(한국: KOSPI, 미국: S&P 500)의 수익률을 나란히 비교해요. 각각의 누적 수익률을 구한 뒤 차이를 계산해요.\n\n플러스(+)면 시장보다 잘한 거고, 마이너스(−)면 시장보다 못한 거예요.',
+    en: 'Compares your return with the market index (KR: KOSPI, US: S&P 500) over the same period by calculating each cumulative return and the difference.\n\nPositive (+) = you beat the market. Negative (−) = the market did better.',
   } satisfies LocalizedText,
   portfolioReturn: { ko: '내 포트폴리오', en: 'My Portfolio' } satisfies LocalizedText,
-  benchmark: { ko: '벤치마크', en: 'Benchmark' } satisfies LocalizedText,
+  benchmark: { ko: '시장 지수', en: 'Market index' } satisfies LocalizedText,
   excess: { ko: '초과 수익', en: 'Excess return' } satisfies LocalizedText,
-  benchmarkName: { ko: '벤치마크', en: 'Benchmark' } satisfies LocalizedText,
+  benchmarkName: { ko: '시장 지수', en: 'Market index' } satisfies LocalizedText,
 
   // Enriched holdings display
   currentValue: { ko: '보유 가치', en: 'Value' } satisfies LocalizedText,
@@ -145,8 +145,8 @@ export const portfolioTexts = {
   // P&L
   totalPnl: { ko: '총 평가손익', en: 'Total P&L' } satisfies LocalizedText,
   totalPnlInfo: {
-    ko: '보유 종목 전체의 평가손익이에요.\n\n평가 가치 = 각 종목의 (현재가 × 수량) 합계\n투자 원금 = 각 종목의 (평균단가 × 수량) 합계\n평가손익 = 평가 가치 − 투자 원금\n\n실현 손익(매도 확정분)이 아닌 미실현 손익이에요.',
-    en: 'Unrealized P&L across all your holdings.\n\nMarket value = sum of (current price × shares)\nCost basis = sum of (avg price × shares)\nP&L = market value − cost basis\n\nThis is unrealized — not locked in until you sell.',
+    ko: '지금 갖고 있는 주식 전체를 합쳐서 얼마를 벌고 있는지(또는 잃고 있는지) 보여줘요.\n\n각 종목의 현재가 × 수량을 모두 더한 게 평가 가치이고, 평균 매수가 × 수량을 더한 게 투자 원금이에요. 평가손익 = 평가 가치 − 투자 원금이에요.\n\n아직 팔지 않은 상태의 손익이라 실제로 팔기 전까지는 확정이 아니에요.',
+    en: 'How much you\'re up or down across all your stocks right now.\n\nMarket value is each stock\'s current price × shares, all added up. Cost is each stock\'s average purchase price × shares. P&L = market value − cost.\n\nThis is unrealized — not locked in until you actually sell.',
   } satisfies LocalizedText,
   invested: { ko: '투자 원금', en: 'Invested' } satisfies LocalizedText,
   marketValue: { ko: '평가 가치', en: 'Market value' } satisfies LocalizedText,
