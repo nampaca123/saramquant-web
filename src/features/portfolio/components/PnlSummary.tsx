@@ -42,8 +42,8 @@ export function PnlSummary({ portfolio }: PnlSummaryProps) {
           />
           {totalPnlPercent != null && (
             <span className={cn(
-              'text-sm font-mono font-medium',
-              isPositive ? 'text-stable' : isNegative ? 'text-warning' : 'text-zinc-400',
+              'text-xs font-mono font-semibold px-1.5 py-0.5 rounded',
+              isPositive ? 'bg-stable-bg text-stable' : isNegative ? 'bg-warning-bg text-warning' : 'bg-zinc-100 text-zinc-400',
             )}>
               {totalPnlPercent > 0 ? '+' : ''}{totalPnlPercent.toFixed(2)}%
             </span>

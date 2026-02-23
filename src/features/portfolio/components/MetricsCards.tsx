@@ -29,88 +29,84 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
   const hasDecomp = decomp && !isError(decomp);
   const hasDivers = divers && !isError(divers);
 
+  const emptyValue = <span className="text-2xl font-mono font-bold text-zinc-300 leading-none">—</span>;
+  const emptySub = <p className="text-[11px] text-zinc-400">{txt(t.portfolio.insufficientData)}</p>;
+
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      {/* Risk Score */}
-      <MetricCard label={txt(t.portfolio.riskScore)} tooltip={t.portfolio.riskScoreInfo}>
-        {riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
-          <div className="flex items-end gap-2 mt-auto">
-            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
-              {riskScore.score}
-            </span>
-            <Badge tier={riskScore.tier as 'STABLE' | 'CAUTION' | 'WARNING'} language={language} className="mb-0.5" />
-          </div>
-        ) : (
-          <EmptyValue />
-        )}
-      </MetricCard>
+      <MetricCard
+        label={txt(t.portfolio.riskScore)}
+        tooltip={t.portfolio.riskScoreInfo}
+        value={
+          riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
+            <div className="flex items-end gap-2">
+              <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
+                {riskScore.score}
+              </span>
+              <Badge tier={riskScore.tier as 'STABLE' | 'CAUTION' | 'WARNING'} language={language} className="mb-0.5" />
+            </div>
+          ) : emptyValue
+        }
+        sub={riskScore?.score == null || riskScore.tier === 'UNKNOWN' ? emptySub : undefined}
+      />
 
-      {/* Volatility */}
-      <MetricCard label={txt(t.portfolio.volatility)} tooltip={t.portfolio.volatilityInfo}>
-        {hasDecomp ? (
-          <>
-            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none mt-auto">
+      <MetricCard
+        label={txt(t.portfolio.volatility)}
+        tooltip={t.portfolio.volatilityInfo}
+        value={
+          hasDecomp ? (
+            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
               {formatPercent(decomp.portfolio_vol * 100, { sign: false })}
             </span>
-            {riskScore?.benchmark_vol != null && (
-              <p className="text-[11px] text-zinc-400 mt-1">
-                {txt(t.portfolio.vsBenchmark)} {formatPercent(riskScore.benchmark_vol * 100, { sign: false })}
-              </p>
-            )}
-          </>
-        ) : (
-          <EmptyValue />
-        )}
-      </MetricCard>
+          ) : emptyValue
+        }
+        sub={
+          hasDecomp && riskScore?.benchmark_vol != null
+            ? <p className="text-[11px] text-zinc-400">{txt(t.portfolio.vsBenchmark)} {formatPercent(riskScore.benchmark_vol * 100, { sign: false })}</p>
+            : !hasDecomp ? emptySub : undefined
+        }
+      />
 
-      {/* Diversification */}
-      <MetricCard label={txt(t.portfolio.diversification)} tooltip={t.portfolio.diversificationInfo}>
-        {hasDivers ? (
-          <>
+      <MetricCard
+        label={txt(t.portfolio.diversification)}
+        tooltip={t.portfolio.diversificationInfo}
+        value={
+          hasDivers ? (
             <span className={cn(
-              'text-2xl font-mono font-bold leading-none mt-auto',
+              'text-2xl font-mono font-bold leading-none',
               divers.hhi < 0.25 ? 'text-stable' : divers.hhi > 0.5 ? 'text-warning' : 'text-zinc-900',
             )}>
               {divers.effective_n}
             </span>
-            <p className="text-[11px] text-zinc-400 mt-1">{txt(t.portfolio.effectiveNLabel)}</p>
-          </>
-        ) : (
-          <EmptyValue />
-        )}
-      </MetricCard>
+          ) : emptyValue
+        }
+        sub={hasDivers ? <p className="text-[11px] text-zinc-400">{txt(t.portfolio.effectiveNLabel)}</p> : emptySub}
+      />
 
-      {/* Max Weight */}
-      <MetricCard label={txt(t.portfolio.maxWeight)} tooltip={t.portfolio.maxWeightInfo}>
-        {hasDivers ? (
-          <span className={cn(
-            'text-2xl font-mono font-bold leading-none mt-auto',
-            divers.max_weight > 0.5 ? 'text-caution' : 'text-zinc-900',
-          )}>
-            {formatPercent(divers.max_weight * 100, { sign: false })}
-          </span>
-        ) : (
-          <EmptyValue />
-        )}
-      </MetricCard>
+      <MetricCard
+        label={txt(t.portfolio.maxWeight)}
+        tooltip={t.portfolio.maxWeightInfo}
+        value={
+          hasDivers ? (
+            <span className={cn(
+              'text-2xl font-mono font-bold leading-none',
+              divers.max_weight > 0.5 ? 'text-caution' : 'text-zinc-900',
+            )}>
+              {formatPercent(divers.max_weight * 100, { sign: false })}
+            </span>
+          ) : emptyValue
+        }
+        sub={!hasDivers ? emptySub : undefined}
+      />
     </div>
   );
 }
 
-function EmptyValue() {
-  const txt = useText();
-  return (
-    <div className="mt-auto">
-      <span className="text-2xl font-mono font-bold text-zinc-300 leading-none">—</span>
-      <p className="text-[11px] text-zinc-400 mt-1">{txt(t.portfolio.insufficientData)}</p>
-    </div>
-  );
-}
-
-function MetricCard({ label, tooltip, children }: {
+function MetricCard({ label, tooltip, value, sub }: {
   label: string;
   tooltip: LocalizedText;
-  children: React.ReactNode;
+  value: React.ReactNode;
+  sub?: React.ReactNode;
 }) {
   const txt = useText();
   const [open, setOpen] = useState(false);
@@ -123,9 +119,9 @@ function MetricCard({ label, tooltip, children }: {
           <HelpCircle className="h-3.5 w-3.5 text-zinc-300 hover:text-zinc-500 transition-colors" />
         </button>
       </div>
-      <div className="flex flex-col flex-1 justify-end">
-        {children}
-      </div>
+      <div className="flex-1" />
+      {value}
+      <div className="min-h-[18px] mt-1">{sub}</div>
       <Popover open={open} onClose={() => setOpen(false)} className="top-8 right-0 w-72 z-50">
         <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line pr-4">
           {txt(tooltip)}
