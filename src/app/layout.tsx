@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   title: 'SaramQuant',
   description: 'Translating quant investment into easy language, not wall street jargon',
   icons: {
-    icon: '/image/logo/saramquant-logo.jpg',
     apple: '/image/logo/saramquant-logo.jpg',
   },
   openGraph: {
