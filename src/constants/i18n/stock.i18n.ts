@@ -34,7 +34,7 @@ export const stockTexts = {
   purchaseDate: { ko: '매입일', en: 'When you bought it' } satisfies LocalizedText,
   selectPortfolio: { ko: '포트폴리오 선택', en: 'Pick a portfolio' } satisfies LocalizedText,
   added: { ko: '추가되었어요', en: 'Added!' } satisfies LocalizedText,
-  sharesError: { ko: '1 이상의 정수를 입력하세요', en: 'Enter a whole number (1 or more)' } satisfies LocalizedText,
+  sharesError: { ko: '0보다 큰 수량을 입력하세요', en: 'Enter a number greater than 0' } satisfies LocalizedText,
   dateError: { ko: '미래 날짜는 선택할 수 없어요', en: "You can't pick a future date" } satisfies LocalizedText,
   registrationPrompt: { ko: '이미 보유한 종목을 등록하면 포트폴리오 리스크 분석을 받을 수 있어요', en: 'Add stocks you own and we\'ll check how risky your whole portfolio is' } satisfies LocalizedText,
   factorTitle: { ko: '이 종목의 성격', en: 'What This Stock Is Like' } satisfies LocalizedText,

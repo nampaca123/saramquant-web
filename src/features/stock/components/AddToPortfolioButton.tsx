@@ -88,8 +88,8 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
   const sharesNum = Number(shares);
   const priceNum = Number(price);
   const isFutureDate = date > today();
-  const isInvalidShares = shares !== '' && (sharesNum <= 0 || !Number.isInteger(sharesNum));
-  const canSubmit = selectedId && shares && sharesNum > 0 && Number.isInteger(sharesNum) && price && priceNum > 0 && !isFutureDate && !priceFetching;
+  const isInvalidShares = shares !== '' && sharesNum <= 0;
+  const canSubmit = selectedId && shares && sharesNum > 0 && price && priceNum > 0 && !isFutureDate && !priceFetching;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -132,11 +132,11 @@ export function AddToPortfolioButton({ stockId, market, open, onClose }: AddToPo
             </label>
             <Input
               type="number"
-              min="1"
-              step="1"
+              min="0.0001"
+              step="any"
               value={shares}
               onChange={(e) => setShares(e.target.value)}
-              placeholder="10"
+              placeholder="0.5"
               aria-invalid={isInvalidShares}
             />
             {isInvalidShares && (

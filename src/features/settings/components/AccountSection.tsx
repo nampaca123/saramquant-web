@@ -21,10 +21,10 @@ export function AccountSection() {
     clear();
   };
 
-  const handleDelete = async () => {
+  const handleDeactivate = async () => {
     setLoading(true);
     try {
-      await userApi.deleteAccount();
+      await userApi.deactivateAccount();
       clear();
     } catch { /* handled */ }
     setLoading(false);
@@ -40,20 +40,20 @@ export function AccountSection() {
           </Button>
           <Button variant="danger" size="sm" onClick={() => setDeleteModalOpen(true)}>
             <Trash2 className="h-4 w-4 mr-2" />
-            {txt(t.settings.deleteAccount)}
+            {txt(t.settings.deactivateAccount)}
           </Button>
         </div>
       </Card>
 
       <Modal open={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
-        <h3 className="text-lg font-bold text-zinc-900 mb-2">{txt(t.settings.deleteAccount)}</h3>
-        <p className="text-warning font-medium text-sm mb-4">{txt(t.settings.deleteAccountWarning)}</p>
+        <h3 className="text-lg font-bold text-zinc-900 mb-2">{txt(t.settings.deactivateAccount)}</h3>
+        <p className="text-zinc-600 text-sm mb-4">{txt(t.settings.deactivateWarning)}</p>
         <div className="flex justify-end gap-2">
           <Button variant="ghost" size="sm" onClick={() => setDeleteModalOpen(false)}>
             {txt(t.common.cancel)}
           </Button>
-          <Button variant="danger" size="sm" onClick={handleDelete} disabled={loading}>
-            {loading ? txt(t.common.loading) : txt(t.common.delete)}
+          <Button variant="danger" size="sm" onClick={handleDeactivate} disabled={loading}>
+            {loading ? txt(t.common.loading) : txt(t.settings.deactivateAccount)}
           </Button>
         </div>
       </Modal>

@@ -32,8 +32,8 @@ export const settingsTexts = {
 
   account: { ko: '계정 관리', en: 'Account' } satisfies LocalizedText,
   logoutAll: { ko: '모든 기기에서 로그아웃', en: 'Log out from all devices' } satisfies LocalizedText,
-  deleteAccount: { ko: '계정 삭제', en: 'Delete Account' } satisfies LocalizedText,
-  deleteAccountWarning: { ko: '되돌릴 수 없어요', en: 'This cannot be undone' } satisfies LocalizedText,
+  deactivateAccount: { ko: '회원 탈퇴', en: 'Deactivate Account' } satisfies LocalizedText,
+  deactivateWarning: { ko: '탈퇴 후에도 다시 로그인하면 계정을 복구할 수 있어요', en: 'You can reactivate your account by logging in again' } satisfies LocalizedText,
   saved: { ko: '저장됨', en: 'Saved' } satisfies LocalizedText,
   loginRequired: { ko: '로그인이 필요해요', en: 'Login required' } satisfies LocalizedText,
   loginRequiredSub: { ko: '설정을 변경하려면 로그인하세요', en: 'Log in to change settings' } satisfies LocalizedText,

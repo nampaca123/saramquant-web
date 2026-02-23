@@ -24,5 +24,5 @@ export const userApi = {
   deleteProfileImage: () =>
     api<void>('/api/user/profile/image', { method: 'DELETE' }),
 
-  deleteAccount: () => api<void>('/api/user/me', { method: 'DELETE' }),
+  deactivateAccount: () => api<void>('/api/user/me', { method: 'DELETE' }),
 } as const;
