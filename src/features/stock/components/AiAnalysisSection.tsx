@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sparkles, MessageSquareText } from 'lucide-react';
+import { Sparkles, MessageSquareText, HelpCircle, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Disclaimer } from '@/components/common/Disclaimer';
+import { AnalysisLoadingOverlay } from '@/components/common/AnalysisLoadingOverlay';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useAuth } from '@/providers/AuthProvider';
@@ -13,6 +14,8 @@ import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
 import type { CachedLlmAnalysis } from '../types/stock.types';
 import type { LocalizedText } from '@/types';
+
+const AI_LOADING_STAGES = [t.stock.aiStage1, t.stock.aiStage2, t.stock.aiStage3, t.stock.aiStage4];
 
 interface AiAnalysisSectionProps {
   symbol: string;
@@ -36,6 +39,7 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
   const [disclaimer, setDisclaimer] = useState(cachedAnalysis ? '' : '');
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -59,16 +63,43 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
 
   return (
     <Card>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-gold" />
           <h3 className="text-sm font-bold text-zinc-900">{txt(t.stock.aiAnalysis)}</h3>
         </div>
-        {usage && (
-          <span className="text-xs font-mono text-zinc-400">
-            {usage.used}/{usage.limit} {txt(t.stock.aiUsage)}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {usage && (
+            <span className="text-xs font-mono text-zinc-400">
+              {usage.used}/{usage.limit} {txt(t.stock.aiUsage)}
+            </span>
+          )}
+          <div className="relative">
+            <button
+              onClick={() => setHelpOpen(!helpOpen)}
+              className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+              {txt(t.stock.aiHowItWorks)}
+            </button>
+            {helpOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute z-50 right-0 top-7 w-72 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in"
+              >
+                <button
+                  onClick={() => setHelpOpen(false)}
+                  className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+                <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                  {txt(t.stock.aiHowItWorksDetail)}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <p className="text-xs text-zinc-500 mb-3">
@@ -105,12 +136,18 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
           disabled={!user || loading}
           className="w-full"
         >
-          {loading ? txt(t.common.loading) : txt(t.stock.requestAnalysis)}
+          {txt(t.stock.requestAnalysis)}
         </Button>
       </div>
 
       {/* Output area */}
-      {!result ? (
+      {loading ? (
+        <AnalysisLoadingOverlay
+          icon={<Sparkles className="h-5 w-5 text-gold" />}
+          stages={AI_LOADING_STAGES}
+          maxWaitText={t.stock.aiMaxWait}
+        />
+      ) : !result ? (
         <AnalysisPreview txt={txt} preset={preset} />
       ) : (
         <div>

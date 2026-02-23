@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Disclaimer } from '@/components/common/Disclaimer';
+import { AnalysisLoadingOverlay } from '@/components/common/AnalysisLoadingOverlay';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { stockApi } from '@/lib/api';
@@ -15,6 +16,8 @@ import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
 import type { StockSimulationResponse } from '../types/stock.types';
 import type { Language, LocalizedText } from '@/types';
+
+const SIM_LOADING_STAGES = [t.simulation.simStage1, t.simulation.simStage2, t.simulation.simStage3];
 
 const SimulationFanChart = dynamic(
   () => import('@/components/ui/SimulationFanChart').then((m) => ({ default: m.SimulationFanChart })),
@@ -189,12 +192,18 @@ export function StockSimulationSection({ symbol, market, currentPrice }: StockSi
         </div>
 
         <Button variant="primary" size="sm" onClick={handleRun} disabled={loading} className="w-full">
-          {loading ? txt(t.common.loading) : txt(t.simulation.run)}
+          {txt(t.simulation.run)}
         </Button>
       </div>
 
       {/* Output area */}
-      {!result ? (
+      {loading ? (
+        <AnalysisLoadingOverlay
+          icon={<TrendingUp className="h-5 w-5 text-gold" />}
+          stages={SIM_LOADING_STAGES}
+          maxWaitText={t.simulation.simMaxWait}
+        />
+      ) : !result ? (
         <OutputPreview confidenceLabel={confidenceLabel} txt={txt} language={language} />
       ) : (
         <SimulationResults
