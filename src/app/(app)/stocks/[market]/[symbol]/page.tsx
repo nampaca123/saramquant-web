@@ -97,6 +97,7 @@ export default function StockDetailPage() {
           />
           <StockSimulationSection
             symbol={params.symbol}
+            market={params.market}
             currentPrice={data.header.latestClose}
           />
         </div>

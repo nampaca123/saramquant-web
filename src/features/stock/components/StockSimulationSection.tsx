@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { TrendingUp, Info, BarChart3 } from 'lucide-react';
+import { TrendingUp, Info, BarChart3, HelpCircle, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
@@ -14,7 +14,7 @@ import { formatPercent } from '@/lib/utils/format-percent';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
 import type { StockSimulationResponse } from '../types/stock.types';
-import type { Language } from '@/types';
+import type { Language, LocalizedText } from '@/types';
 
 const SimulationFanChart = dynamic(
   () => import('@/components/ui/SimulationFanChart').then((m) => ({ default: m.SimulationFanChart })),
@@ -23,6 +23,7 @@ const SimulationFanChart = dynamic(
 
 interface StockSimulationSectionProps {
   symbol: string;
+  market: string;
   currentPrice: number | null;
 }
 
@@ -40,16 +41,21 @@ const RESULT_TOOLTIPS = {
   cvar: t.simulation.tooltipCvar,
 };
 
-export function StockSimulationSection({ symbol, currentPrice }: StockSimulationSectionProps) {
+export function StockSimulationSection({ symbol, market, currentPrice }: StockSimulationSectionProps) {
   const txt = useText();
   const { language } = useLanguage();
   const [days, setDays] = useState('60');
   const [confidence, setConfidence] = useState('0.95');
+  const [method, setMethod] = useState<'gbm' | 'bootstrap'>('gbm');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<StockSimulationResponse | null>(null);
   const [error, setError] = useState('');
+  const [openTip, setOpenTip] = useState<string | null>(null);
 
   const confidenceLabel = `${Math.round(Number(confidence) * 100)}%`;
+
+  const toggleTip = (key: string) => setOpenTip(openTip === key ? null : key);
+  const closeTip = () => setOpenTip(null);
 
   const handleRun = async () => {
     setLoading(true);
@@ -58,7 +64,8 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
       const res = await stockApi.simulation(symbol, {
         days: Number(days),
         confidence: Number(confidence),
-        method: 'gbm',
+        method,
+        market,
       });
       setResult(res);
     } catch {
@@ -70,53 +77,118 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
 
   return (
     <Card>
-      <div className="flex items-center gap-2 mb-4">
-        <TrendingUp className="h-4 w-4 text-gold" />
-        <h3 className="text-sm font-bold text-zinc-900">{txt(t.simulation.title)}</h3>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-gold" />
+          <h3 className="text-sm font-bold text-zinc-900">{txt(t.simulation.title)}</h3>
+        </div>
+        <div className="relative">
+          <button
+            onClick={() => toggleTip('howItWorks')}
+            className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            {txt(t.simulation.howItWorks)}
+          </button>
+          {openTip === 'howItWorks' && (
+            <InfoPopover onClose={closeTip}>
+              <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                {txt(t.simulation.howItWorksDetail)}
+              </p>
+            </InfoPopover>
+          )}
+        </div>
       </div>
 
       <p className="text-xs text-zinc-500 mb-4">
         {txt(t.simulation.desc)}
       </p>
 
-      {/* Controls -- always visible */}
-      <div className="flex items-end gap-3 flex-wrap mb-4">
-        <div>
-          <label className="text-xs text-zinc-500 mb-1 block">{txt(t.simulation.days)}</label>
-          <Select
-            value={days}
-            onChange={(e) => setDays(e.target.value)}
-            options={[
-              { value: '30', label: txt(t.simulation.days30) },
-              { value: '60', label: txt(t.simulation.days60) },
-              { value: '120', label: txt(t.simulation.days120) },
-              { value: '252', label: txt(t.simulation.days252) },
-            ]}
-            className="w-24"
-          />
+      {/* Controls */}
+      <div className="space-y-3 mb-4">
+        <div className="flex items-end gap-3 flex-wrap">
+          <div>
+            <label className="text-xs text-zinc-500 mb-1 block">{txt(t.simulation.days)}</label>
+            <Select
+              value={days}
+              onChange={(e) => setDays(e.target.value)}
+              options={[
+                { value: '30', label: txt(t.simulation.days30) },
+                { value: '60', label: txt(t.simulation.days60) },
+                { value: '120', label: txt(t.simulation.days120) },
+                { value: '252', label: txt(t.simulation.days252) },
+              ]}
+              className="w-24"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-zinc-500 mb-1 block">
+              {txt(t.simulation.confidence)}
+              <span className="relative ml-1 inline-block">
+                <button onClick={() => toggleTip('confidence')} className="text-zinc-400 hover:text-zinc-600">
+                  <Info className="inline h-3 w-3" />
+                </button>
+                {openTip === 'confidence' && (
+                  <InfoPopover onClose={closeTip} className="left-0 top-5">
+                    <p className="text-xs text-zinc-600 leading-relaxed">
+                      {txt(t.simulation.confidenceTooltip)}
+                    </p>
+                  </InfoPopover>
+                )}
+              </span>
+            </label>
+            <Select
+              value={confidence}
+              onChange={(e) => setConfidence(e.target.value)}
+              options={[
+                { value: '0.90', label: '90%' },
+                { value: '0.95', label: '95%' },
+                { value: '0.99', label: '99%' },
+              ]}
+              className="w-20"
+            />
+          </div>
         </div>
+
+        {/* Method selector */}
         <div>
-          <label className="text-xs text-zinc-500 mb-1 block">
-            {txt(t.simulation.confidence)}
-            <span
-              className="ml-1 text-zinc-400 cursor-help"
-              title={txt(t.simulation.confidenceTooltip)}
-            >
-              <Info className="inline h-3 w-3" />
+          <label className="text-xs text-zinc-500 mb-1.5 flex items-center gap-1">
+            {txt(t.simulation.method)}
+            <span className="relative inline-block">
+              <button onClick={() => toggleTip('method')} className="text-zinc-400 hover:text-zinc-600">
+                <Info className="inline h-3 w-3" />
+              </button>
+              {openTip === 'method' && (
+                <InfoPopover onClose={closeTip} className="left-0 top-5">
+                  <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                    {txt(t.simulation.methodTooltip)}
+                  </p>
+                </InfoPopover>
+              )}
             </span>
           </label>
-          <Select
-            value={confidence}
-            onChange={(e) => setConfidence(e.target.value)}
-            options={[
-              { value: '0.90', label: '90%' },
-              { value: '0.95', label: '95%' },
-              { value: '0.99', label: '99%' },
-            ]}
-            className="w-20"
-          />
+          <div className="flex gap-2">
+            {([
+              { value: 'gbm' as const, label: t.simulation.methodGbm },
+              { value: 'bootstrap' as const, label: t.simulation.methodBootstrap },
+            ]).map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setMethod(opt.value)}
+                className={cn(
+                  'rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
+                  method === opt.value
+                    ? 'border-gold bg-gold-wash text-gold'
+                    : 'border-zinc-100 text-zinc-500 hover:border-zinc-200',
+                )}
+              >
+                {txt(opt.label)}
+              </button>
+            ))}
+          </div>
         </div>
-        <Button variant="primary" size="sm" onClick={handleRun} disabled={loading}>
+
+        <Button variant="primary" size="sm" onClick={handleRun} disabled={loading} className="w-full">
           {loading ? txt(t.common.loading) : txt(t.simulation.run)}
         </Button>
       </div>
@@ -139,10 +211,54 @@ export function StockSimulationSection({ symbol, currentPrice }: StockSimulation
   );
 }
 
+function InfoPopover({ onClose, children, className }: { onClose: () => void; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn(
+      'absolute z-50 w-64 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in',
+      className ?? 'right-0 top-7',
+    )}>
+      <button onClick={onClose} className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600">
+        <X className="h-3 w-3" />
+      </button>
+      {children}
+    </div>
+  );
+}
+
+function MetricCard({ label, value, tooltip, txt }: {
+  label: string;
+  value: number;
+  tooltip: LocalizedText;
+  txt: (v: any) => string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative rounded-xl border border-zinc-100 p-3 text-center">
+      <p className="text-[11px] text-zinc-500">
+        {label}
+        <button onClick={() => setOpen(!open)} className="ml-1 text-zinc-400 hover:text-zinc-600 align-middle">
+          <Info className="inline h-3 w-3" />
+        </button>
+      </p>
+      <p className={cn(
+        'text-lg font-mono font-bold mt-1',
+        value > 0 ? 'text-up' : 'text-down',
+      )}>
+        {formatPercent(value * 100)}
+      </p>
+      {open && (
+        <InfoPopover onClose={() => setOpen(false)} className="left-1/2 -translate-x-1/2 top-full mt-1">
+          <p className="text-xs text-zinc-600 leading-relaxed">{txt(tooltip)}</p>
+        </InfoPopover>
+      )}
+    </div>
+  );
+}
+
 function OutputPreview({ confidenceLabel, txt, language }: { confidenceLabel: string; txt: (v: any) => string; language: Language }) {
   return (
     <div className="space-y-3">
-      {/* Metric cards skeleton */}
       <div className="grid grid-cols-3 gap-3">
         {[
           txt(t.simulation.expectedReturn),
@@ -156,7 +272,6 @@ function OutputPreview({ confidenceLabel, txt, language }: { confidenceLabel: st
         ))}
       </div>
 
-      {/* Chart skeleton */}
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 py-10">
         <BarChart3 className="h-8 w-8 text-zinc-200 mb-2" />
         <p className="text-xs text-zinc-400">
@@ -164,7 +279,6 @@ function OutputPreview({ confidenceLabel, txt, language }: { confidenceLabel: st
         </p>
       </div>
 
-      {/* Percentile table skeleton */}
       <div className="rounded-xl border border-dashed border-zinc-200 p-3">
         <p className="text-[11px] text-zinc-400 mb-2 font-medium">
           {txt(t.simulation.finalDistribution)}
@@ -207,24 +321,12 @@ function SimulationResults({
 
   return (
     <div className="space-y-4">
-      {/* Metric cards */}
       <div className="grid grid-cols-3 gap-3">
         {metrics.map((item) => (
-          <div key={item.label} className="rounded-xl border border-zinc-100 p-3 text-center">
-            <p className="text-[11px] text-zinc-500" title={txt(item.tooltip)}>
-              {item.label} <Info className="inline h-3 w-3 text-zinc-400" />
-            </p>
-            <p className={cn(
-              'text-lg font-mono font-bold mt-1',
-              item.value > 0 ? 'text-up' : 'text-down',
-            )}>
-              {formatPercent(item.value * 100)}
-            </p>
-          </div>
+          <MetricCard key={item.label} label={item.label} value={item.value} tooltip={item.tooltip} txt={txt} />
         ))}
       </div>
 
-      {/* Fan chart */}
       {result.path_percentiles.length > 0 && (
         <SimulationFanChart
           data={result.path_percentiles}
@@ -232,7 +334,6 @@ function SimulationResults({
         />
       )}
 
-      {/* Final price percentiles table */}
       {sortedPercentiles.length > 0 && (
         <div className="rounded-xl border border-zinc-100 p-3">
           <p className="text-[11px] font-medium text-zinc-500 mb-2">
