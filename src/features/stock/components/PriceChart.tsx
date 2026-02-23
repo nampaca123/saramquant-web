@@ -36,7 +36,7 @@ export function PriceChart({ symbol, market }: PriceChartProps) {
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
       height: containerRef.current.clientHeight,
-      layout: { background: { color: 'transparent' }, textColor: '#a1a1aa', fontFamily: 'var(--font-mono)' },
+      layout: { background: { color: 'transparent' }, textColor: '#a1a1aa', fontFamily: 'var(--font-mono)', attributionLogo: false },
       grid: { vertLines: { color: '#f4f4f5' }, horzLines: { color: '#f4f4f5' } },
       rightPriceScale: { borderVisible: false },
       timeScale: { borderVisible: false },
