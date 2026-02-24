@@ -73,3 +73,8 @@ textarea,
 .animation-delay-400 {
   animation-delay: 0.4s;
 }
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
