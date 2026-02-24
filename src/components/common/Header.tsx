@@ -45,7 +45,9 @@ export function Header() {
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4">
           <Link href="/screener" className="flex items-center gap-2 shrink-0">
             <Image src="/image/logo/saramquant-logo.jpg" alt="SaramQuant" width={28} height={28} className="rounded-md" />
-            <span className="hidden text-sm font-bold text-zinc-900 sm:inline">SaramQuant</span>
+            <span className={`hidden sm:inline text-zinc-400 ${language === 'ko' ? 'text-xs font-light tracking-[0.1em]' : 'text-[11px] font-semibold uppercase tracking-[0.2em]'}`}>
+              {language === 'ko' ? '사람퀀트' : 'SaramQuant'}
+            </span>
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex">

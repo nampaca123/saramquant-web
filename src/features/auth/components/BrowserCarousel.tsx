@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDES = [
   { src: '/image/screenshots/sq_stock_detail_risks.png', alt: 'Stock risk analysis dashboard' },
@@ -49,6 +50,14 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
     return () => clearInterval(timer);
   }, [displayIndex, goTo]);
 
+  const goPrev = useCallback(() => {
+    goTo((displayIndex - 1 + SLIDES.length) % SLIDES.length);
+  }, [displayIndex, goTo]);
+
+  const goNext = useCallback(() => {
+    goTo((displayIndex + 1) % SLIDES.length);
+  }, [displayIndex, goTo]);
+
   return (
     <div className="relative w-full">
       <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-2xl shadow-zinc-900/10">
@@ -63,7 +72,7 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
           </div>
         </div>
 
-        <div className="relative aspect-video overflow-hidden bg-white">
+        <div className="group/slide relative aspect-video overflow-hidden bg-white">
           {SLIDES.map((slide, i) => (
             <div
               key={slide.src}
@@ -87,6 +96,21 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
               />
             </div>
           ))}
+
+          <button
+            onClick={goPrev}
+            className="absolute left-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition-opacity duration-200 hover:bg-white lg:flex h-8 w-8 opacity-0 group-hover/slide:opacity-100"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="h-4 w-4 text-zinc-600" />
+          </button>
+          <button
+            onClick={goNext}
+            className="absolute right-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition-opacity duration-200 hover:bg-white lg:flex h-8 w-8 opacity-0 group-hover/slide:opacity-100"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="h-4 w-4 text-zinc-600" />
+          </button>
 
           <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-zinc-900/40 px-2.5 py-1.5 backdrop-blur-sm">
             {SLIDES.map((_, i) => (

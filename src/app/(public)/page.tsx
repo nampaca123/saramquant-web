@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { userApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
+import { useLanguage } from '@/providers/LanguageProvider';
 import { t } from '@/lib/i18n/translations';
 import { LanguageToggle } from '@/components/common/LanguageToggle';
 import { OAuthButtons } from '@/features/auth/components/OAuthButtons';
@@ -18,6 +19,7 @@ const FEATURE_KEYS = ['feature1', 'feature2', 'feature3'] as const;
 
 export default function LandingPage() {
   const txt = useText();
+  const { language } = useLanguage();
   const router = useRouter();
   const [view, setView] = useState<AuthView>('main');
   const [activeSlide, setActiveSlide] = useState(0);
@@ -31,22 +33,22 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-gold-wash lg:h-dvh lg:overflow-hidden">
+    <div className="min-h-dvh bg-zinc-50 lg:h-dvh lg:overflow-hidden">
       <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row">
         {/* Hero */}
         <div className="relative flex flex-1 flex-col px-6 py-8 sm:px-12 lg:px-12 xl:px-16 lg:py-10">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/20 via-transparent to-transparent" />
 
           <div className="relative w-full max-w-4xl animate-fade-in lg:my-auto">
-            <p className="mb-2 text-[11px] uppercase tracking-widest text-zinc-400">
-              SaramQuant
+            <p className={`mb-1.5 text-zinc-300 ${language === 'ko' ? 'text-[12px] font-light tracking-[0.15em]' : 'text-[11px] uppercase tracking-widest'}`}>
+              {language === 'ko' ? '사람퀀트' : 'SaramQuant'}
             </p>
 
-            <h1 className="text-lg font-semibold text-zinc-600 sm:text-xl">
+            <h1 className="text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl">
               {txt(t.landing.headline)}
             </h1>
 
-            <div className="mt-4 sm:mt-5 lg:w-[90%]">
+            <div className="mt-5 lg:w-[90%]">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
@@ -57,15 +59,15 @@ export default function LandingPage() {
                   onClick={() => handleSlideChange(i)}
                   className={`group flex items-start gap-1.5 rounded-md px-2 py-1.5 text-left transition-all duration-300 lg:flex-1 lg:rounded-none lg:px-0 lg:py-1 ${
                     i === activeSlide
-                      ? 'bg-gold-wash/80 lg:bg-transparent'
-                      : 'hover:bg-gold-wash/60 lg:hover:bg-transparent'
+                      ? 'bg-zinc-100 lg:bg-transparent'
+                      : 'hover:bg-zinc-100/60 lg:hover:bg-transparent'
                   }`}
                 >
                   <span
                     className={`mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold transition-colors duration-300 ${
                       i === activeSlide
                         ? 'bg-gold text-white'
-                        : 'bg-zinc-300/60 text-zinc-400'
+                        : 'bg-zinc-200 text-zinc-400'
                     }`}
                   >
                     {i + 1}
@@ -73,7 +75,7 @@ export default function LandingPage() {
                   <span
                     className={`text-xs leading-snug transition-colors duration-300 ${
                       i === activeSlide
-                        ? 'font-medium text-zinc-600'
+                        ? 'font-medium text-zinc-700'
                         : 'text-zinc-400'
                     }`}
                   >
