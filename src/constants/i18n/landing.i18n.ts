@@ -1,7 +1,7 @@
 import type { LocalizedText } from '@/types';
 
 export const landingTexts = {
-  headline: { ko: '투자를 데이터 기반으로\n안전하고 쉽게 하도록\n도와드려요', en: 'Invest safely and easily,\nguided by data' } satisfies LocalizedText,
+  headline: { ko: '투자가 더 안전하도록 데이터 기반으로 도와드려요', en: 'Helping you invest more safely, guided by data' } satisfies LocalizedText,
   getStarted: { ko: '시작하기', en: 'Get Started' } satisfies LocalizedText,
   getStartedDesc: { ko: '무료로 시작하고 리스크를 한눈에 파악하세요', en: 'Start free — see your risk at a glance' } satisfies LocalizedText,
   feature1: { ko: '복잡한 투자 지표를 초보자도 이해할 수 있게 설명해줘요', en: 'Complex investing metrics, explained so anyone can understand' } satisfies LocalizedText,

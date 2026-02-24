@@ -31,53 +31,49 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-zinc-50">
-      <div className="absolute right-4 top-4 z-10">
-        <LanguageToggle />
-      </div>
-
+    <div className="min-h-dvh bg-gold-wash lg:h-dvh lg:overflow-hidden">
       <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row">
         {/* Hero */}
-        <div className="relative flex flex-1 flex-col px-6 py-10 sm:px-12 lg:overflow-y-auto lg:px-16 xl:px-20">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/30 via-transparent to-transparent" />
+        <div className="relative flex flex-1 flex-col px-6 py-8 sm:px-12 lg:px-12 xl:px-16 lg:py-10">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent" />
 
-          <div className="relative w-full max-w-3xl animate-fade-in lg:my-auto">
-            <p className="mb-3 text-sm font-semibold tracking-wide text-gold sm:text-base">
+          <div className="relative w-full max-w-4xl animate-fade-in lg:my-auto">
+            <p className="mb-2 text-[11px] uppercase tracking-widest text-zinc-400">
               SaramQuant
             </p>
 
-            <h1 className="whitespace-pre-line text-[1.625rem] font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl lg:text-[2.5rem]">
+            <h1 className="text-lg font-semibold text-zinc-600 sm:text-xl">
               {txt(t.landing.headline)}
             </h1>
 
-            <div className="mt-7 sm:mt-9">
+            <div className="mt-4 sm:mt-5 lg:w-[90%]">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
-            <div className="mt-5 flex flex-col gap-1 sm:mt-7">
+            <div className="mt-3 flex flex-col gap-0.5 sm:mt-4 lg:flex-row lg:items-start lg:gap-4">
               {FEATURE_KEYS.map((key, i) => (
                 <button
                   key={key}
                   onClick={() => handleSlideChange(i)}
-                  className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-300 ${
+                  className={`group flex items-start gap-1.5 rounded-md px-2 py-1.5 text-left transition-all duration-300 lg:flex-1 lg:rounded-none lg:px-0 lg:py-1 ${
                     i === activeSlide
-                      ? 'bg-gold-wash/60'
-                      : 'hover:bg-zinc-100'
+                      ? 'bg-gold-wash/80 lg:bg-transparent'
+                      : 'hover:bg-gold-wash/60 lg:hover:bg-transparent'
                   }`}
                 >
                   <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300 ${
+                    className={`mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold transition-colors duration-300 ${
                       i === activeSlide
                         ? 'bg-gold text-white'
-                        : 'bg-zinc-200 text-zinc-500'
+                        : 'bg-zinc-300/60 text-zinc-400'
                     }`}
                   >
                     {i + 1}
                   </span>
                   <span
-                    className={`text-sm leading-snug transition-colors duration-300 sm:text-[15px] ${
+                    className={`text-xs leading-snug transition-colors duration-300 ${
                       i === activeSlide
-                        ? 'font-medium text-zinc-900'
+                        ? 'font-medium text-zinc-600'
                         : 'text-zinc-400'
                     }`}
                   >
@@ -90,7 +86,11 @@ export default function LandingPage() {
         </div>
 
         {/* Auth */}
-        <div className="flex items-center justify-center border-t border-zinc-100 bg-white px-6 py-12 sm:px-12 lg:w-[440px] lg:shrink-0 lg:border-l lg:border-t-0 lg:py-0">
+        <div className="relative flex items-center justify-center border-t border-zinc-100 bg-white px-6 py-12 sm:px-12 lg:w-[440px] lg:shrink-0 lg:border-l lg:border-t-0 lg:py-0">
+          <div className="absolute right-4 top-4 z-10">
+            <LanguageToggle />
+          </div>
+
           <div className="w-full max-w-sm animate-slide-up">
             <h2 className="text-2xl font-bold text-zinc-900 mb-2">
               {txt(t.landing.getStarted)}
