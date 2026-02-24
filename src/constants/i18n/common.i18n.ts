@@ -17,6 +17,12 @@ export const commonTexts = {
   showMore: { ko: '상세 보기', en: 'Show details' } satisfies LocalizedText,
   showLess: { ko: '접기', en: 'Hide details' } satisfies LocalizedText,
   greeting: { ko: '안녕하세요', en: 'Hello' } satisfies LocalizedText,
+  helpDesk: { ko: '도움말', en: 'Help' } satisfies LocalizedText,
+  helpDeskMessage: {
+    ko: '이용 중 문제가 있으시면 아래 이메일로 연락해 주세요.',
+    en: 'If you run into any issues, feel free to reach out via email below.',
+  } satisfies LocalizedText,
+  emailUs: { ko: '이메일 보내기', en: 'Send email' } satisfies LocalizedText,
 } as const;
 
 export const navTexts = {
