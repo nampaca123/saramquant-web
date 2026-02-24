@@ -38,39 +38,34 @@ export default function LandingPage() {
 
       <div className="flex h-dvh flex-col lg:flex-row">
         {/* Hero */}
-        <div className="relative flex flex-1 flex-col justify-center overflow-hidden px-6 py-8 sm:px-12 lg:px-16 xl:px-20 lg:py-0">
+        <div className="relative flex flex-1 flex-col overflow-hidden px-6 py-6 sm:px-12 lg:px-16 xl:px-20 lg:py-8">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/40 via-transparent to-zinc-50" />
 
-          <div className="relative mx-auto flex w-full max-w-2xl flex-col animate-fade-in lg:mx-0">
+          <div className="relative flex h-full w-full max-w-3xl flex-col animate-fade-in lg:mx-0">
             {/* Headline */}
-            <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-zinc-900 text-balance sm:text-3xl lg:text-[2rem] xl:text-4xl">
-              {txt(t.landing.headline).split('\n').map((line, i) => (
-                <span key={i}>
-                  {i > 0 && <br />}
-                  {line}
-                </span>
-              ))}
+            <h1 className="text-lg font-bold leading-snug tracking-tight text-zinc-900 sm:text-xl lg:text-2xl">
+              {txt(t.landing.headline).split('\n').join(' ')}
             </h1>
 
-            {/* Browser carousel - main visual */}
-            <div className="mt-5">
+            {/* Browser carousel - fills remaining vertical space */}
+            <div className="mt-4 min-h-0 flex-1">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
             {/* Feature captions synced to carousel */}
-            <div className="mt-3 flex flex-col">
+            <div className="mt-3 flex flex-col gap-0.5">
               {FEATURE_KEYS.map((key, i) => (
                 <button
                   key={key}
                   onClick={() => handleSlideChange(i)}
-                  className={`group flex items-start gap-3 rounded-lg px-3 py-2 text-left transition-all duration-300 ${
+                  className={`group flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left transition-all duration-300 ${
                     i === activeSlide
                       ? 'bg-gold-wash/60'
                       : 'hover:bg-zinc-100'
                   }`}
                 >
                   <span
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300 ${
+                    className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors duration-300 ${
                       i === activeSlide
                         ? 'bg-gold text-white'
                         : 'bg-zinc-200 text-zinc-500'
@@ -79,9 +74,9 @@ export default function LandingPage() {
                     {i + 1}
                   </span>
                   <span
-                    className={`text-sm leading-relaxed transition-colors duration-300 ${
+                    className={`text-[13px] leading-snug transition-colors duration-300 ${
                       i === activeSlide
-                        ? 'font-semibold text-zinc-900'
+                        ? 'font-medium text-zinc-900'
                         : 'text-zinc-400'
                     }`}
                   >
