@@ -159,7 +159,7 @@ export function SimulationSection({
             />
           </div>
           <div>
-            <label className="text-xs text-zinc-500 mb-1 block">
+            <span className="text-xs text-zinc-500 mb-1 block">
               {txt(t.simulation.confidence)}
               <span className="relative ml-1 inline-block">
                 <button onClick={() => toggleTip('confidence')} className="text-zinc-400 hover:text-zinc-600">
@@ -173,7 +173,7 @@ export function SimulationSection({
                   </InfoPopover>
                 )}
               </span>
-            </label>
+            </span>
             <Select
               value={confidence}
               onChange={(e) => setConfidence(e.target.value)}
@@ -189,7 +189,7 @@ export function SimulationSection({
 
         {/* Method selector */}
         <div>
-          <label className="text-xs text-zinc-500 mb-1.5 flex items-center gap-1">
+          <span className="text-xs text-zinc-500 mb-1.5 flex items-center gap-1">
             {txt(t.simulation.method)}
             <span className="relative inline-block">
               <button onClick={() => toggleTip('method')} className="text-zinc-400 hover:text-zinc-600">
@@ -203,7 +203,7 @@ export function SimulationSection({
                 </InfoPopover>
               )}
             </span>
-          </label>
+          </span>
           <div className="flex gap-2">
             {([
               { value: 'gbm' as const, label: t.simulation.methodGbm },
