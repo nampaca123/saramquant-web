@@ -17,7 +17,6 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
   const [displayIndex, setDisplayIndex] = useState(activeIndex);
   const [progressKey, setProgressKey] = useState(0);
 
-  // Sync when parent changes activeIndex (e.g. feature button click)
   useEffect(() => {
     if (activeIndex !== displayIndex && !isTransitioning) {
       setDirection(activeIndex > displayIndex || (displayIndex === 2 && activeIndex === 0) ? 'next' : 'prev');
@@ -51,10 +50,8 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
   }, [displayIndex, goTo]);
 
   return (
-    <div className="relative flex h-full w-full flex-col">
-      {/* Browser frame */}
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-2xl shadow-zinc-900/10">
-        {/* Title bar - macOS style */}
+    <div className="relative w-full">
+      <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-2xl shadow-zinc-900/10">
         <div className="flex shrink-0 items-center gap-2 border-b border-zinc-200/80 bg-zinc-50 px-3 py-2">
           <div className="flex items-center gap-1.5">
             <span className="block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#FF5F57' }} />
@@ -66,8 +63,7 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
           </div>
         </div>
 
-        {/* Screenshot area - fills remaining space */}
-        <div className="relative min-h-0 flex-1 overflow-hidden bg-zinc-50">
+        <div className="relative aspect-video overflow-hidden bg-white">
           {SLIDES.map((slide, i) => (
             <div
               key={slide.src}
@@ -85,14 +81,13 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
                 src={slide.src}
                 alt={slide.alt}
                 fill
-                className="object-cover object-top"
+                className="object-contain object-top"
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 priority={i === 0}
               />
             </div>
           ))}
 
-          {/* Dot indicators - overlaid at bottom of screenshot */}
           <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-zinc-900/40 px-2.5 py-1.5 backdrop-blur-sm">
             {SLIDES.map((_, i) => (
               <button

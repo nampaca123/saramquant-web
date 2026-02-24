@@ -31,41 +31,42 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="h-dvh overflow-hidden bg-zinc-50">
+    <div className="min-h-dvh bg-zinc-50">
       <div className="absolute right-4 top-4 z-10">
         <LanguageToggle />
       </div>
 
-      <div className="flex h-dvh flex-col lg:flex-row">
+      <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row">
         {/* Hero */}
-        <div className="relative flex flex-1 flex-col overflow-hidden px-6 py-6 sm:px-12 lg:px-16 xl:px-20 lg:py-8">
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/40 via-transparent to-zinc-50" />
+        <div className="relative flex flex-1 flex-col px-6 py-10 sm:px-12 lg:overflow-y-auto lg:px-16 xl:px-20">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/30 via-transparent to-transparent" />
 
-          <div className="relative flex h-full w-full max-w-3xl flex-col animate-fade-in lg:mx-0">
-            {/* Headline */}
-            <h1 className="text-lg font-bold leading-snug tracking-tight text-zinc-900 sm:text-xl lg:text-2xl">
-              {txt(t.landing.headline).split('\n').join(' ')}
+          <div className="relative w-full max-w-3xl animate-fade-in lg:my-auto">
+            <p className="mb-3 text-sm font-semibold tracking-wide text-gold sm:text-base">
+              SaramQuant
+            </p>
+
+            <h1 className="whitespace-pre-line text-[1.625rem] font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl lg:text-[2.5rem]">
+              {txt(t.landing.headline)}
             </h1>
 
-            {/* Browser carousel - fills remaining vertical space */}
-            <div className="mt-4 min-h-0 flex-1">
+            <div className="mt-7 sm:mt-9">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
-            {/* Feature captions synced to carousel */}
-            <div className="mt-3 flex flex-col gap-0.5">
+            <div className="mt-5 flex flex-col gap-1 sm:mt-7">
               {FEATURE_KEYS.map((key, i) => (
                 <button
                   key={key}
                   onClick={() => handleSlideChange(i)}
-                  className={`group flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left transition-all duration-300 ${
+                  className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-300 ${
                     i === activeSlide
                       ? 'bg-gold-wash/60'
                       : 'hover:bg-zinc-100'
                   }`}
                 >
                   <span
-                    className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors duration-300 ${
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors duration-300 ${
                       i === activeSlide
                         ? 'bg-gold text-white'
                         : 'bg-zinc-200 text-zinc-500'
@@ -74,7 +75,7 @@ export default function LandingPage() {
                     {i + 1}
                   </span>
                   <span
-                    className={`text-[13px] leading-snug transition-colors duration-300 ${
+                    className={`text-sm leading-snug transition-colors duration-300 sm:text-[15px] ${
                       i === activeSlide
                         ? 'font-medium text-zinc-900'
                         : 'text-zinc-400'
