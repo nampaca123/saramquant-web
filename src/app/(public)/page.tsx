@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { userApi } from '@/lib/api';
@@ -32,34 +31,19 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-dvh bg-zinc-50">
+    <div className="h-dvh overflow-hidden bg-zinc-50">
       <div className="absolute right-4 top-4 z-10">
         <LanguageToggle />
       </div>
 
-      <div className="flex min-h-dvh flex-col lg:flex-row">
+      <div className="flex h-dvh flex-col lg:flex-row">
         {/* Hero */}
-        <div className="relative flex flex-1 flex-col justify-center overflow-hidden px-6 py-10 sm:px-12 lg:px-16 xl:px-20 lg:py-0">
+        <div className="relative flex flex-1 flex-col justify-center overflow-hidden px-6 py-8 sm:px-12 lg:px-16 xl:px-20 lg:py-0">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/40 via-transparent to-zinc-50" />
 
-          <div className="relative mx-auto w-full max-w-2xl animate-fade-in lg:mx-0">
-            {/* Logo + Brand */}
-            <div className="flex items-center gap-3 mb-6">
-              <Image
-                src="/image/logo/saramquant-logo.jpg"
-                alt="SaramQuant"
-                width={44}
-                height={44}
-                className="rounded-xl shadow-md ring-1 ring-zinc-900/5"
-                priority
-              />
-              <span className="text-xl font-bold tracking-tight text-zinc-900">
-                SaramQuant
-              </span>
-            </div>
-
+          <div className="relative mx-auto flex w-full max-w-2xl flex-col animate-fade-in lg:mx-0">
             {/* Headline */}
-            <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-zinc-900 text-balance sm:text-3xl lg:text-4xl">
+            <h1 className="text-2xl font-extrabold leading-tight tracking-tight text-zinc-900 text-balance sm:text-3xl lg:text-[2rem] xl:text-4xl">
               {txt(t.landing.headline).split('\n').map((line, i) => (
                 <span key={i}>
                   {i > 0 && <br />}
@@ -69,17 +53,17 @@ export default function LandingPage() {
             </h1>
 
             {/* Browser carousel - main visual */}
-            <div className="mt-8">
+            <div className="mt-5">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
             {/* Feature captions synced to carousel */}
-            <div className="mt-6 flex flex-col gap-0">
+            <div className="mt-3 flex flex-col">
               {FEATURE_KEYS.map((key, i) => (
                 <button
                   key={key}
                   onClick={() => handleSlideChange(i)}
-                  className={`group flex items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-all duration-300 ${
+                  className={`group flex items-start gap-3 rounded-lg px-3 py-2 text-left transition-all duration-300 ${
                     i === activeSlide
                       ? 'bg-gold-wash/60'
                       : 'hover:bg-zinc-100'
