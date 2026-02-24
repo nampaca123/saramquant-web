@@ -27,13 +27,13 @@ export function Disclaimer({ text, variant = 'global', className }: DisclaimerPr
 
   return (
     <footer className={cn('border-t border-zinc-100 bg-zinc-50 px-4 py-3', className)}>
-      <div className="mx-auto max-w-6xl flex items-center justify-center gap-3">
-        <p className="text-xs text-zinc-400 text-center">{content}</p>
+      <div className="mx-auto max-w-6xl flex items-center justify-between gap-4">
+        <p className="text-xs text-zinc-400 text-center flex-1">{content}</p>
 
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             onClick={() => setHelpOpen((v) => !v)}
-            className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-[11px] font-medium text-zinc-500 transition hover:border-zinc-300 hover:text-zinc-700"
+            className="flex items-center gap-1 rounded-full bg-zinc-50 px-2.5 py-1 text-[11px] font-medium text-zinc-400 transition hover:text-zinc-600"
           >
             <CircleHelp className="h-3 w-3" />
             {txt(t.common.helpDesk)}
