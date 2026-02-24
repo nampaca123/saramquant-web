@@ -47,9 +47,10 @@ const mdComponents: Components = {
 
 interface AnalysisHistoryProps {
   portfolioId: number;
+  refreshKey?: number;
 }
 
-export function AnalysisHistory({ portfolioId }: AnalysisHistoryProps) {
+export function AnalysisHistory({ portfolioId, refreshKey }: AnalysisHistoryProps) {
   const txt = useText();
   const { language } = useLanguage();
   const [items, setItems] = useState<PortfolioLlmHistory[]>([]);
@@ -68,7 +69,7 @@ export function AnalysisHistory({ portfolioId }: AnalysisHistoryProps) {
     }
   }, [portfolioId]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { fetch(); }, [fetch, refreshKey]);
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);

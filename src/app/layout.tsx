@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.saramquant.com'),
   title: {
-    default: 'SaramQuant | 사람퀀트 - 쉬운 퀀트 투자',
+    default: 'SaramQuant',
     template: '%s | SaramQuant',
   },
   description:

@@ -55,6 +55,7 @@ export default function PortfolioPage() {
   const [analysis, setAnalysis] = useState<PortfolioAnalysisResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [historyKey, setHistoryKey] = useState(0);
 
   const activePortfolio = summaries.find((s) => s.marketGroup === tab);
 
@@ -175,8 +176,8 @@ export default function PortfolioPage() {
             <BenchmarkComparison data={benchmarkData} chartData={benchmarkChartData} />
           </div>
           <SimulationChart portfolioId={activePortfolio.id} />
-          <AiDiagnosisSection portfolioId={activePortfolio.id} />
-          <AnalysisHistory portfolioId={activePortfolio.id} />
+          <AiDiagnosisSection portfolioId={activePortfolio.id} onSuccess={() => setHistoryKey((k) => k + 1)} />
+          <AnalysisHistory portfolioId={activePortfolio.id} refreshKey={historyKey} />
         </>
       )}
     </div>

@@ -17,9 +17,10 @@ const PRESETS: AiPreset[] = [
 
 interface AiDiagnosisSectionProps {
   portfolioId: number;
+  onSuccess?: () => void;
 }
 
-export function AiDiagnosisSection({ portfolioId }: AiDiagnosisSectionProps) {
+export function AiDiagnosisSection({ portfolioId, onSuccess }: AiDiagnosisSectionProps) {
   const { language } = useLanguage();
 
   const handleAnalyze = useCallback(async (preset: string) => {
@@ -29,6 +30,7 @@ export function AiDiagnosisSection({ portfolioId }: AiDiagnosisSectionProps) {
   return (
     <AiAnalysisSectionBase
       onAnalyze={handleAnalyze}
+      onSuccess={onSuccess}
       presets={PRESETS}
       title={t.portfolio.aiDiagnosis}
       description={t.portfolio.aiDesc}

@@ -12,6 +12,7 @@ interface SimulationChartProps {
 
 export function SimulationChart({ portfolioId }: SimulationChartProps) {
   const [partialCoverage, setPartialCoverage] = useState<{ symbols: string[] } | null>(null);
+  const [currentValue, setCurrentValue] = useState<number | undefined>(undefined);
 
   const handleRun = useCallback(async (params: SimulationParams): Promise<SimulationResult> => {
     const res = await portfolioApi.simulation(portfolioId, {
@@ -24,6 +25,7 @@ export function SimulationChart({ portfolioId }: SimulationChartProps) {
     } else {
       setPartialCoverage(null);
     }
+    setCurrentValue(res.target.current_value || undefined);
     return {
       expectedReturn: res.results.expected_return,
       var: res.results.var,
@@ -37,7 +39,7 @@ export function SimulationChart({ portfolioId }: SimulationChartProps) {
   return (
     <SimulationSection
       onRun={handleRun}
-      referenceLine={undefined}
+      referenceLine={currentValue}
       title={t.portfolio.simTitle}
       description={t.portfolio.simDesc}
       howItWorksDetail={t.portfolio.simHowItWorksDetail}

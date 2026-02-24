@@ -53,6 +53,7 @@ interface PresetResult { analysis: string; disclaimer: string }
 
 export interface AiAnalysisSectionBaseProps {
   onAnalyze: (preset: string) => Promise<{ analysis: string; disclaimer: string }>;
+  onSuccess?: () => void;
   presets: AiPreset[];
   title: LocalizedText;
   description: LocalizedText;
@@ -69,6 +70,7 @@ export interface AiAnalysisSectionBaseProps {
 
 export function AiAnalysisSectionBase({
   onAnalyze,
+  onSuccess,
   presets,
   title,
   description,
@@ -105,6 +107,7 @@ export function AiAnalysisSectionBase({
       const res = await onAnalyze(preset);
       setResults((prev) => ({ ...prev, [preset]: { analysis: res.analysis, disclaimer: res.disclaimer } }));
       if (usage) setUsage({ ...usage, used: usage.used + 1 });
+      onSuccess?.();
     } catch {
       setResults((prev) => ({ ...prev, [preset]: { analysis: txt(t.common.error), disclaimer: '' } }));
     } finally {
