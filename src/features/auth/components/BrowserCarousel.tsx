@@ -60,7 +60,7 @@ export function BrowserCarousel({ activeIndex, onIndexChange }: { activeIndex: n
 
   return (
     <div className="relative w-full">
-      <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-2xl shadow-zinc-900/10">
+      <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)]">
         <div className="flex shrink-0 items-center gap-2 border-b border-zinc-200/80 bg-zinc-50 px-3 py-2">
           <div className="flex items-center gap-1.5">
             <span className="block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#FF5F57' }} />

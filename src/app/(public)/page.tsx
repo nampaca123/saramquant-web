@@ -36,11 +36,11 @@ export default function LandingPage() {
     <div className="min-h-dvh bg-zinc-50 lg:h-dvh lg:overflow-hidden">
       <div className="flex min-h-dvh flex-col lg:h-dvh lg:flex-row">
         {/* Hero */}
-        <div className="relative flex flex-1 flex-col px-6 py-8 sm:px-12 lg:px-12 xl:px-16 lg:py-10">
+        <div className="relative flex flex-1 flex-col px-6 py-8 sm:px-12 lg:px-12 xl:px-16 lg:py-12">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-wash/20 via-transparent to-transparent" />
 
           <div className="relative w-full max-w-4xl animate-fade-in lg:my-auto">
-            <p className={`mb-1.5 text-zinc-300 ${language === 'ko' ? 'text-[12px] font-light tracking-[0.15em]' : 'text-[11px] uppercase tracking-widest'}`}>
+            <p className={`mb-3 text-zinc-400 ${language === 'ko' ? 'text-[12px] font-light tracking-[0.15em]' : 'text-[11px] uppercase tracking-widest'}`}>
               {language === 'ko' ? '사람퀀트' : 'SaramQuant'}
             </p>
 
@@ -48,11 +48,11 @@ export default function LandingPage() {
               {txt(t.landing.headline)}
             </h1>
 
-            <div className="mt-5 lg:w-[90%]">
+            <div className="mt-6 lg:mt-7 lg:w-[90%]">
               <BrowserCarousel activeIndex={activeSlide} onIndexChange={handleSlideChange} />
             </div>
 
-            <div className="mt-3 flex flex-col gap-0.5 sm:mt-4 lg:flex-row lg:items-start lg:gap-4">
+            <div className="mt-4 flex flex-col gap-0.5 sm:mt-5 lg:flex-row lg:items-start lg:gap-4">
               {FEATURE_KEYS.map((key, i) => (
                 <button
                   key={key}
