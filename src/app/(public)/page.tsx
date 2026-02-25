@@ -137,7 +137,7 @@ export default function LandingPage() {
               />
             )}
 
-            {view !== 'main' && (
+            {view === 'login' && (
               <button
                 onClick={() => setView('main')}
                 className="mt-4 w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors"
