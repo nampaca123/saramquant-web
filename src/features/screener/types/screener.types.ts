@@ -26,6 +26,11 @@ export interface DashboardStocksParams {
   roeMax?: number;
   debtRatioMin?: number;
   debtRatioMax?: number;
+  priceHeatTier?: string;
+  volatilityTier?: string;
+  trendTier?: string;
+  companyHealthTier?: string;
+  valuationTier?: string;
 }
 
 export interface DashboardStockItem {

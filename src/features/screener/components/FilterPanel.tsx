@@ -1,16 +1,27 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { FlagIcon } from '@/components/common/FlagIcon';
 import { cn } from '@/lib/utils/cn';
+import { RISK_DIMENSION_LABELS } from '@/constants/indicator-tooltips.constants';
 import { MARKET_OPTIONS, TIER_FILTER_OPTIONS, SORT_OPTIONS } from '../constants/screener.constants';
 import type { DashboardStocksParams } from '../types/screener.types';
 import type { Market } from '@/types';
+
+type DimensionKey = 'priceHeatTier' | 'volatilityTier' | 'trendTier' | 'companyHealthTier' | 'valuationTier';
+
+const DIMENSION_FILTER_CONFIG: { paramKey: DimensionKey; dimName: string }[] = [
+  { paramKey: 'priceHeatTier', dimName: 'price_heat' },
+  { paramKey: 'volatilityTier', dimName: 'volatility' },
+  { paramKey: 'trendTier', dimName: 'trend' },
+  { paramKey: 'companyHealthTier', dimName: 'company_health' },
+  { paramKey: 'valuationTier', dimName: 'valuation' },
+];
 
 const TIER_CHIP: Record<string, { idle: string; active: string }> = {
   STABLE: {
@@ -37,6 +48,7 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
   const txt = useText();
   const { language } = useLanguage();
   const [sectors, setSectors] = useState<string[]>([]);
+  const [dimOpen, setDimOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   useEffect(() => {
@@ -118,6 +130,60 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
           );
         })}
       </div>
+
+      {/* 5 dimension filter toggle */}
+      <button
+        onClick={() => setDimOpen((prev) => !prev)}
+        aria-expanded={dimOpen}
+        className={cn(
+          'flex items-center gap-1.5 self-start text-xs transition-colors',
+          dimOpen ? 'font-medium text-gold' : 'text-zinc-500 hover:text-zinc-700',
+        )}
+      >
+        <Sparkles className="h-3.5 w-3.5" />
+        {txt(t.screener.dimensionFilter)}
+        <ChevronDown className={cn('h-3 w-3 transition-transform', dimOpen && 'rotate-180')} />
+      </button>
+
+      {dimOpen && (
+        <div className="space-y-2.5 rounded-lg border border-gold/20 bg-gold-wash/30 p-3">
+          <p className="text-[11px] text-zinc-500">{txt(t.screener.dimensionFilterDesc)}</p>
+          {DIMENSION_FILTER_CONFIG.map(({ paramKey, dimName }) => {
+            const dimLabel = RISK_DIMENSION_LABELS[dimName];
+            const selected = params[paramKey]?.split(',') ?? [];
+            const toggleDimTier = (tier: string) => {
+              const next = selected.includes(tier)
+                ? selected.filter((v) => v !== tier)
+                : [...selected, tier];
+              update({ [paramKey]: next.length > 0 ? next.join(',') : undefined });
+            };
+            return (
+              <div key={dimName} className="flex flex-col gap-1">
+                <span className="text-[11px] font-medium text-zinc-600" title={dimLabel?.question[language]}>
+                  {dimLabel?.question[language] ?? dimName}
+                </span>
+                <div className="flex gap-1">
+                  {TIER_FILTER_OPTIONS.map((o) => {
+                    const chip = TIER_CHIP[o.value];
+                    return (
+                      <button
+                        key={o.value}
+                        onClick={() => toggleDimTier(o.value)}
+                        className={cn(
+                          'rounded-full border px-2.5 py-0.5 text-[10px] font-medium transition-colors',
+                          selected.includes(o.value) ? chip.active : chip.idle,
+                        )}
+                      >
+                        {o.label[language]}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Sector */}
       {sectors.length > 0 && (

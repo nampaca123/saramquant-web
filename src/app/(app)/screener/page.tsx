@@ -10,6 +10,7 @@ import { FilterPanel } from '@/features/screener/components/FilterPanel';
 import { StockList } from '@/features/screener/components/StockList';
 import { ScreenerSkeleton } from '@/features/screener/components/ScreenerSkeleton';
 import { DataFreshnessPopover } from '@/features/screener/components/DataFreshnessPopover';
+import { EtfNoticePopover } from '@/features/screener/components/EtfNoticePopover';
 import type { BenchmarkSummary } from '@/features/home/types/home.types';
 import type { DashboardStocksParams, DashboardPage } from '@/features/screener/types/screener.types';
 import { DEFAULT_PAGE_SIZE } from '@/features/screener/constants/screener.constants';
@@ -60,7 +61,10 @@ export default function ScreenerPage() {
             </p>
           </div>
         </div>
-        <DataFreshnessPopover />
+        <div className="flex items-center gap-3">
+          <EtfNoticePopover />
+          <DataFreshnessPopover />
+        </div>
       </div>
 
       {benchmarks.length > 0 && <BenchmarkCards benchmarks={benchmarks} />}
