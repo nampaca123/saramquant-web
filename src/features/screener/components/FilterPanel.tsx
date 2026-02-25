@@ -139,7 +139,7 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
       {/* 5-dimension tier matrix */}
       <div className="rounded-lg border border-zinc-100 bg-zinc-50/50 px-3 py-2">
         {/* Column headers — aligned with dots */}
-        <div className="mb-1.5 grid grid-cols-[1fr_repeat(3,24px)] items-center gap-x-2">
+        <div className="mb-1.5 grid grid-cols-[1fr_repeat(3,36px)] items-center gap-x-1">
           <span />
           {TIER_FILTER_OPTIONS.map((o) => (
             <span key={o.value} className="text-center text-[9px] font-medium text-zinc-400">
@@ -159,7 +159,7 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
               update({ [paramKey]: next.length > 0 ? next.join(',') : undefined });
             };
             return (
-              <div key={dimName} className="grid grid-cols-[1fr_repeat(3,24px)] items-center gap-x-2">
+              <div key={dimName} className="grid grid-cols-[1fr_repeat(3,36px)] items-center gap-x-1">
                 <span className="truncate text-[11px] text-zinc-600">
                   {dimLabel?.label[language] ?? dimName}
                 </span>
