@@ -134,7 +134,7 @@ export default function LandingPage() {
             {view === 'signup' && (
               <SignupForm
                 onSwitchToLogin={() => setView('login')}
-                onSuccess={() => setView('login')}
+                onSuccess={() => router.push('/onboarding')}
               />
             )}
 

@@ -45,6 +45,7 @@ export function AccountOverview() {
   const [preview, setPreview] = useState<string | null>(user?.profile?.profileImageUrl ?? null);
   const [imgError, setImgError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(false);
 
   if (!user) return null;
 
@@ -57,13 +58,19 @@ export function AccountOverview() {
     const file = e.target.files?.[0];
     if (!file) return;
     setImgError(false);
+    setUploadError(false);
+    const prevPreview = preview;
     setPreview(URL.createObjectURL(file));
     setUploading(true);
     try {
       await userApi.uploadProfileImage(file);
       await refresh();
-    } catch { /* handled */ }
+    } catch {
+      setPreview(prevPreview);
+      setUploadError(true);
+    }
     setUploading(false);
+    e.target.value = '';
   };
 
   return (
@@ -96,6 +103,9 @@ export function AccountOverview() {
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
 
           <div className="min-w-0">
+            {uploadError && (
+              <p className="text-xs text-warning mb-1">이미지 업로드에 실패했어요. 다시 시도해 주세요.</p>
+            )}
             <p className="text-lg font-semibold text-zinc-900 truncate">
               {user.profile?.nickname ?? user.name}
             </p>
