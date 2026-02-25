@@ -10,6 +10,7 @@ export const screenerTexts = {
   advancedFilters: { ko: '고급 필터', en: 'More filters' } satisfies LocalizedText,
   searchPlaceholder: { ko: '종목명 또는 심볼 검색', en: 'Search by name or ticker' } satisfies LocalizedText,
   noResults: { ko: '조건에 맞는 종목이 없어요', en: 'Nothing matched — try different filters' } satisfies LocalizedText,
+  loadError: { ko: '데이터를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.', en: 'Failed to load data. Please try again shortly.' } satisfies LocalizedText,
   sortBy: { ko: '정렬 기준', en: 'Sort by' } satisfies LocalizedText,
   riskLevel: { ko: '리스크 등급', en: 'Risk Level' } satisfies LocalizedText,
   expertFilters: { ko: '전문가용 상세 필터', en: 'Advanced Filters' } satisfies LocalizedText,

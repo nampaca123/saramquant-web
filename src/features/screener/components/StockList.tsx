@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RefreshCw } from 'lucide-react';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { cn } from '@/lib/utils/cn';
@@ -11,13 +11,32 @@ import type { DashboardPage } from '../types/screener.types';
 interface StockListProps {
   data: DashboardPage | null;
   loading: boolean;
+  error?: boolean;
+  onRetry?: () => void;
   onPageChange: (page: number) => void;
 }
 
-export function StockList({ data, loading, onPageChange }: StockListProps) {
+export function StockList({ data, loading, error, onRetry, onPageChange }: StockListProps) {
   const txt = useText();
 
-  if (loading || !data) return null;
+  if (loading) return null;
+
+  if (error || !data) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-16 text-zinc-400">
+        <p className="text-sm">{txt(t.screener.loadError)}</p>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+          >
+            <RefreshCw className="h-3 w-3" />
+            {txt({ ko: '다시 시도해주세요', en: 'Retry' })}
+          </button>
+        )}
+      </div>
+    );
+  }
 
   if (data.content.length === 0) {
     return (

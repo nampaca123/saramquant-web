@@ -26,16 +26,19 @@ export default function ScreenerPage() {
   const txt = useText();
   const [params, setParams] = useState<DashboardStocksParams>(INITIAL_PARAMS);
   const [data, setData] = useState<DashboardPage | null>(null);
+  const [error, setError] = useState(false);
   const [benchmarks, setBenchmarks] = useState<BenchmarkSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async (p: DashboardStocksParams) => {
     setLoading(true);
+    setError(false);
     try {
       const result = await dashboardApi.stocks(p);
       setData(result);
     } catch {
       setData(null);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -79,6 +82,8 @@ export default function ScreenerPage() {
             <StockList
               data={data}
               loading={loading}
+              error={error}
+              onRetry={() => fetchData(params)}
               onPageChange={(page) => setParams((prev) => ({ ...prev, page }))}
             />
           )}
