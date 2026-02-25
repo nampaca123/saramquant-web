@@ -123,6 +123,7 @@ export default function LandingPage() {
               <LoginForm
                 onSwitchToSignup={() => setView('signup')}
                 onSwitchToForgotPassword={() => setView('forgot-password')}
+                onBack={() => setView('main')}
               />
             )}
 
@@ -137,14 +138,6 @@ export default function LandingPage() {
               />
             )}
 
-            {view === 'login' && (
-              <button
-                onClick={() => setView('main')}
-                className="mt-4 w-full text-center text-sm text-zinc-400 hover:text-zinc-600 transition-colors"
-              >
-                ← {txt(t.common.cancel)}
-              </button>
-            )}
 
             <Link
               href="/screener"

@@ -12,9 +12,10 @@ import { t } from '@/lib/i18n/translations';
 interface LoginFormProps {
   onSwitchToSignup: () => void;
   onSwitchToForgotPassword: () => void;
+  onBack: () => void;
 }
 
-export function LoginForm({ onSwitchToSignup, onSwitchToForgotPassword }: LoginFormProps) {
+export function LoginForm({ onSwitchToSignup, onSwitchToForgotPassword, onBack }: LoginFormProps) {
   const txt = useText();
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -48,32 +49,48 @@ export function LoginForm({ onSwitchToSignup, onSwitchToForgotPassword }: LoginF
         required
         autoComplete="email"
       />
-      <Input
-        type="password"
-        placeholder={txt(t.auth.password)}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        minLength={8}
-        autoComplete="current-password"
-      />
+      <div className="flex flex-col gap-1">
+        <Input
+          type="password"
+          placeholder={txt(t.auth.password)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          minLength={8}
+          autoComplete="current-password"
+        />
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={onSwitchToForgotPassword}
+            className="text-xs text-zinc-400 hover:text-gold transition-colors"
+          >
+            {txt(t.auth.forgotPassword)}
+          </button>
+        </div>
+      </div>
       {error && <p className="text-sm text-warning">{error}</p>}
       <Button type="submit" disabled={loading}>
         {loading ? txt(t.common.loading) : txt(t.common.login)}
       </Button>
-      <button
-        type="button"
-        onClick={onSwitchToForgotPassword}
-        className="text-sm text-zinc-400 hover:text-gold transition-colors"
-      >
-        {txt(t.auth.forgotPassword)}
-      </button>
+      <div className="flex items-center gap-3 my-1">
+        <div className="h-px flex-1 bg-zinc-100" />
+        <span className="text-xs text-zinc-300">or</span>
+        <div className="h-px flex-1 bg-zinc-100" />
+      </div>
       <button
         type="button"
         onClick={onSwitchToSignup}
         className="text-sm text-zinc-500 hover:text-gold transition-colors"
       >
         {txt(t.auth.noAccount)}
+      </button>
+      <button
+        type="button"
+        onClick={onBack}
+        className="text-xs text-zinc-300 hover:text-zinc-500 transition-colors"
+      >
+        ← {txt(t.common.cancel)}
       </button>
     </form>
   );
