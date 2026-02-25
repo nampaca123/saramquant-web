@@ -32,7 +32,7 @@ export function EtfNoticePopover() {
       {open && (
         <div
           onMouseLeave={() => setOpen(false)}
-          className="absolute right-0 top-full mt-1.5 z-50 w-60 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg"
+          className="absolute left-0 top-full mt-1.5 z-50 w-60 max-w-[calc(100vw-2rem)] rounded-lg border border-zinc-200 bg-white p-3 shadow-lg"
         >
           <p className="text-[11px] leading-relaxed text-zinc-600">
             {txt(t.screener.etfNotice)}

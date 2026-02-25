@@ -59,15 +59,13 @@ export default function ScreenerPage() {
           <LayoutGrid className="h-5 w-5 text-gold" />
           <div>
             <h1 className="text-xl font-bold text-zinc-900">{txt(t.screener.title)}</h1>
-            <p className="text-xs text-zinc-500">
-              {txt(t.screener.subtitle)}
-            </p>
+            <div className="flex items-center gap-1">
+              <p className="text-xs text-zinc-500">{txt(t.screener.subtitle)}</p>
+              <EtfNoticePopover />
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <EtfNoticePopover />
-          <DataFreshnessPopover />
-        </div>
+        <DataFreshnessPopover />
       </div>
 
       {benchmarks.length > 0 && <BenchmarkCards benchmarks={benchmarks} />}
