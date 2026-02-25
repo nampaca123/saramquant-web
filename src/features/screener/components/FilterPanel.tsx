@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, SlidersHorizontal, ChevronDown, Check, Sparkles } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, Check } from 'lucide-react';
 import { dashboardApi } from '@/lib/api';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
@@ -15,12 +15,18 @@ import type { Market } from '@/types';
 
 type DimensionKey = 'priceHeatTier' | 'volatilityTier' | 'trendTier' | 'companyHealthTier' | 'valuationTier';
 
-const DIMENSION_FILTER_CONFIG: { paramKey: DimensionKey; dimName: string }[] = [
+const DIMENSION_FILTERS: { paramKey: DimensionKey; dimName: string }[] = [
   { paramKey: 'priceHeatTier', dimName: 'price_heat' },
   { paramKey: 'volatilityTier', dimName: 'volatility' },
   { paramKey: 'trendTier', dimName: 'trend' },
   { paramKey: 'companyHealthTier', dimName: 'company_health' },
   { paramKey: 'valuationTier', dimName: 'valuation' },
+];
+
+const TIER_DOTS: { value: string; dot: string; activeDot: string; ring: string }[] = [
+  { value: 'STABLE',  dot: 'bg-stable/25',  activeDot: 'bg-stable',  ring: 'ring-stable/30' },
+  { value: 'CAUTION', dot: 'bg-caution/25', activeDot: 'bg-caution', ring: 'ring-caution/30' },
+  { value: 'WARNING', dot: 'bg-warning/25', activeDot: 'bg-warning', ring: 'ring-warning/30' },
 ];
 
 const TIER_CHIP: Record<string, { idle: string; active: string }> = {
@@ -48,7 +54,6 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
   const txt = useText();
   const { language } = useLanguage();
   const [sectors, setSectors] = useState<string[]>([]);
-  const [dimOpen, setDimOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   useEffect(() => {
@@ -131,59 +136,55 @@ export function FilterPanel({ params, onChange, className }: FilterPanelProps) {
         })}
       </div>
 
-      {/* 5 dimension filter toggle */}
-      <button
-        onClick={() => setDimOpen((prev) => !prev)}
-        aria-expanded={dimOpen}
-        className={cn(
-          'flex items-center gap-1.5 self-start text-xs transition-colors',
-          dimOpen ? 'font-medium text-gold' : 'text-zinc-500 hover:text-zinc-700',
-        )}
-      >
-        <Sparkles className="h-3.5 w-3.5" />
-        {txt(t.screener.dimensionFilter)}
-        <ChevronDown className={cn('h-3 w-3 transition-transform', dimOpen && 'rotate-180')} />
-      </button>
-
-      {dimOpen && (
-        <div className="space-y-2.5 rounded-lg border border-gold/20 bg-gold-wash/30 p-3">
-          <p className="text-[11px] text-zinc-500">{txt(t.screener.dimensionFilterDesc)}</p>
-          {DIMENSION_FILTER_CONFIG.map(({ paramKey, dimName }) => {
+      {/* 5-dimension tier matrix */}
+      <div className="rounded-lg border border-zinc-100 bg-zinc-50/50 px-3 py-2">
+        {/* Column headers — aligned with dots */}
+        <div className="mb-1.5 grid grid-cols-[1fr_repeat(3,24px)] items-center gap-x-2">
+          <span />
+          {TIER_FILTER_OPTIONS.map((o) => (
+            <span key={o.value} className="text-center text-[9px] font-medium text-zinc-400">
+              {o.label[language]}
+            </span>
+          ))}
+        </div>
+        {/* Rows — one per dimension */}
+        <div className="flex flex-col gap-1.5">
+          {DIMENSION_FILTERS.map(({ paramKey, dimName }) => {
             const dimLabel = RISK_DIMENSION_LABELS[dimName];
             const selected = params[paramKey]?.split(',') ?? [];
-            const toggleDimTier = (tier: string) => {
+            const toggle = (tier: string) => {
               const next = selected.includes(tier)
                 ? selected.filter((v) => v !== tier)
                 : [...selected, tier];
               update({ [paramKey]: next.length > 0 ? next.join(',') : undefined });
             };
             return (
-              <div key={dimName} className="flex flex-col gap-1">
-                <span className="text-[11px] font-medium text-zinc-600" title={dimLabel?.question[language]}>
-                  {dimLabel?.question[language] ?? dimName}
+              <div key={dimName} className="grid grid-cols-[1fr_repeat(3,24px)] items-center gap-x-2">
+                <span className="truncate text-[11px] text-zinc-600">
+                  {dimLabel?.label[language] ?? dimName}
                 </span>
-                <div className="flex gap-1">
-                  {TIER_FILTER_OPTIONS.map((o) => {
-                    const chip = TIER_CHIP[o.value];
-                    return (
-                      <button
-                        key={o.value}
-                        onClick={() => toggleDimTier(o.value)}
+                {TIER_DOTS.map((td) => {
+                  const on = selected.includes(td.value);
+                  return (
+                    <button
+                      key={td.value}
+                      onClick={() => toggle(td.value)}
+                      className="flex items-center justify-center"
+                    >
+                      <span
                         className={cn(
-                          'rounded-full border px-2.5 py-0.5 text-[10px] font-medium transition-colors',
-                          selected.includes(o.value) ? chip.active : chip.idle,
+                          'block h-3.5 w-3.5 rounded-full transition-all',
+                          on ? `${td.activeDot} ring-2 ${td.ring} scale-110` : `${td.dot} hover:scale-110`,
                         )}
-                      >
-                        {o.label[language]}
-                      </button>
-                    );
-                  })}
-                </div>
+                      />
+                    </button>
+                  );
+                })}
               </div>
             );
           })}
         </div>
-      )}
+      </div>
 
       {/* Sector */}
       {sectors.length > 0 && (

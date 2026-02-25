@@ -26,9 +26,4 @@ export const screenerTexts = {
     ko: 'ETF·펀드 등 재무제표가 없는 상품은 분석 대상에 포함되지 않아요. 개별 종목(주식)만 다루고 있어요.',
     en: "ETFs, funds, and similar products aren't included here — we only cover individual stocks that have financial statements to analyze.",
   } satisfies LocalizedText,
-  dimensionFilter: { ko: '5대 리스크 지표로 골라보기', en: 'Filter by 5 Risk Signals' } satisfies LocalizedText,
-  dimensionFilterDesc: {
-    ko: '각 지표에서 원하는 등급만 골라보세요',
-    en: 'Pick the risk level you want for each signal',
-  } satisfies LocalizedText,
 } as const;
