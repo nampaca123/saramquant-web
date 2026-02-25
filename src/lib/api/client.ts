@@ -70,7 +70,9 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
         body: body !== undefined ? JSON.stringify(body) : undefined,
       });
       if (retry.ok) {
-        return retry.status === 204 ? (undefined as T) : retry.json();
+        if (retry.status === 204) return undefined as T;
+        const retryText = await retry.text();
+        return retryText ? JSON.parse(retryText) : (undefined as T);
       }
       throw new ApiError(retry.status, await retry.json().catch(() => null));
     }
@@ -85,5 +87,7 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
     throw new ApiError(res.status, await res.json().catch(() => null));
   }
 
-  return res.status === 204 ? (undefined as T) : res.json();
+  if (res.status === 204) return undefined as T;
+  const text = await res.text();
+  return text ? JSON.parse(text) : (undefined as T);
 }
