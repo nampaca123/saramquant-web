@@ -50,6 +50,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
   const [gender, setGender] = useState<Gender | null>(null);
   const [markets, setMarkets] = useState<Market[]>([]);
   const [experience, setExperience] = useState<InvestmentExperience>('BEGINNER');
+  const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -64,6 +65,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
     if (!birthYear || Number(birthYear) < 1900 || Number(birthYear) > 2010) errs.birthYear = txt(t.onboarding.required);
     if (!gender) errs.gender = txt(t.onboarding.required);
     if (markets.length === 0) errs.markets = txt(t.onboarding.selectAtLeastOne);
+    if (!consent) errs.consent = txt(t.onboarding.consentRequired);
     setErrors(errs);
 
     if (Object.keys(errs).length > 0) {
@@ -201,8 +203,34 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
         </div>
       </div>
 
+      {/* Consent */}
+      <div id="field-consent" className="!mt-6">
+        <p className="text-[11px] leading-relaxed text-zinc-400">
+          {txt(t.onboarding.consentNotice)}{' '}
+          <a href="/terms" target="_blank" rel="noopener" className="underline hover:text-zinc-600">
+            {txt(t.onboarding.consentTerms)}
+          </a>
+          {' · '}
+          <a href="/privacy" target="_blank" rel="noopener" className="underline hover:text-zinc-600">
+            {txt(t.onboarding.consentPrivacy)}
+          </a>
+        </p>
+        <label className="mt-2 flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => { setConsent(e.target.checked); clearError('consent'); }}
+            className="h-3.5 w-3.5 rounded border-zinc-300 accent-[var(--color-gold)]"
+          />
+          <span className={cn('text-xs', consent ? 'text-zinc-600' : 'text-zinc-400')}>
+            {txt(t.onboarding.consentAgree)}
+          </span>
+        </label>
+        {errors.consent && <p className="text-[11px] text-warning mt-1">{errors.consent}</p>}
+      </div>
+
       {/* Submit */}
-      <Button onClick={handleSubmit} disabled={saving} size="lg" className="w-full gap-2 text-base !mt-8">
+      <Button onClick={handleSubmit} disabled={saving} size="lg" className="w-full gap-2 text-base !mt-5">
         {saving ? txt(t.common.loading) : txt(t.onboarding.start)}
         {!saving && <ChevronRight className="h-5 w-5" />}
       </Button>
