@@ -9,32 +9,32 @@ import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { isValidEmail, isValidPassword } from '@/lib/validation';
 
-interface SignupFormProps {
-  onSwitchToLogin: () => void;
-  onSuccess: () => void;
+interface ForgotPasswordFormProps {
+  onBack: () => void;
 }
 
 const ERROR_MAP: Record<string, keyof typeof t.auth> = {
-  EMAIL_EXISTS: 'errEmailExists',
-  ACCOUNT_DEACTIVATED: 'errAccountDeactivated',
   RATE_LIMITED: 'errRateLimited',
   INVALID_CODE: 'errInvalidCode',
   INVALID_CODE_FORMAT: 'errInvalidCode',
   CODE_EXPIRED: 'errCodeExpired',
   TOO_MANY_ATTEMPTS: 'errTooManyAttempts',
   EMAIL_NOT_VERIFIED: 'errEmailNotVerified',
+  INVALID_RESET_TARGET: 'errInvalidResetTarget',
 };
 
-export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
+export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
   const txt = useText();
-  const [step, setStep] = useState<1 | 2>(1);
-  const [name, setName] = useState('');
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [verificationId, setVerificationId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -58,13 +58,11 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
   const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (!isValidEmail(email)) { setError(txt(t.auth.errInvalidEmail)); return; }
-    if (!isValidPassword(password)) { setError(txt(t.auth.errInvalidPassword)); return; }
 
     setLoading(true);
     try {
-      await authApi.sendVerification({ email });
+      await authApi.forgotPassword({ email });
       setStep(2);
       setCooldown(60);
     } catch (err) {
@@ -79,7 +77,7 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
     setError('');
     setLoading(true);
     try {
-      await authApi.sendVerification({ email });
+      await authApi.forgotPassword({ email });
       setCooldown(60);
     } catch (err) {
       resolveError(err, 'errSendFailed');
@@ -88,28 +86,82 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
     }
   };
 
-  const handleVerifyAndSignup = async (e: FormEvent) => {
+  const handleVerify = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const { verificationId } = await authApi.verifyEmail({
-        email,
-        code,
-        purpose: 'SIGNUP',
-      });
-      await authApi.signup({ email, password, name, verificationId });
-      onSuccess();
+      const res = await authApi.verifyEmail({ email, code, purpose: 'PASSWORD_RESET' });
+      setVerificationId(res.verificationId);
+      setStep(3);
     } catch (err) {
-      resolveError(err, 'errSignupFailed');
+      resolveError(err, 'errVerifyFailed');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleReset = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (!isValidPassword(newPassword)) { setError(txt(t.auth.errInvalidPassword)); return; }
+    if (newPassword !== confirmPw) { setError(txt(t.auth.errPasswordMismatch)); return; }
+
+    setLoading(true);
+    try {
+      await authApi.resetPassword({ email, newPassword, verificationId });
+      setDone(true);
+    } catch (err) {
+      resolveError(err, 'errResetFailed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="flex flex-col gap-4 text-center">
+        <p className="text-sm text-zinc-700">{txt(t.auth.passwordResetSuccess)}</p>
+        <Button onClick={onBack}>{txt(t.common.login)}</Button>
+      </div>
+    );
+  }
+
+  if (step === 3) {
+    return (
+      <form onSubmit={handleReset} className="flex flex-col gap-4">
+        <Input
+          type="password"
+          placeholder={txt(t.auth.newPassword)}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          required
+          minLength={8}
+          maxLength={100}
+          autoComplete="new-password"
+        />
+        <Input
+          type="password"
+          placeholder={txt(t.auth.confirmPassword)}
+          value={confirmPw}
+          onChange={(e) => setConfirmPw(e.target.value)}
+          required
+          minLength={8}
+          maxLength={100}
+          autoComplete="new-password"
+        />
+        {error && <p className="text-sm text-warning">{error}</p>}
+        <Button type="submit" disabled={loading}>
+          {loading ? txt(t.common.loading) : txt(t.auth.newPassword)}
+        </Button>
+      </form>
+    );
+  }
+
   if (step === 2) {
     return (
-      <form onSubmit={handleVerifyAndSignup} className="flex flex-col gap-4">
+      <form onSubmit={handleVerify} className="flex flex-col gap-4">
         <div>
           <p className="text-sm font-medium text-zinc-700 mb-1">
             {txt(t.auth.enterCode)}
@@ -154,14 +206,14 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
 
   return (
     <form onSubmit={handleSendCode} className="flex flex-col gap-4">
-      <Input
-        placeholder={txt(t.auth.name)}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-        maxLength={100}
-        autoComplete="name"
-      />
+      <div>
+        <p className="text-sm font-medium text-zinc-700 mb-1">
+          {txt(t.auth.forgotPassword)}
+        </p>
+        <p className="text-xs text-zinc-400 mb-3">
+          {txt(t.auth.codeSentToEmail)}
+        </p>
+      </div>
       <Input
         type="email"
         placeholder={txt(t.auth.email)}
@@ -170,26 +222,16 @@ export function SignupForm({ onSwitchToLogin, onSuccess }: SignupFormProps) {
         required
         autoComplete="email"
       />
-      <Input
-        type="password"
-        placeholder={txt(t.auth.password)}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        minLength={8}
-        maxLength={100}
-        autoComplete="new-password"
-      />
       {error && <p className="text-sm text-warning">{error}</p>}
       <Button type="submit" disabled={loading}>
         {loading ? txt(t.common.loading) : txt(t.auth.sendCode)}
       </Button>
       <button
         type="button"
-        onClick={onSwitchToLogin}
-        className="text-sm text-zinc-500 hover:text-gold transition-colors"
+        onClick={onBack}
+        className="text-sm text-zinc-400 hover:text-zinc-600 transition-colors"
       >
-        {txt(t.auth.hasAccount)}
+        ← {txt(t.common.cancel)}
       </button>
     </form>
   );

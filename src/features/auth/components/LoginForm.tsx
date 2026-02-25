@@ -11,9 +11,10 @@ import { t } from '@/lib/i18n/translations';
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
+  onSwitchToForgotPassword: () => void;
 }
 
-export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
+export function LoginForm({ onSwitchToSignup, onSwitchToForgotPassword }: LoginFormProps) {
   const txt = useText();
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -60,6 +61,13 @@ export function LoginForm({ onSwitchToSignup }: LoginFormProps) {
       <Button type="submit" disabled={loading}>
         {loading ? txt(t.common.loading) : txt(t.common.login)}
       </Button>
+      <button
+        type="button"
+        onClick={onSwitchToForgotPassword}
+        className="text-sm text-zinc-400 hover:text-gold transition-colors"
+      >
+        {txt(t.auth.forgotPassword)}
+      </button>
       <button
         type="button"
         onClick={onSwitchToSignup}

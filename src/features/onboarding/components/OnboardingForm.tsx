@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils/cn';
 import { FlagIcon } from '@/components/common/FlagIcon';
+import { isValidBirthYear } from '@/lib/validation';
 import type { Market, InvestmentExperience, Gender } from '@/types';
 
 const MARKET_OPTIONS: { value: Market; label: string }[] = [
@@ -62,7 +63,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
     if (!nickname.trim()) errs.nickname = txt(t.onboarding.required);
-    if (!birthYear || Number(birthYear) < 1900 || Number(birthYear) > 2010) errs.birthYear = txt(t.onboarding.required);
+    if (!birthYear || !isValidBirthYear(Number(birthYear))) errs.birthYear = txt(t.onboarding.required);
     if (!gender) errs.gender = txt(t.onboarding.required);
     if (markets.length === 0) errs.markets = txt(t.onboarding.selectAtLeastOne);
     if (!consent) errs.consent = txt(t.onboarding.consentRequired);

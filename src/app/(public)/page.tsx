@@ -11,9 +11,10 @@ import { LanguageToggle } from '@/components/common/LanguageToggle';
 import { OAuthButtons } from '@/features/auth/components/OAuthButtons';
 import { LoginForm } from '@/features/auth/components/LoginForm';
 import { SignupForm } from '@/features/auth/components/SignupForm';
+import { ForgotPasswordForm } from '@/features/auth/components/ForgotPasswordForm';
 import { BrowserCarousel } from '@/features/auth/components/BrowserCarousel';
 
-type AuthView = 'main' | 'login' | 'signup';
+type AuthView = 'main' | 'login' | 'signup' | 'forgot-password';
 
 const FEATURE_KEYS = ['feature1', 'feature2', 'feature3'] as const;
 
@@ -119,7 +120,14 @@ export default function LandingPage() {
             )}
 
             {view === 'login' && (
-              <LoginForm onSwitchToSignup={() => setView('signup')} />
+              <LoginForm
+                onSwitchToSignup={() => setView('signup')}
+                onSwitchToForgotPassword={() => setView('forgot-password')}
+              />
+            )}
+
+            {view === 'forgot-password' && (
+              <ForgotPasswordForm onBack={() => setView('login')} />
             )}
 
             {view === 'signup' && (

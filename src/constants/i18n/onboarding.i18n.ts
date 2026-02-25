@@ -11,8 +11,8 @@ export const onboardingTexts = {
   required: { ko: '필수 항목이에요', en: "We need this one" } satisfies LocalizedText,
   start: { ko: '시작하기', en: "Let's go!" } satisfies LocalizedText,
   consentNotice: {
-    ko: '본 서비스는 투자 자문이 아닌 정보 제공·교육 목적이며, 투자 전 전문가 상담을 권장합니다. 서비스 운영·보안을 위해 개인정보(이메일, 닉네임, 생년), IP 주소 및 IP 기반 대략적 위치를 수집하며 법령이 정한 기간까지 보유합니다.',
-    en: 'This service is for informational and educational purposes only — not investment advice. Consult a professional before investing. We collect personal data (email, nickname, birth year), IP address, and IP-based approximate location for service operation and security, retained as required by law.',
+    ko: '본 서비스는 투자 자문이 아닌 정보 제공·교육 목적이며, 투자 전 전문가 상담을 권장합니다. 서비스 운영·보안을 위해 개인정보(이메일, 생년, 성별 등), IP 주소 및 IP 기반 대략적 위치를 수집하며 법령이 정한 기간까지 보유합니다.',
+    en: 'This service is for informational and educational purposes only — not investment advice. Consult a professional before investing. We collect personal data (email, birth year, gender, etc.), IP address, and IP-based approximate location for service operation and security, retained as required by law.',
   } satisfies LocalizedText,
   consentTerms: { ko: '이용약관', en: 'Terms' } satisfies LocalizedText,
   consentPrivacy: { ko: '개인정보처리방침', en: 'Privacy Policy' } satisfies LocalizedText,
