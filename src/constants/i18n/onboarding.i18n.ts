@@ -22,4 +22,6 @@ export const onboardingTexts = {
     en: 'I have read and agree to the above',
   } satisfies LocalizedText,
   consentRequired: { ko: '동의가 필요합니다', en: 'You must agree to continue' } satisfies LocalizedText,
+  errorSessionExpired: { ko: '세션이 만료되었습니다. 다시 로그인해주세요.', en: 'Your session has expired. Please log in again.' } satisfies LocalizedText,
+  errorSubmit: { ko: '저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', en: 'Something went wrong. Please try again later.' } satisfies LocalizedText,
 } as const;

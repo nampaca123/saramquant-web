@@ -7,6 +7,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useText } from '@/lib/i18n/use-text';
 import { t } from '@/lib/i18n/translations';
 import { userApi } from '@/lib/api';
+import { ApiError } from '@/lib/api/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils/cn';
@@ -54,6 +55,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
   const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const clearError = (key: string) => setErrors((p) => ({ ...p, [key]: '' }));
 
@@ -79,6 +81,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSaving(true);
+    setSubmitError(null);
     try {
       if (avatarFile) await userApi.uploadProfileImage(avatarFile);
       await userApi.updateProfile({
@@ -90,8 +93,13 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
       });
       await refresh();
       router.replace('/screener');
-    } catch {
+    } catch (err) {
       setSaving(false);
+      if (err instanceof ApiError && err.status === 401) {
+        setSubmitError(txt(t.onboarding.errorSessionExpired));
+      } else {
+        setSubmitError(txt(t.onboarding.errorSubmit));
+      }
     }
   };
 
@@ -233,6 +241,13 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
         </label>
         {errors.consent && <p className="text-[11px] text-warning mt-1">{errors.consent}</p>}
       </div>
+
+      {/* Submit error */}
+      {submitError && (
+        <div className="rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-warning">
+          {submitError}
+        </div>
+      )}
 
       {/* Submit */}
       <Button onClick={handleSubmit} disabled={saving} size="lg" className="w-full gap-2 text-base !mt-5">
