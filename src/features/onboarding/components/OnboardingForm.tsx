@@ -121,9 +121,13 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
           min={1900}
           max={2010}
           value={birthYear}
-          onChange={(e) => { setBirthYear(e.target.value); clearError('birthYear'); }}
+          onChange={(e) => {
+            const v = e.target.value.slice(0, 4);
+            setBirthYear(v);
+            clearError('birthYear');
+          }}
           placeholder="1995"
-          error={errors.birthYear || undefined}
+          error={errors.birthYear || (birthYear.length === 4 && !isValidBirthYear(Number(birthYear)) ? txt(t.onboarding.invalidBirthYear) : undefined)}
         />
       </div>
 

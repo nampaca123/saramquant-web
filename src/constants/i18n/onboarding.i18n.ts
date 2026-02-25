@@ -9,6 +9,7 @@ export const onboardingTexts = {
   nicknamePlaceholder: { ko: '어떻게 불러드릴까요?', en: 'What should we call you?' } satisfies LocalizedText,
   selectAtLeastOne: { ko: '최소 1개를 선택하세요', en: 'Pick at least one' } satisfies LocalizedText,
   required: { ko: '필수 항목이에요', en: "We need this one" } satisfies LocalizedText,
+  invalidBirthYear: { ko: '유효한 출생연도를 입력하세요 (예시: 1997)', en: 'Enter a valid birth year (e.g., 1997)' } satisfies LocalizedText,
   start: { ko: '시작하기', en: "Let's go!" } satisfies LocalizedText,
   consentNotice: {
     ko: '본 서비스는 투자 자문이 아닌 정보 제공·교육 목적이며, 투자 전 전문가 상담을 권장합니다. 서비스 운영·보안을 위해 개인정보(이메일, 생년, 성별 등), IP 주소 및 IP 기반 대략적 위치를 수집하며 법령이 정한 기간까지 보유합니다.',
