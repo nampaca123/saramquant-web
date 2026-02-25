@@ -119,7 +119,7 @@ export function OnboardingForm({ avatarFile }: OnboardingFormProps) {
         <Input
           type="number"
           min={1900}
-          max={2010}
+          max={new Date().getFullYear()}
           value={birthYear}
           onChange={(e) => {
             const v = e.target.value.slice(0, 4);
