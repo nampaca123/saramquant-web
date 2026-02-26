@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type ComponentPropsWithoutRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
-import { Sparkles, MessageSquareText, HelpCircle, X } from 'lucide-react';
+import { Sparkles, MessageSquareText, HelpCircle, Check, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Disclaimer } from '@/components/common/Disclaimer';
@@ -49,10 +49,10 @@ export interface AiPreset {
   subtitle: LocalizedText;
 }
 
-interface PresetResult { analysis: string; disclaimer: string }
+interface PresetResult { analysis: string; disclaimer: string; cached?: boolean }
 
 export interface AiAnalysisSectionBaseProps {
-  onAnalyze: (preset: string) => Promise<{ analysis: string; disclaimer: string }>;
+  onAnalyze: (preset: string) => Promise<{ analysis: string; disclaimer: string; cached?: boolean }>;
   onSuccess?: () => void;
   presets: AiPreset[];
   title: LocalizedText;
@@ -64,6 +64,7 @@ export interface AiAnalysisSectionBaseProps {
   loadingStages: LocalizedText[];
   maxWaitText: LocalizedText;
   cachedResult?: { preset: string; analysis: string; disclaimer: string };
+  sharedEconomyDetail?: LocalizedText;
 }
 
 /* ── Main Component ── */
@@ -81,6 +82,7 @@ export function AiAnalysisSectionBase({
   loadingStages,
   maxWaitText,
   cachedResult,
+  sharedEconomyDetail,
 }: AiAnalysisSectionBaseProps) {
   const txt = useText();
   const { user } = useAuth();
@@ -92,8 +94,10 @@ export function AiAnalysisSectionBase({
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [sharedInfoOpen, setSharedInfoOpen] = useState(false);
 
   const currentResult = results[preset];
+  const showCachedHint = !!sharedEconomyDetail && currentResult?.cached === true;
 
   useEffect(() => {
     if (user) {
@@ -103,10 +107,14 @@ export function AiAnalysisSectionBase({
 
   const handleAnalyze = async () => {
     setLoading(true);
+    setSharedInfoOpen(false);
     try {
       const res = await onAnalyze(preset);
-      setResults((prev) => ({ ...prev, [preset]: { analysis: res.analysis, disclaimer: res.disclaimer } }));
-      if (usage) setUsage({ ...usage, used: usage.used + 1 });
+      setResults((prev) => ({
+        ...prev,
+        [preset]: { analysis: res.analysis, disclaimer: res.disclaimer, cached: res.cached },
+      }));
+      if (!res.cached && usage) setUsage({ ...usage, used: usage.used + 1 });
       onSuccess?.();
     } catch {
       setResults((prev) => ({ ...prev, [preset]: { analysis: txt(t.common.error), disclaimer: '' } }));
@@ -204,6 +212,35 @@ export function AiAnalysisSectionBase({
         <AnalysisPreview txt={txt} preset={preset} presets={presets} previewText={previewText} />
       ) : (
         <div>
+          {showCachedHint && (
+            <div className="flex items-center gap-1.5 mb-2">
+              <Check className="h-3 w-3 text-stable" />
+              <span className="text-[11px] text-stable">
+                {txt(t.stock.aiCachedHint)}
+              </span>
+              <div className="relative">
+                <button onClick={() => setSharedInfoOpen(!sharedInfoOpen)}>
+                  <HelpCircle className="h-3 w-3 text-stable/50 hover:text-stable/80 transition-colors" />
+                </button>
+                {sharedInfoOpen && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute z-50 left-0 bottom-6 w-64 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in"
+                  >
+                    <button
+                      onClick={() => setSharedInfoOpen(false)}
+                      className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                      {txt(sharedEconomyDetail!)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <div className="rounded-xl border border-zinc-100 bg-zinc-50/50 p-4 mb-3 max-h-[420px] overflow-y-auto">
             <ReactMarkdown components={mdComponents}>
               {currentResult.analysis}

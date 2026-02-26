@@ -40,6 +40,8 @@ export const stockTexts = {
   factorTitle: { ko: '이 종목의 성격', en: 'What This Stock Is Like' } satisfies LocalizedText,
   factorDesc: { ko: '같은 시장의 모든 종목 대비 이 종목이 어디쯤에 있는지 보여줘요. 가운데가 평균이에요.', en: 'See how this stock compares to everything else in the same market. The middle is average.' } satisfies LocalizedText,
   sectorStockCount: { ko: '개 종목', en: ' stocks' } satisfies LocalizedText,
+  aiCachedHint: { ko: '이미 분석된 결과예요 — 사용 횟수가 차감되지 않았어요', en: 'Already analyzed — this didn\'t count against your limit' } satisfies LocalizedText,
+  aiSharedEconomy: { ko: '오늘 다른 분석가가 같은 조건으로 이미 분석을 요청했어요. 이런 경우에는 사용 횟수가 차감되지 않아요.\n\n사람퀀트를 사용하는 분이 많아질수록, 무료로 볼 수 있는 분석 결과도 자연스럽게 늘어나요. 함께 쓸수록 모두에게 좋은 구조랍니다.', en: 'Another analyst already requested this exact analysis today, so it didn\'t use one of your daily turns.\n\nThe more people use SaramQuant, the more free analyses become available for everyone. It\'s a system that gets better the more we share.' } satisfies LocalizedText,
 } as const;
 
 export const simulationTexts = {

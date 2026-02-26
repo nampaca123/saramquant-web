@@ -39,6 +39,7 @@ export function AiAnalysisSection({ symbol, market, cachedAnalysis }: AiAnalysis
       loadingStages={[t.stock.aiStage1, t.stock.aiStage2, t.stock.aiStage3, t.stock.aiStage4]}
       maxWaitText={t.stock.aiMaxWait}
       cachedResult={cachedAnalysis ? { preset: cachedAnalysis.preset, analysis: cachedAnalysis.analysis, disclaimer: '' } : undefined}
+      sharedEconomyDetail={t.stock.aiSharedEconomy}
     />
   );
 }
