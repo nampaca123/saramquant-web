@@ -11,8 +11,33 @@ import { formatPercent } from '@/lib/utils/format-percent';
 import { isError } from '@/lib/utils/is-error';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
-import type { LocalizedText } from '@/types';
+import type { LocalizedText, RiskTier } from '@/types';
 import type { PortfolioAnalysisResponse } from '../types/portfolio.types';
+
+const TIER_TEXT: Record<RiskTier, string> = {
+  STABLE: 'text-stable',
+  CAUTION: 'text-caution',
+  WARNING: 'text-warning',
+};
+
+function volTier(portfolioVol: number, benchmarkVol: number): RiskTier {
+  const ratio = portfolioVol / benchmarkVol;
+  if (ratio <= 1.0) return 'STABLE';
+  if (ratio <= 1.5) return 'CAUTION';
+  return 'WARNING';
+}
+
+function hhiTier(hhi: number): RiskTier {
+  if (hhi <= 0.25) return 'STABLE';
+  if (hhi <= 0.5) return 'CAUTION';
+  return 'WARNING';
+}
+
+function weightTier(maxWeight: number): RiskTier {
+  if (maxWeight <= 0.4) return 'STABLE';
+  if (maxWeight <= 0.7) return 'CAUTION';
+  return 'WARNING';
+}
 
 interface MetricsCardsProps {
   analysis: PortfolioAnalysisResponse | null;
@@ -32,6 +57,12 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
   const emptyValue = <span className="text-2xl font-mono font-bold text-zinc-300 leading-none">—</span>;
   const emptySub = <p className="text-[11px] text-zinc-400">{txt(t.portfolio.insufficientData)}</p>;
 
+  const vTier = hasDecomp && riskScore?.benchmark_vol
+    ? volTier(decomp.portfolio_vol, riskScore.benchmark_vol)
+    : null;
+  const dTier = hasDivers ? hhiTier(divers.hhi) : null;
+  const wTier = hasDivers ? weightTier(divers.max_weight) : null;
+
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       <MetricCard
@@ -40,10 +71,10 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         value={
           riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
             <div className="flex items-end gap-2">
-              <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
+              <span className={cn('text-2xl font-mono font-bold leading-none', TIER_TEXT[riskScore.tier as RiskTier])}>
                 {riskScore.score}
               </span>
-              <Badge tier={riskScore.tier as 'STABLE' | 'CAUTION' | 'WARNING'} language={language} className="mb-0.5" />
+              <Badge tier={riskScore.tier as RiskTier} language={language} className="mb-0.5" />
             </div>
           ) : emptyValue
         }
@@ -55,9 +86,12 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         tooltip={t.portfolio.volatilityInfo}
         value={
           hasDecomp ? (
-            <span className="text-2xl font-mono font-bold text-zinc-900 leading-none">
-              {formatPercent(decomp.portfolio_vol * 100, { sign: false })}
-            </span>
+            <div className="flex items-end gap-2">
+              <span className={cn('text-2xl font-mono font-bold leading-none', vTier ? TIER_TEXT[vTier] : 'text-zinc-900')}>
+                {formatPercent(decomp.portfolio_vol * 100, { sign: false })}
+              </span>
+              {vTier && <Badge tier={vTier} language={language} className="mb-0.5" />}
+            </div>
           ) : emptyValue
         }
         sub={
@@ -72,12 +106,12 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         tooltip={t.portfolio.diversificationInfo}
         value={
           hasDivers ? (
-            <span className={cn(
-              'text-2xl font-mono font-bold leading-none',
-              divers.hhi < 0.25 ? 'text-stable' : divers.hhi > 0.5 ? 'text-warning' : 'text-zinc-900',
-            )}>
-              {divers.effective_n}
-            </span>
+            <div className="flex items-end gap-2">
+              <span className={cn('text-2xl font-mono font-bold leading-none', dTier ? TIER_TEXT[dTier] : 'text-zinc-900')}>
+                {divers.effective_n}
+              </span>
+              {dTier && <Badge tier={dTier} language={language} className="mb-0.5" />}
+            </div>
           ) : emptyValue
         }
         sub={hasDivers ? <p className="text-[11px] text-zinc-400">{txt(t.portfolio.effectiveNLabel)}</p> : emptySub}
@@ -88,12 +122,12 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
         tooltip={t.portfolio.maxWeightInfo}
         value={
           hasDivers ? (
-            <span className={cn(
-              'text-2xl font-mono font-bold leading-none',
-              divers.max_weight > 0.5 ? 'text-caution' : 'text-zinc-900',
-            )}>
-              {formatPercent(divers.max_weight * 100, { sign: false })}
-            </span>
+            <div className="flex items-end gap-2">
+              <span className={cn('text-2xl font-mono font-bold leading-none', wTier ? TIER_TEXT[wTier] : 'text-zinc-900')}>
+                {formatPercent(divers.max_weight * 100, { sign: false })}
+              </span>
+              {wTier && <Badge tier={wTier} language={language} className="mb-0.5" />}
+            </div>
           ) : emptyValue
         }
         sub={!hasDivers ? emptySub : undefined}
