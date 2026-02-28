@@ -100,8 +100,8 @@ export const portfolioTexts = {
 
   // Metric tooltips
   riskScoreInfo: {
-    ko: '내 주식들이 시장 전체에 비해 얼마나 요동치는지를 0~100 사이 점수로 보여줘요.\n\n내 주식들의 가격 출렁임 폭(연간 변동성)을 시장 대표 지수(한국: KOSPI, 미국: S&P 500)의 출렁임 폭으로 나눈 뒤 50을 곱해서 점수를 매겨요. 50점이면 시장과 출렁임이 같고, 높을수록 더 많이 흔들리는 거예요.\n\nMorningstar의 포트폴리오 리스크 점수(MPRS) 방식을 참고했어요.',
-    en: 'Shows how much your stocks shake compared to the overall market, on a 0–100 scale.\n\nWe take how much your stocks swing (annualized volatility) and divide it by how much the market index swings (KR: KOSPI, US: S&P 500), then multiply by 50. A score of 50 means you swing the same as the market — higher means more.\n\nInspired by Morningstar\'s Portfolio Risk Score (MPRS).',
+    ko: '한 줄 요약\n100점 = 상대적으로 안전, 0점 = 상대적으로 위험\n\n점수 읽는 법\n• 70~100: 시장 대비 변동성이 낮은 편\n• 30~69: 시장과 비슷하거나 중간 수준\n• 0~29: 시장 대비 변동성이 높은 편\n\n어떻게 계산하나요?\n1) 내 포트폴리오 연간 변동성을 계산해요\n2) 시장 지수(KR: KOSPI, US: S&P 500) 연간 변동성과 비교해요\n3) 비교값을 점수로 변환한 뒤, 화면에서는 이해하기 쉽게 "높을수록 안전" 방향으로 보여줘요\n\n즉, 이 점수는 수익률이 아니라 "얼마나 크게 흔들리는지"를 보여주는 지표예요.',
+    en: 'Quick read\n100 = relatively safer, 0 = relatively riskier\n\nHow to read it\n• 70–100: usually less volatile than the market\n• 30–69: around market-level to moderate volatility\n• 0–29: usually more volatile than the market\n\nHow we calculate it\n1) Compute your portfolio\'s annualized volatility\n2) Compare it with the market index volatility (KR: KOSPI, US: S&P 500)\n3) Convert to a score, then present it in a "higher = safer" direction for easier reading\n\nSo this score is about "how much it swings," not about return.',
   } satisfies LocalizedText,
   volatilityInfo: {
     ko: '내 주식들의 가격이 하루하루 얼마나 오르내리는지를 1년 기준으로 환산한 수치예요.\n\n일별 수익률의 표준편차를 구한 뒤 √252를 곱해 연간 수치로 변환해요. 숫자가 클수록 가격이 많이 출렁인다는 뜻이에요.',
