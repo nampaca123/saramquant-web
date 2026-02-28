@@ -36,7 +36,7 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       <MetricCard
         label={txt(t.portfolio.riskScore)}
-        tooltip={t.portfolio.riskScoreInfo}
+        tooltipContent={<RiskScoreTooltipContent />}
         value={
           riskScore && riskScore.score != null && riskScore.tier !== 'UNKNOWN' ? (
             <div className="flex items-end gap-2">
@@ -102,9 +102,10 @@ export function MetricsCards({ analysis }: MetricsCardsProps) {
   );
 }
 
-function MetricCard({ label, tooltip, value, sub }: {
+function MetricCard({ label, tooltip, tooltipContent, value, sub }: {
   label: string;
-  tooltip: LocalizedText;
+  tooltip?: LocalizedText;
+  tooltipContent?: React.ReactNode;
   value: React.ReactNode;
   sub?: React.ReactNode;
 }) {
@@ -123,10 +124,32 @@ function MetricCard({ label, tooltip, value, sub }: {
       {value}
       <div className="min-h-[18px] mt-1">{sub}</div>
       <Popover open={open} onClose={() => setOpen(false)} className="top-8 right-0 w-72 z-50">
-        <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line pr-4">
-          {txt(tooltip)}
-        </p>
+        {tooltipContent ?? (
+          <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line pr-4">
+            {tooltip ? txt(tooltip) : ''}
+          </p>
+        )}
       </Popover>
     </Card>
+  );
+}
+
+function RiskScoreTooltipContent() {
+  const txt = useText();
+
+  return (
+    <>
+      <h4 className="text-sm font-bold text-zinc-900 mb-2 pr-4">{txt(t.portfolio.riskScoreExplain)}</h4>
+      <p className="text-xs text-zinc-600 leading-relaxed mb-3">{txt(t.portfolio.riskScoreInfo)}</p>
+      <p className="text-xs font-mono text-zinc-400 mb-3">{txt(t.portfolio.riskScoreScale)}</p>
+      <p className="text-xs font-medium text-zinc-700 mb-1">{txt(t.portfolio.riskScoreCriteria)}</p>
+      <ul className="space-y-1 mb-3">
+        <li className="text-xs text-zinc-500">• {txt(t.portfolio.riskScoreCriteriaLow)}</li>
+        <li className="text-xs text-zinc-500">• {txt(t.portfolio.riskScoreCriteriaMid)}</li>
+        <li className="text-xs text-zinc-500">• {txt(t.portfolio.riskScoreCriteriaHigh)}</li>
+      </ul>
+      <p className="text-xs text-zinc-500 leading-relaxed mb-2">{txt(t.portfolio.riskScoreMethodology)}</p>
+      <p className="text-xs text-zinc-400 italic">{txt(t.portfolio.riskScoreSource)}</p>
+    </>
   );
 }

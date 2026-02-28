@@ -100,9 +100,20 @@ export const portfolioTexts = {
 
   // Metric tooltips
   riskScoreInfo: {
-    ko: '한 줄 요약\n100점 = 상대적으로 안전, 0점 = 상대적으로 위험\n\n점수 읽는 법\n• 70~100: 시장 대비 변동성이 낮은 편\n• 30~69: 시장과 비슷하거나 중간 수준\n• 0~29: 시장 대비 변동성이 높은 편\n\n어떻게 계산하나요?\n1) 내 포트폴리오 연간 변동성을 계산해요\n2) 시장 지수(KR: KOSPI, US: S&P 500) 연간 변동성과 비교해요\n3) 비교값을 점수로 변환한 뒤, 화면에서는 이해하기 쉽게 "높을수록 안전" 방향으로 보여줘요\n\n즉, 이 점수는 수익률이 아니라 "얼마나 크게 흔들리는지"를 보여주는 지표예요.',
-    en: 'Quick read\n100 = relatively safer, 0 = relatively riskier\n\nHow to read it\n• 70–100: usually less volatile than the market\n• 30–69: around market-level to moderate volatility\n• 0–29: usually more volatile than the market\n\nHow we calculate it\n1) Compute your portfolio\'s annualized volatility\n2) Compare it with the market index volatility (KR: KOSPI, US: S&P 500)\n3) Convert to a score, then present it in a "higher = safer" direction for easier reading\n\nSo this score is about "how much it swings," not about return.',
+    ko: '내 포트폴리오가 시장 대비 얼마나 크게 흔들리는지 보여주는 점수예요. 수익률이 아니라 변동성 지표예요.',
+    en: 'Shows how much your portfolio swings versus the market. This is a volatility metric, not a return metric.',
   } satisfies LocalizedText,
+  riskScoreExplain: { ko: '이 점수는 어떻게 읽나요?', en: 'How should I read this score?' } satisfies LocalizedText,
+  riskScoreScale: { ko: '100점 = 상대적으로 안전 / 0점 = 상대적으로 위험', en: '100 = relatively safer / 0 = relatively riskier' } satisfies LocalizedText,
+  riskScoreCriteria: { ko: '해석 기준', en: 'How to interpret' } satisfies LocalizedText,
+  riskScoreCriteriaLow: { ko: '70~100: 시장 대비 변동성이 낮은 편', en: '70–100: usually less volatile than the market' } satisfies LocalizedText,
+  riskScoreCriteriaMid: { ko: '30~69: 시장과 비슷하거나 중간 수준', en: '30–69: around market-level to moderate volatility' } satisfies LocalizedText,
+  riskScoreCriteriaHigh: { ko: '0~29: 시장 대비 변동성이 높은 편', en: '0–29: usually more volatile than the market' } satisfies LocalizedText,
+  riskScoreMethodology: {
+    ko: '내 포트폴리오의 연간 변동성을 시장 지수(KR: KOSPI, US: S&P 500)와 비교해 점수화한 뒤, 화면에서는 "높을수록 안전" 방향으로 보여줘요.',
+    en: 'We compare your portfolio\'s annualized volatility with the market index (KR: KOSPI, US: S&P 500), then present it in a "higher = safer" direction.',
+  } satisfies LocalizedText,
+  riskScoreSource: { ko: 'Morningstar Portfolio Risk Score(MPRS) 방식 기반', en: 'Based on Morningstar Portfolio Risk Score (MPRS)' } satisfies LocalizedText,
   volatilityInfo: {
     ko: '내 주식들의 가격이 하루하루 얼마나 오르내리는지를 1년 기준으로 환산한 수치예요.\n\n일별 수익률의 표준편차를 구한 뒤 √252를 곱해 연간 수치로 변환해요. 숫자가 클수록 가격이 많이 출렁인다는 뜻이에요.',
     en: 'How much your stocks\' prices jump around day to day, scaled to a yearly number.\n\nWe calculate the standard deviation of daily returns and multiply by √252 to annualize it. Bigger number = more ups and downs.',
