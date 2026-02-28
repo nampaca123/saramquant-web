@@ -129,7 +129,7 @@ export const RISK_DIMENSION_LABELS: Record<string, { label: LocalizedText; quest
     question: { ko: '가격이 얼마나 출렁이나요?', en: 'How much does the price jump around?' },
   },
   trend: {
-    label: { ko: '추세 강도', en: 'Direction' },
+    label: { ko: '추세 강도', en: 'Trend Strength' },
     question: { ko: '지금 가격이 한 방향으로 움직이고 있나요?', en: 'Is the price heading up, down, or nowhere?' },
   },
   company_health: {

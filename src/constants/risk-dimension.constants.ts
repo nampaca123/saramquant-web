@@ -106,7 +106,7 @@ export const DIMENSION_META: Record<DimensionName, DimensionMeta> = {
 
   trend: {
     icon: TrendingUp,
-    label: { ko: '추세', en: 'Direction' },
+    label: { ko: '추세 강도', en: 'Trend Strength' },
     description: {
       ko: '지금 뚜렷한 추세(상승/하락)가 있는지, 얼마나 강한지를 측정해요. 강한 하락 추세는 위험, 강한 상승은 상대적으로 덜 위험해요.',
       en: "Is the price clearly heading up or down? A strong drop is risky. A steady rise is usually less concerning.",
