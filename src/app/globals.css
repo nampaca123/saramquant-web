@@ -78,3 +78,14 @@ textarea,
   from { width: 0%; }
   to { width: 100%; }
 }
+
+.ai-agent-badge {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899, #f59e0b);
+  background-size: 200% 200%;
+  animation: badge-shimmer 3s ease infinite;
+}
+
+@keyframes badge-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}

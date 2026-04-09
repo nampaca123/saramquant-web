@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, type ComponentPropsWithoutRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
-import { Bot, AlertTriangle, RefreshCw, Check, Circle, History, X, HelpCircle, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react';
+import { Bot, AlertTriangle, RefreshCw, Check, History, X, HelpCircle, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useText } from '@/lib/i18n/use-text';
@@ -151,25 +151,26 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
 
   return (
     <>
-      <div className="rounded-2xl border border-gold/20 bg-gradient-to-b from-gold-wash/35 via-white to-white shadow-sm overflow-hidden">
-        <div className="flex flex-wrap items-start justify-between gap-3 px-5 py-4 border-b border-gold/15">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-gold/10 text-gold">
-              <Bot className="h-4 w-4" />
+      <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-violet-100 via-pink-50 to-amber-50">
+              <Bot className="h-4 w-4 text-violet-500" />
             </div>
-            <div className="min-w-0">
+            <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-zinc-900">{txt(t.portfolio.recTitle)}</h3>
-                <span className="inline-flex h-5 items-center rounded-full border border-gold/25 bg-white px-2 text-[10px] font-semibold text-gold">
-                  LLM Agent
+                <span className="ai-agent-badge inline-flex h-[18px] items-center rounded-full px-2 text-[10px] font-bold text-white">
+                  AI Agent
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-500 mt-0.5">{txt(hasHoldings ? t.portfolio.recDesc : t.portfolio.recDescEmpty)}</p>
+              <p className="text-[11px] text-zinc-400 mt-0.5">{txt(hasHoldings ? t.portfolio.recDesc : t.portfolio.recDescEmpty)}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {usage && (
-              <span className="text-[11px] font-mono text-zinc-500 bg-white border border-zinc-200 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-mono text-zinc-400 px-2 py-0.5">
                 {usage.used}/{usage.limit}
               </span>
             )}
@@ -204,72 +205,46 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
           </div>
         </div>
 
-        <div className="p-5">
-          <div className="rounded-xl border border-gold/15 bg-white/90 p-3 mb-4">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <p className="text-[11px] font-semibold text-zinc-700">
-                {txt({ ko: '추천 전략', en: 'Recommendation Style' })}
-              </p>
-              <span className="text-[10px] text-zinc-400">
-                {txt({ ko: '하나를 선택하세요', en: 'Pick one style' })}
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            {presets.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => setDirection(p.key)}
-                disabled={phase === 'loading'}
-                className={cn(
-                    'rounded-lg border px-3 py-2.5 text-left transition-all bg-white',
-                  direction === p.key
-                      ? 'border-gold/50 shadow-[0_0_0_1px_rgba(200,152,30,0.15)]'
-                      : 'border-zinc-200 hover:border-zinc-300',
-                  phase === 'loading' && 'opacity-50 pointer-events-none',
-                )}
-              >
-                  <div className="flex items-center gap-2">
-                    {(() => {
-                      const meta = DIRECTION_META[p.key];
-                      const Icon = meta.icon;
-                      return (
-                        <span className={cn('inline-flex h-6 w-6 items-center justify-center rounded-md bg-zinc-50', meta.accent)}>
-                          <Icon className="h-3.5 w-3.5" />
-                        </span>
-                      );
-                    })()}
-                    <span className="text-xs font-semibold text-zinc-800">{txt(p.label)}</span>
-                  </div>
-                  <span className="text-[10px] block mt-1 text-zinc-500">{txt(p.desc)}</span>
-              </button>
-            ))}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-zinc-200 bg-white p-3.5 mb-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-zinc-800">{txt({ ko: 'Agent 실행', en: 'Run Agent' })}</p>
-                <p className="text-[11px] text-zinc-500">{txt(t.portfolio.recMaxWait)}</p>
-              </div>
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <span className="inline-flex h-8 items-center rounded-full border border-gold/20 bg-gold-wash px-2.5 text-[11px] font-medium text-gold">
-                  {txt(t.portfolio.recCost)}
-                </span>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleRecommend}
-                  disabled={!user || phase === 'loading'}
-                  className="w-full sm:w-auto sm:min-w-[180px]"
+        <div className="px-5 py-4 space-y-4">
+          {/* Strategy chips + Run button — single compact row */}
+          <div className="flex flex-wrap items-center gap-2">
+            {presets.map((p) => {
+              const meta = DIRECTION_META[p.key];
+              const Icon = meta.icon;
+              return (
+                <button
+                  key={p.key}
+                  onClick={() => setDirection(p.key)}
+                  disabled={phase === 'loading'}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all',
+                    direction === p.key
+                      ? 'border-gold/40 bg-gold-wash text-zinc-800 shadow-sm'
+                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300 hover:text-zinc-700',
+                    phase === 'loading' && 'opacity-50 pointer-events-none',
+                  )}
                 >
-                  <Bot className="h-3.5 w-3.5 mr-1.5" />
-                  {txt(t.portfolio.recBtn)}
-                </Button>
-              </div>
-            </div>
+                  <Icon className={cn('h-3 w-3', direction === p.key ? meta.accent : 'text-zinc-400')} />
+                  {txt(p.label)}
+                </button>
+              );
+            })}
+
+            <div className="h-5 w-px bg-zinc-200 mx-1 hidden sm:block" />
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleRecommend}
+              disabled={!user || phase === 'loading'}
+            >
+              <Bot className="h-3.5 w-3.5 mr-1" />
+              {txt(t.portfolio.recBtn)}
+            </Button>
+            <span className="text-[11px] text-zinc-400">{txt(t.portfolio.recCost)}</span>
           </div>
 
+          {/* Output area */}
           {phase === 'loading' && (
             <AgentWorkspace
               thinkingText={thinkingText}
@@ -407,25 +382,9 @@ function AgentWorkspace({
 
 function IdleState({ txt }: { txt: (v: { ko: string; en: string }) => string }) {
   return (
-    <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/30 p-5">
-      <div className="flex items-start gap-3">
-        <div className="shrink-0 flex items-center justify-center h-8 w-8 rounded-lg bg-zinc-100">
-          <Bot className="h-4 w-4 text-zinc-400" />
-        </div>
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-zinc-400">Agent</span>
-            <Circle className="h-1 w-1 fill-zinc-300 text-zinc-300" />
-            <span className="text-[10px] text-zinc-400">{txt({ ko: '대기 중', en: 'Idle' })}</span>
-          </div>
-          <div className="space-y-1.5">
-            <div className="h-2.5 w-4/5 rounded bg-zinc-100" />
-            <div className="h-2.5 w-3/5 rounded bg-zinc-100" />
-            <div className="h-2.5 w-full rounded bg-zinc-100" />
-          </div>
-          <p className="text-[11px] text-zinc-400 mt-3">{txt(t.portfolio.recPreview)}</p>
-        </div>
-      </div>
+    <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50/40 px-4 py-3.5 flex items-center gap-3">
+      <Bot className="h-4 w-4 text-zinc-300 shrink-0" />
+      <p className="text-[12px] text-zinc-400">{txt(t.portfolio.recPreview)}</p>
     </div>
   );
 }
