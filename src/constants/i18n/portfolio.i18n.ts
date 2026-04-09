@@ -163,4 +163,59 @@ export const portfolioTexts = {
   marketValue: { ko: '평가 가치', en: 'Market value' } satisfies LocalizedText,
   pnl: { ko: '손익', en: 'P&L' } satisfies LocalizedText,
   costBasis: { ko: '원금', en: 'Cost' } satisfies LocalizedText,
+
+  // AI Portfolio Recommendation
+  recTitle: { ko: 'AI 포트폴리오 추천', en: 'AI Portfolio Builder' } satisfies LocalizedText,
+  recDesc: {
+    ko: 'AI가 데이터를 분석해서 포트폴리오 개선안을 만들어 드려요.',
+    en: 'AI analyzes real data and builds an improved portfolio for you.',
+  } satisfies LocalizedText,
+  recDescEmpty: {
+    ko: '아직 보유 종목이 없습니다. AI가 맞춤 포트폴리오를 구성해 드릴게요.',
+    en: "You don't have any stocks yet. AI will build a portfolio for you.",
+  } satisfies LocalizedText,
+  recHowItWorks: { ko: '이 기능은 뭔가요?', en: "What's this?" } satisfies LocalizedText,
+  recHowItWorksDetail: {
+    ko: 'AI가 종목 검색, 상세 분석, 리스크 검증 도구를 직접 사용해서 포트폴리오를 구성해요.\n\n받는 데이터:\n• 현재 보유 종목과 비중\n• 사용자 투자 성향 (온보딩 시 설정)\n• 실시간 종목 데이터 (팩터, 밸류에이션, 섹터)\n\n도구를 여러 번 사용하므로 진단보다 시간이 조금 더 걸려요.',
+    en: 'AI uses stock screening, detailed analysis, and risk verification tools to build your portfolio.\n\nData it uses:\n• Your current holdings and weights\n• Your investment profile (set during onboarding)\n• Live stock data (factors, valuations, sectors)\n\nIt uses multiple tools, so it takes a bit longer than a simple diagnosis.',
+  } satisfies LocalizedText,
+  recBtn: { ko: '추천 받기', en: 'Get Recommendation' } satisfies LocalizedText,
+  recCost: { ko: '3 크레딧 소모', en: '3 credits' } satisfies LocalizedText,
+  recPreview: {
+    ko: '위 버튼을 눌러 AI에게 포트폴리오 추천을 요청하세요',
+    en: 'Tap the button above to get an AI portfolio recommendation',
+  } satisfies LocalizedText,
+  recMaxWait: { ko: '최대 2분 정도 걸릴 수 있어요', en: 'This may take up to 2 minutes' } satisfies LocalizedText,
+  recRetryCost: { ko: '3 크레딧이 다시 소모됩니다', en: '3 credits will be used again' } satisfies LocalizedText,
+
+  // Recommendation presets
+  recImprove: { ko: '전체 개선', en: 'Improve All' } satisfies LocalizedText,
+  recImproveEmpty: { ko: '포트폴리오 구성', en: 'Build Portfolio' } satisfies LocalizedText,
+  recImproveDesc: { ko: 'AI가 포트폴리오를 분석하고 알아서 개선해요', en: 'AI analyzes and improves your portfolio' } satisfies LocalizedText,
+  recImproveDescEmpty: { ko: 'AI가 맞춤 포트폴리오를 처음부터 구성해요', en: 'AI builds a custom portfolio from scratch' } satisfies LocalizedText,
+  recConservative: { ko: '안정 위주', en: 'Play it Safe' } satisfies LocalizedText,
+  recConservativeDesc: { ko: '변동성을 줄이고 안정적으로 바꿔요', en: 'Reduce swings and prioritize stability' } satisfies LocalizedText,
+  recGrowth: { ko: '수익 위주', en: 'Go for Growth' } satisfies LocalizedText,
+  recGrowthDesc: { ko: '성장 가능성이 높은 종목 위주로 바꿔요', en: 'Focus on stocks with high growth potential' } satisfies LocalizedText,
+
+  // Recommendation result
+  recAssessment: { ko: '현재 포트폴리오 평가', en: 'Current Portfolio Assessment' } satisfies LocalizedText,
+  recStocks: { ko: '추천 종목', en: 'Recommended Stocks' } satisfies LocalizedText,
+  recOverall: { ko: '전체 분석', en: 'Overall Analysis' } satisfies LocalizedText,
+  recActionKeep: { ko: '유지', en: 'Keep' } satisfies LocalizedText,
+  recActionAdd: { ko: '추가', en: 'Add' } satisfies LocalizedText,
+  recActionRemove: { ko: '제거', en: 'Remove' } satisfies LocalizedText,
+  recAllocation: { ko: '비중', en: 'Weight' } satisfies LocalizedText,
+
+  // Recommendation errors
+  recErrorAuth: { ko: '로그인이 만료되었습니다', en: 'Your session has expired' } satisfies LocalizedText,
+  recErrorCredit: { ko: '오늘의 사용량을 초과했습니다', en: "You've used all your credits for today" } satisfies LocalizedText,
+  recErrorTemp: { ko: '일시적인 오류가 발생했어요', en: 'A temporary error occurred' } satisfies LocalizedText,
+  recErrorServer: { ko: '서버 오류가 발생했어요', en: 'A server error occurred' } satisfies LocalizedText,
+
+  // Recommendation history
+  recHistoryTitle: { ko: '지난 추천 기록', en: 'Past Recommendations' } satisfies LocalizedText,
+  recHistoryDesc: { ko: '이전에 받은 AI 추천을 다시 볼 수 있어요', en: 'Review your previous AI recommendations' } satisfies LocalizedText,
+  recHistoryEmpty: { ko: '아직 추천 기록이 없어요', en: 'No past recommendations yet' } satisfies LocalizedText,
+  recHistoryEmptySub: { ko: 'AI 추천을 한 번 받으면 여기에 기록이 남아요', en: 'Get a recommendation above and it will appear here' } satisfies LocalizedText,
 } as const;

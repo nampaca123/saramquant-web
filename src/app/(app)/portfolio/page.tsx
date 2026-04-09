@@ -42,6 +42,14 @@ const AnalysisHistory = dynamic(
   () => import('@/features/portfolio/components/AnalysisHistory').then((m) => ({ default: m.AnalysisHistory })),
   { ssr: false },
 );
+const RecommendationSection = dynamic(
+  () => import('@/features/portfolio/components/RecommendationSection').then((m) => ({ default: m.RecommendationSection })),
+  { ssr: false },
+);
+const RecommendationHistory = dynamic(
+  () => import('@/features/portfolio/components/RecommendationHistory').then((m) => ({ default: m.RecommendationHistory })),
+  { ssr: false },
+);
 
 export default function PortfolioPage() {
   const txt = useText();
@@ -56,6 +64,7 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [historyKey, setHistoryKey] = useState(0);
+  const [recHistoryKey, setRecHistoryKey] = useState(0);
 
   const activePortfolio = summaries.find((s) => s.marketGroup === tab);
 
@@ -180,6 +189,13 @@ export default function PortfolioPage() {
           <AnalysisHistory portfolioId={activePortfolio.id} refreshKey={historyKey} />
         </>
       )}
+
+      <RecommendationSection
+        marketGroup={tab}
+        hasHoldings={!!detail && detail.holdings.length > 0}
+        onSuccess={() => setRecHistoryKey((k) => k + 1)}
+      />
+      <RecommendationHistory marketGroup={tab} refreshKey={recHistoryKey} />
     </div>
   );
 }
