@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { userApi } from '@/lib/api';
 import type { UserResponse } from '@/types';
@@ -13,6 +13,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const REVALIDATE_THROTTLE_MS = 30_000;
 
 function isProfileComplete(user: UserResponse): boolean {
   const p = user.profile;
@@ -31,8 +32,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const lastFetchAtRef = useRef(0);
+  const fetchInFlightRef = useRef(false);
+  const loggedOutRef = useRef(true);
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(async (force = false) => {
+    const now = Date.now();
+    if (!force && (fetchInFlightRef.current || now - lastFetchAtRef.current < REVALIDATE_THROTTLE_MS)) return;
+    fetchInFlightRef.current = true;
+    lastFetchAtRef.current = now;
     try {
       const me = await userApi.me();
       setUser(me);
@@ -40,16 +48,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     } finally {
       setLoading(false);
+      fetchInFlightRef.current = false;
     }
   }, []);
 
   const clear = useCallback(() => {
+    if (loggedOutRef.current) return;
+    loggedOutRef.current = true;
     setUser(null);
-    router.push('/');
-  }, [router]);
+    if (pathname !== '/') router.push('/');
+  }, [pathname, router]);
 
   useEffect(() => {
-    fetchUser();
+    loggedOutRef.current = user == null;
+  }, [user]);
+
+  useEffect(() => {
+    fetchUser(true);
   }, [fetchUser]);
 
   useEffect(() => {
@@ -57,6 +72,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.addEventListener('sq:auth-expired', handler);
     return () => window.removeEventListener('sq:auth-expired', handler);
   }, [clear]);
+
+  useEffect(() => {
+    const revalidate = () => {
+      if (document.visibilityState === 'visible') void fetchUser();
+    };
+    const onFocus = () => { void fetchUser(); };
+    document.addEventListener('visibilitychange', revalidate);
+    window.addEventListener('focus', onFocus);
+    return () => {
+      document.removeEventListener('visibilitychange', revalidate);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [fetchUser]);
 
   useEffect(() => {
     if (loading || !user) return;

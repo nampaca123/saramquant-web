@@ -29,6 +29,12 @@ export interface SSECallbacks {
 
 const SSE_TIMEOUT_MS = 360_000;
 
+function emitAuthExpired() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('sq:auth-expired'));
+  }
+}
+
 function mapHttpStatus(status: number, body?: { code?: string; message?: string }): SSEError {
   if (status === 401) return { code: 'AUTH_EXPIRED', message: body?.message ?? 'Session expired', retryable: false };
   if (status === 429) return { code: 'RATE_LIMITED', message: body?.message ?? 'Too many requests', retryable: true };
@@ -63,9 +69,7 @@ export function connectSSE(path: string, params: Record<string, string>, callbac
         clearTimeout(timeout);
         const body = await res.json().catch(() => ({}));
         const error = mapHttpStatus(res.status, body);
-        if (error.code === 'AUTH_EXPIRED' && typeof window !== 'undefined') {
-          window.dispatchEvent(new CustomEvent('sq:auth-expired'));
-        }
+        if (error.code === 'AUTH_EXPIRED') emitAuthExpired();
         callbacks.onError?.(error);
         callbacks.onComplete?.();
         return;
@@ -120,6 +124,7 @@ export function connectSSE(path: string, params: Record<string, string>, callbac
                 break;
               case 'error': {
                 const code = parsed.code as SSEError['code'] | undefined;
+                if (code === 'AUTH_EXPIRED') emitAuthExpired();
                 callbacks.onError?.({
                   code: code ?? 'SERVER_ERROR',
                   message: parsed.message ?? 'Unknown error',

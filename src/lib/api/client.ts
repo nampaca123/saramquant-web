@@ -13,6 +13,39 @@ export class ApiError extends Error {
 let isRefreshing = false;
 let refreshPromise: Promise<boolean> | null = null;
 
+const AUTH_EXPIRED_CODES = new Set([
+  'AUTH_EXPIRED',
+  'SESSION_EXPIRED',
+  'INVALID_REFRESH',
+  'INVALID_REFRESH_TOKEN',
+  'TOKEN_REUSED',
+  'UNAUTHORIZED',
+]);
+
+function emitAuthExpired() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('sq:auth-expired'));
+  }
+}
+
+function getErrorCode(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null;
+  const code = (body as { code?: unknown }).code;
+  return typeof code === 'string' ? code.toUpperCase() : null;
+}
+
+function isAuthExpiredResponse(status: number, body: unknown): boolean {
+  if (status === 401) return true;
+  const code = getErrorCode(body);
+  if (!code) return false;
+  if (status === 403 && AUTH_EXPIRED_CODES.has(code)) return true;
+  return status >= 500 && AUTH_EXPIRED_CODES.has(code);
+}
+
+async function parseErrorBody(response: Response): Promise<unknown> {
+  return response.json().catch(() => null);
+}
+
 async function tryRefresh(): Promise<boolean> {
   if (isRefreshing && refreshPromise) return refreshPromise;
   isRefreshing = true;
@@ -46,18 +79,20 @@ function buildUrl(path: string, params?: RequestOptions['params']): string {
 
 export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T> {
   const { body, params, headers: customHeaders, ...rest } = opts;
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+  const requestBody = body === undefined ? undefined : (isFormData ? body : JSON.stringify(body));
 
   const headers: Record<string, string> = {
     'X-Gateway-Auth-Key': env.gatewayAuthKey,
     ...customHeaders,
   } as Record<string, string>;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (body !== undefined && !isFormData) headers['Content-Type'] = 'application/json';
 
   const res = await fetch(buildUrl(path, params), {
     credentials: 'include',
     ...rest,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: requestBody,
   });
 
   if (res.status === 401) {
@@ -67,24 +102,26 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
         credentials: 'include',
         ...rest,
         headers,
-        body: body !== undefined ? JSON.stringify(body) : undefined,
+        body: requestBody,
       });
       if (retry.ok) {
         if (retry.status === 204) return undefined as T;
         const retryText = await retry.text();
         return retryText ? JSON.parse(retryText) : (undefined as T);
       }
-      throw new ApiError(retry.status, await retry.json().catch(() => null));
+      const retryBody = await parseErrorBody(retry);
+      if (isAuthExpiredResponse(retry.status, retryBody)) emitAuthExpired();
+      throw new ApiError(retry.status, retryBody);
     }
 
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('sq:auth-expired'));
-    }
+    emitAuthExpired();
     throw new ApiError(401, { error: 'Session expired' });
   }
 
   if (!res.ok) {
-    throw new ApiError(res.status, await res.json().catch(() => null));
+    const body = await parseErrorBody(res);
+    if (isAuthExpiredResponse(res.status, body)) emitAuthExpired();
+    throw new ApiError(res.status, body);
   }
 
   if (res.status === 204) return undefined as T;
