@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { PieChart, Briefcase } from 'lucide-react';
+import { PieChart, Briefcase, History, X } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { useAuth } from '@/providers/AuthProvider';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useText } from '@/lib/i18n/use-text';
@@ -46,10 +47,6 @@ const RecommendationSection = dynamic(
   () => import('@/features/portfolio/components/RecommendationSection').then((m) => ({ default: m.RecommendationSection })),
   { ssr: false },
 );
-const RecommendationHistory = dynamic(
-  () => import('@/features/portfolio/components/RecommendationHistory').then((m) => ({ default: m.RecommendationHistory })),
-  { ssr: false },
-);
 
 export default function PortfolioPage() {
   const txt = useText();
@@ -64,7 +61,7 @@ export default function PortfolioPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [historyKey, setHistoryKey] = useState(0);
-  const [recHistoryKey, setRecHistoryKey] = useState(0);
+  const [analysisHistoryOpen, setAnalysisHistoryOpen] = useState(false);
 
   const activePortfolio = summaries.find((s) => s.marketGroup === tab);
 
@@ -179,23 +176,53 @@ export default function PortfolioPage() {
       ) : null}
 
       {activePortfolio && detail && detail.holdings.length > 0 && (
-        <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <DiversificationChart data={diversData} />
-            <BenchmarkComparison data={benchmarkData} chartData={benchmarkChartData} />
-          </div>
-          <SimulationChart portfolioId={activePortfolio.id} />
-          <AiDiagnosisSection portfolioId={activePortfolio.id} onSuccess={() => setHistoryKey((k) => k + 1)} />
-          <AnalysisHistory portfolioId={activePortfolio.id} refreshKey={historyKey} />
-        </>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <DiversificationChart data={diversData} />
+          <BenchmarkComparison data={benchmarkData} chartData={benchmarkChartData} />
+        </div>
       )}
 
+      {/* AI Agent — prominent position right after charts */}
       <RecommendationSection
         marketGroup={tab}
         hasHoldings={!!detail && detail.holdings.length > 0}
-        onSuccess={() => setRecHistoryKey((k) => k + 1)}
       />
-      <RecommendationHistory marketGroup={tab} refreshKey={recHistoryKey} />
+
+      {/* Simulation + AI Diagnosis — side by side like stock detail page */}
+      {activePortfolio && detail && detail.holdings.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <SimulationChart portfolioId={activePortfolio.id} />
+            <AiDiagnosisSection
+              portfolioId={activePortfolio.id}
+              onSuccess={() => setHistoryKey((k) => k + 1)}
+              historyButton={
+                <button
+                  onClick={() => setAnalysisHistoryOpen(true)}
+                  className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-600 transition-colors"
+                  title={txt(t.portfolio.historyTitle)}
+                >
+                  <History className="h-4 w-4" />
+                </button>
+              }
+            />
+          </div>
+
+          {/* Analysis history modal */}
+          <Modal open={analysisHistoryOpen} onClose={() => setAnalysisHistoryOpen(false)} className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <History className="h-4 w-4 text-zinc-400" />
+                <h3 className="text-sm font-bold text-zinc-900">{txt(t.portfolio.historyTitle)}</h3>
+              </div>
+              <button onClick={() => setAnalysisHistoryOpen(false)} className="text-zinc-400 hover:text-zinc-600">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <AnalysisHistory portfolioId={activePortfolio.id} refreshKey={historyKey} embedded />
+          </Modal>
+        </>
+      )}
     </div>
   );
 }

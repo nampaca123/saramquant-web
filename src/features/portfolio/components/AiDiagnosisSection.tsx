@@ -18,9 +18,10 @@ const PRESETS: AiPreset[] = [
 interface AiDiagnosisSectionProps {
   portfolioId: number;
   onSuccess?: () => void;
+  historyButton?: React.ReactNode;
 }
 
-export function AiDiagnosisSection({ portfolioId, onSuccess }: AiDiagnosisSectionProps) {
+export function AiDiagnosisSection({ portfolioId, onSuccess, historyButton }: AiDiagnosisSectionProps) {
   const { language } = useLanguage();
 
   const handleAnalyze = useCallback(async (preset: string) => {
@@ -39,6 +40,7 @@ export function AiDiagnosisSection({ portfolioId, onSuccess }: AiDiagnosisSectio
       previewText={t.portfolio.aiPreview}
       loadingStages={[t.portfolio.aiStage1, t.portfolio.aiStage2, t.portfolio.aiStage3, t.portfolio.aiStage4]}
       maxWaitText={t.portfolio.aiMaxWait}
+      headerExtra={historyButton}
     />
   );
 }

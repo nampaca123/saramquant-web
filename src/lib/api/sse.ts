@@ -6,14 +6,28 @@ export interface SSEError {
   retryable: boolean;
 }
 
+export interface ToolCallInfo {
+  tool: string;
+  args: Record<string, unknown>;
+}
+
+export interface ToolResultInfo {
+  tool: string;
+  summary: string;
+  durationMs: number;
+}
+
 export interface SSECallbacks {
   onProgress?: (step: string, message: string) => void;
+  onThinking?: (text: string) => void;
+  onToolCall?: (info: ToolCallInfo) => void;
+  onToolResult?: (info: ToolResultInfo) => void;
   onResult?: (data: unknown) => void;
   onError?: (error: SSEError) => void;
   onComplete?: () => void;
 }
 
-const SSE_TIMEOUT_MS = 160_000;
+const SSE_TIMEOUT_MS = 360_000;
 
 function mapHttpStatus(status: number, body?: { code?: string; message?: string }): SSEError {
   if (status === 401) return { code: 'AUTH_EXPIRED', message: body?.message ?? 'Session expired', retryable: false };
@@ -88,20 +102,34 @@ export function connectSSE(path: string, params: Record<string, string>, callbac
 
           try {
             const parsed = JSON.parse(data);
-            if (eventType === 'progress') {
-              callbacks.onProgress?.(parsed.step, parsed.message);
-            } else if (eventType === 'result') {
-              callbacks.onResult?.(parsed);
-            } else if (eventType === 'error') {
-              const code = parsed.code as SSEError['code'] | undefined;
-              callbacks.onError?.({
-                code: code ?? 'SERVER_ERROR',
-                message: parsed.message ?? 'Unknown error',
-                retryable: code !== 'CREDIT_EXCEEDED' && code !== 'AUTH_EXPIRED',
-              });
+            switch (eventType) {
+              case 'progress':
+                callbacks.onProgress?.(parsed.step, parsed.message);
+                break;
+              case 'thinking':
+                callbacks.onThinking?.(parsed.text);
+                break;
+              case 'tool_call':
+                callbacks.onToolCall?.({ tool: parsed.tool, args: parsed.args ?? {} });
+                break;
+              case 'tool_result':
+                callbacks.onToolResult?.({ tool: parsed.tool, summary: parsed.summary, durationMs: parsed.durationMs ?? 0 });
+                break;
+              case 'result':
+                callbacks.onResult?.(parsed);
+                break;
+              case 'error': {
+                const code = parsed.code as SSEError['code'] | undefined;
+                callbacks.onError?.({
+                  code: code ?? 'SERVER_ERROR',
+                  message: parsed.message ?? 'Unknown error',
+                  retryable: code !== 'CREDIT_EXCEEDED' && code !== 'AUTH_EXPIRED',
+                });
+                break;
+              }
             }
           } catch {
-            // non-JSON data line — skip
+            // non-JSON line (e.g. SSE comment) — skip
           }
         }
       }

@@ -2,18 +2,20 @@
 
 import { useState, useEffect, useRef, useCallback, type ComponentPropsWithoutRef } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
-import { Sparkles, HelpCircle, X, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Bot, ChevronRight, AlertTriangle, RefreshCw, Wrench, Check, Circle, History, X, HelpCircle } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { useText } from '@/lib/i18n/use-text';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useAuth } from '@/providers/AuthProvider';
 import { llmApi } from '@/lib/api';
 import { cn } from '@/lib/utils/cn';
 import { t } from '@/lib/i18n/translations';
-import type { SSEError } from '@/lib/api/sse';
+import type { SSEError, ToolCallInfo, ToolResultInfo } from '@/lib/api/sse';
 import type { MarketGroup } from '@/types';
 import type { RecommendationDirection, RecommendationResult } from '../types/recommendation.types';
+import { RecommendationHistory } from './RecommendationHistory';
 
 const mdComponents: Components = {
   h2: (props: ComponentPropsWithoutRef<'h2'>) => (
@@ -33,7 +35,7 @@ const mdComponents: Components = {
   ),
   li: (props: ComponentPropsWithoutRef<'li'>) => (
     <li className="flex gap-2 text-[13px] leading-[1.75] text-zinc-600">
-      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold/60" />
+      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-300" />
       <span>{props.children}</span>
     </li>
   ),
@@ -41,6 +43,13 @@ const mdComponents: Components = {
 };
 
 type Phase = 'idle' | 'loading' | 'result' | 'error';
+
+interface ToolEntry {
+  tool: string;
+  status: 'running' | 'done';
+  summary?: string;
+  durationMs?: number;
+}
 
 interface RecommendationSectionProps {
   marketGroup: MarketGroup;
@@ -55,12 +64,16 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
 
   const [direction, setDirection] = useState<RecommendationDirection>('IMPROVE');
   const [phase, setPhase] = useState<Phase>('idle');
+  const [thinkingText, setThinkingText] = useState('');
+  const [toolEntries, setToolEntries] = useState<ToolEntry[]>([]);
   const [progressMsg, setProgressMsg] = useState('');
   const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [error, setError] = useState<SSEError | null>(null);
   const [usage, setUsage] = useState<{ used: number; limit: number } | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [recHistoryKey, setRecHistoryKey] = useState(0);
 
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -76,6 +89,8 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
 
   const handleRecommend = useCallback(() => {
     setPhase('loading');
+    setThinkingText('');
+    setToolEntries([]);
     setProgressMsg('');
     setElapsed(0);
     setResult(null);
@@ -87,10 +102,25 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
       { marketGroup, lang: language, direction },
       {
         onProgress: (_step, message) => setProgressMsg(message),
+        onThinking: (text) => setThinkingText((prev) => prev + text),
+        onToolCall: (info: ToolCallInfo) => {
+          setToolEntries((prev) => [...prev, { tool: info.tool, status: 'running' }]);
+          setThinkingText('');
+        },
+        onToolResult: (info: ToolResultInfo) => {
+          setToolEntries((prev) =>
+            prev.map((e) =>
+              e.tool === info.tool && e.status === 'running'
+                ? { ...e, status: 'done' as const, summary: info.summary, durationMs: info.durationMs }
+                : e,
+            ),
+          );
+        },
         onResult: (data) => {
           setResult(data as RecommendationResult);
           setPhase('result');
           if (usage) setUsage({ ...usage, used: usage.used + 3 });
+          setRecHistoryKey((k) => k + 1);
           onSuccess?.();
         },
         onError: (err) => {
@@ -104,149 +134,259 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
     );
   }, [marketGroup, language, direction, usage, onSuccess]);
 
-  const presets: { key: RecommendationDirection; label: typeof t.portfolio.recImprove; desc: typeof t.portfolio.recImproveDesc }[] = [
+  const presets: { key: RecommendationDirection; label: { ko: string; en: string }; desc: { ko: string; en: string } }[] = [
     {
       key: 'IMPROVE',
-      label: hasHoldings ? t.portfolio.recImprove : t.portfolio.recImproveEmpty,
-      desc: hasHoldings ? t.portfolio.recImproveDesc : t.portfolio.recImproveDescEmpty,
+      label: hasHoldings ? { ko: '전체 개선', en: 'Improve All' } : { ko: '포트폴리오 구성', en: 'Build Portfolio' },
+      desc: hasHoldings ? { ko: 'AI가 전반적으로 개선해요', en: 'AI improves overall' } : { ko: 'AI가 맞춤 구성해요', en: 'AI builds for you' },
     },
-    { key: 'CONSERVATIVE', label: t.portfolio.recConservative, desc: t.portfolio.recConservativeDesc },
-    { key: 'GROWTH', label: t.portfolio.recGrowth, desc: t.portfolio.recGrowthDesc },
+    { key: 'CONSERVATIVE', label: { ko: '안정 위주', en: 'Play it Safe' }, desc: { ko: '변동성 줄이기', en: 'Reduce swings' } },
+    { key: 'GROWTH', label: { ko: '수익 위주', en: 'Go for Growth' }, desc: { ko: '성장 가능성 위주', en: 'High growth focus' } },
   ];
 
   return (
-    <Card>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-gold" />
-          <h3 className="text-sm font-bold text-zinc-900">{txt(t.portfolio.recTitle)}</h3>
-        </div>
-        <div className="flex items-center gap-3">
-          {usage && (
-            <span className="text-xs font-mono text-zinc-400">
-              {usage.used}/{usage.limit}
-            </span>
-          )}
-          <div className="relative">
-            <button
-              onClick={() => setHelpOpen(!helpOpen)}
-              className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
-            >
-              <HelpCircle className="h-3.5 w-3.5" />
-              {txt(t.portfolio.recHowItWorks)}
-            </button>
-            {helpOpen && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="absolute z-50 right-0 top-7 w-72 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in"
-              >
-                <button onClick={() => setHelpOpen(false)} className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600">
-                  <X className="h-3 w-3" />
-                </button>
-                <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
-                  {txt(t.portfolio.recHowItWorksDetail)}
-                </p>
-              </div>
+    <>
+      <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-50">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-zinc-900">
+              <Bot className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-zinc-900">{txt(t.portfolio.recTitle)}</h3>
+              <p className="text-[11px] text-zinc-400">{txt(hasHoldings ? t.portfolio.recDesc : t.portfolio.recDescEmpty)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {usage && (
+              <span className="text-[11px] font-mono text-zinc-400 bg-zinc-50 px-2 py-0.5 rounded-full">
+                {usage.used}/{usage.limit}
+              </span>
             )}
+            <button
+              onClick={() => setHistoryOpen(true)}
+              className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-600 transition-colors"
+              title={txt(t.portfolio.recHistoryTitle)}
+            >
+              <History className="h-4 w-4" />
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setHelpOpen(!helpOpen)}
+                className="p-1.5 rounded-lg hover:bg-zinc-50 text-zinc-400 hover:text-zinc-600 transition-colors"
+              >
+                <HelpCircle className="h-4 w-4" />
+              </button>
+              {helpOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute z-50 right-0 top-9 w-72 rounded-xl bg-white p-3 shadow-lg border border-zinc-100 animate-fade-in"
+                >
+                  <button onClick={() => setHelpOpen(false)} className="absolute top-2 right-2 text-zinc-400 hover:text-zinc-600">
+                    <X className="h-3 w-3" />
+                  </button>
+                  <p className="text-xs text-zinc-600 leading-relaxed whitespace-pre-line">
+                    {txt(t.portfolio.recHowItWorksDetail)}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <p className="text-xs text-zinc-500 mb-3">
-        {txt(hasHoldings ? t.portfolio.recDesc : t.portfolio.recDescEmpty)}
-      </p>
+        <div className="p-5">
+          {/* Presets — compact horizontal */}
+          <div className="flex gap-2 mb-4">
+            {presets.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => setDirection(p.key)}
+                disabled={phase === 'loading'}
+                className={cn(
+                  'flex-1 rounded-lg border px-3 py-2 text-left transition-all',
+                  direction === p.key
+                    ? 'border-zinc-900 bg-zinc-900 text-white'
+                    : 'border-zinc-100 hover:border-zinc-200 bg-white',
+                  phase === 'loading' && 'opacity-50 pointer-events-none',
+                )}
+              >
+                <span className={cn('text-xs font-medium block', direction === p.key ? 'text-white' : 'text-zinc-700')}>
+                  {txt(p.label)}
+                </span>
+                <span className={cn('text-[10px] block mt-0.5', direction === p.key ? 'text-zinc-400' : 'text-zinc-400')}>
+                  {txt(p.desc)}
+                </span>
+              </button>
+            ))}
+          </div>
 
-      {/* Presets */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        {presets.map((p) => (
-          <button
-            key={p.key}
-            onClick={() => setDirection(p.key)}
-            disabled={phase === 'loading'}
-            className={cn(
-              'rounded-lg border px-3 py-2 text-left transition-all',
-              direction === p.key ? 'border-gold bg-gold-wash' : 'border-zinc-100 hover:border-zinc-200',
-              phase === 'loading' && 'opacity-50 pointer-events-none',
-            )}
+          {/* Run button */}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleRecommend}
+            disabled={!user || phase === 'loading'}
+            className="w-full mb-4 bg-zinc-900 hover:bg-zinc-800 border-zinc-900"
           >
-            <span className={cn('text-sm font-medium', direction === p.key ? 'text-gold' : 'text-zinc-700')}>
-              {txt(p.label)}
-            </span>
-            <span className="block text-xs text-zinc-400 mt-0.5 line-clamp-2">{txt(p.desc)}</span>
+            <Bot className="h-3.5 w-3.5 mr-1.5" />
+            {txt(t.portfolio.recBtn)}
+            <span className="ml-auto text-[11px] opacity-60">{txt(t.portfolio.recCost)}</span>
+          </Button>
+
+          {/* Main output area */}
+          {phase === 'loading' && (
+            <AgentWorkspace
+              thinkingText={thinkingText}
+              toolEntries={toolEntries}
+              progressMsg={progressMsg}
+              elapsed={elapsed}
+              txt={txt}
+            />
+          )}
+          {phase === 'idle' && <IdleState txt={txt} />}
+          {phase === 'error' && error && <ErrorState error={error} txt={txt} onRetry={handleRecommend} />}
+          {phase === 'result' && result && <ResultView result={result} txt={txt} />}
+        </div>
+      </div>
+
+      {/* History modal */}
+      <Modal open={historyOpen} onClose={() => setHistoryOpen(false)} className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <History className="h-4 w-4 text-zinc-400" />
+            <h3 className="text-sm font-bold text-zinc-900">{txt(t.portfolio.recHistoryTitle)}</h3>
+          </div>
+          <button onClick={() => setHistoryOpen(false)} className="text-zinc-400 hover:text-zinc-600">
+            <X className="h-4 w-4" />
           </button>
-        ))}
-      </div>
-
-      {/* Run button */}
-      <div className="mb-3 flex items-center gap-2">
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleRecommend}
-          disabled={!user || phase === 'loading'}
-          className="flex-1"
-        >
-          {txt(t.portfolio.recBtn)}
-        </Button>
-        <span className="text-xs text-zinc-400">{txt(t.portfolio.recCost)}</span>
-      </div>
-
-      {/* Output */}
-      {phase === 'loading' && <LoadingState progressMsg={progressMsg} elapsed={elapsed} />}
-      {phase === 'idle' && <IdleState txt={txt} direction={direction} presets={presets} />}
-      {phase === 'error' && error && <ErrorState error={error} txt={txt} onRetry={handleRecommend} />}
-      {phase === 'result' && result && <ResultView result={result} txt={txt} />}
-    </Card>
+        </div>
+        <RecommendationHistory marketGroup={marketGroup} refreshKey={recHistoryKey} embedded />
+      </Modal>
+    </>
   );
 }
 
-/* ── Sub-components ── */
+/* ── Agent workspace — the "working" view ── */
 
-function LoadingState({ progressMsg, elapsed }: { progressMsg: string; elapsed: number }) {
+const TOOL_LABELS: Record<string, { ko: string; en: string }> = {
+  screen_stocks: { ko: '종목 검색', en: 'Stock screening' },
+  get_stock_detail: { ko: '종목 분석', en: 'Stock analysis' },
+  get_sector_overview: { ko: '섹터 분석', en: 'Sector overview' },
+  evaluate_portfolio: { ko: '리스크 검증', en: 'Risk evaluation' },
+  web_search: { ko: '웹 검색', en: 'Web search' },
+};
+
+function AgentWorkspace({
+  thinkingText,
+  toolEntries,
+  progressMsg,
+  elapsed,
+  txt,
+}: {
+  thinkingText: string;
+  toolEntries: ToolEntry[];
+  progressMsg: string;
+  elapsed: number;
+  txt: (v: { ko: string; en: string }) => string;
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [thinkingText, toolEntries]);
+
   return (
-    <div className="rounded-xl border border-zinc-100 bg-gradient-to-b from-zinc-50/80 to-white p-6">
-      <div className="flex flex-col items-center text-center space-y-4">
-        <div className="relative flex items-center justify-center h-10 w-10">
-          <span className="absolute inset-0 animate-ping rounded-full bg-gold/10" />
-          <span className="relative animate-pulse"><Sparkles className="h-5 w-5 text-gold" /></span>
+    <div className="rounded-xl border border-zinc-100 overflow-hidden">
+      {/* Status bar */}
+      <div className="flex items-center justify-between px-4 py-2 bg-zinc-50/80 border-b border-zinc-100">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/60" />
+            <span className="relative rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <span className="text-[11px] font-medium text-zinc-600">{txt(t.portfolio.recThinkingLabel)}</span>
         </div>
-        <div className="h-5 flex items-center">
-          <p className="text-sm font-medium text-zinc-600 animate-fade-in">{progressMsg || 'AI가 분석을 시작하고 있어요...'}</p>
-        </div>
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="h-1.5 w-1.5 rounded-full bg-gold animate-bounce" style={{ animationDelay: `${i * 150}ms`, animationDuration: '1s' }} />
-          ))}
-        </div>
-        <p className="text-xs font-mono text-zinc-400">{elapsed}s</p>
+        <span className="text-[11px] font-mono text-zinc-400 tabular-nums">{elapsed}s</span>
+      </div>
+
+      {/* Scrollable workspace */}
+      <div ref={scrollRef} className="max-h-[300px] overflow-y-auto p-4 space-y-2.5 bg-white">
+        {/* Tool step entries */}
+        {toolEntries.map((entry, i) => (
+          <div
+            key={`${entry.tool}-${i}`}
+            className={cn(
+              'flex items-start gap-2.5 px-3 py-2 rounded-lg text-xs transition-all',
+              entry.status === 'done' ? 'bg-zinc-50' : 'bg-zinc-50 border border-zinc-100',
+            )}
+          >
+            {entry.status === 'running' ? (
+              <div className="mt-0.5 h-3.5 w-3.5 rounded-full border-2 border-zinc-300 border-t-zinc-600 animate-spin shrink-0" />
+            ) : (
+              <Check className="mt-0.5 h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className={cn('font-medium', entry.status === 'done' ? 'text-zinc-500' : 'text-zinc-700')}>
+                  {txt(TOOL_LABELS[entry.tool] ?? { ko: entry.tool, en: entry.tool })}
+                </span>
+                {entry.status === 'done' && entry.durationMs != null && (
+                  <span className="text-[10px] text-zinc-400 ml-2">{(entry.durationMs / 1000).toFixed(1)}s</span>
+                )}
+              </div>
+              {entry.status === 'done' && entry.summary && (
+                <span className="text-[11px] text-zinc-400 block mt-0.5">{entry.summary}</span>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Progress message */}
+        {progressMsg && !thinkingText && (
+          <p className="text-[11px] text-zinc-400 px-1">{progressMsg}</p>
+        )}
+
+        {/* Thinking text stream */}
+        {thinkingText && (
+          <div className="px-1">
+            <p className="text-[12px] leading-[1.75] text-zinc-500 whitespace-pre-wrap break-words">
+              {thinkingText}
+              <span className="inline-block w-1 h-3.5 bg-zinc-400/50 animate-pulse ml-0.5 -mb-0.5 rounded-sm" />
+            </p>
+          </div>
+        )}
+
+        {/* Empty state while waiting for first event */}
+        {toolEntries.length === 0 && !thinkingText && !progressMsg && (
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400 px-1">
+            <div className="h-3 w-3 rounded-full border-2 border-zinc-300 border-t-zinc-500 animate-spin" />
+            <span>{txt({ ko: '에이전트 시작 중...', en: 'Starting agent...' })}</span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-function IdleState({ txt, direction, presets }: {
-  txt: (v: { ko: string; en: string }) => string;
-  direction: RecommendationDirection;
-  presets: { key: RecommendationDirection; label: { ko: string; en: string } }[];
-}) {
-  const label = presets.find((p) => p.key === direction);
+function IdleState({ txt }: { txt: (v: { ko: string; en: string }) => string }) {
   return (
-    <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50 p-4">
+    <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/30 p-5">
       <div className="flex items-start gap-3">
-        <div className="shrink-0 rounded-full bg-gold-wash p-2">
-          <Sparkles className="h-4 w-4 text-gold" />
+        <div className="shrink-0 flex items-center justify-center h-8 w-8 rounded-lg bg-zinc-100">
+          <Bot className="h-4 w-4 text-zinc-400" />
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-zinc-500">AI</span>
-            <span className="text-[10px] text-zinc-400">·</span>
-            <span className="text-[10px] text-zinc-400">{label ? txt(label.label) : ''}</span>
+            <span className="text-xs font-medium text-zinc-400">Agent</span>
+            <Circle className="h-1 w-1 fill-zinc-300 text-zinc-300" />
+            <span className="text-[10px] text-zinc-400">{txt({ ko: '대기 중', en: 'Idle' })}</span>
           </div>
           <div className="space-y-1.5">
-            <div className="h-3 w-4/5 rounded bg-zinc-200/60" />
-            <div className="h-3 w-3/5 rounded bg-zinc-200/60" />
-            <div className="h-3 w-full rounded bg-zinc-200/60" />
+            <div className="h-2.5 w-4/5 rounded bg-zinc-100" />
+            <div className="h-2.5 w-3/5 rounded bg-zinc-100" />
+            <div className="h-2.5 w-full rounded bg-zinc-100" />
           </div>
           <p className="text-[11px] text-zinc-400 mt-3">{txt(t.portfolio.recPreview)}</p>
         </div>
@@ -260,7 +400,7 @@ function ErrorState({ error, txt, onRetry }: {
   txt: (v: { ko: string; en: string }) => string;
   onRetry: () => void;
 }) {
-  const messageMap: Record<SSEError['code'], typeof t.portfolio.recErrorTemp> = {
+  const messageMap: Record<SSEError['code'], { ko: string; en: string }> = {
     AUTH_EXPIRED: t.portfolio.recErrorAuth,
     CREDIT_EXCEEDED: t.portfolio.recErrorCredit,
     RATE_LIMITED: t.portfolio.recErrorTemp,
@@ -270,9 +410,9 @@ function ErrorState({ error, txt, onRetry }: {
   };
 
   return (
-    <div className="rounded-xl border border-warning/20 bg-warning/5 p-4">
+    <div className="rounded-xl border border-orange-100 bg-orange-50/50 p-4">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+        <AlertTriangle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
         <div className="flex-1">
           <p className="text-sm font-medium text-zinc-700">{txt(messageMap[error.code])}</p>
           {error.retryable && (
@@ -291,9 +431,9 @@ function ErrorState({ error, txt, onRetry }: {
 }
 
 const ACTION_STYLES = {
-  ADD: { bg: 'bg-stable/10', text: 'text-stable', label: t.portfolio.recActionAdd },
+  ADD: { bg: 'bg-emerald-50', text: 'text-emerald-600', label: t.portfolio.recActionAdd },
   KEEP: { bg: 'bg-blue-50', text: 'text-blue-600', label: t.portfolio.recActionKeep },
-  REMOVE: { bg: 'bg-warning/10', text: 'text-warning', label: t.portfolio.recActionRemove },
+  REMOVE: { bg: 'bg-orange-50', text: 'text-orange-600', label: t.portfolio.recActionRemove },
 } as const;
 
 function ResultView({ result, txt }: {
@@ -324,9 +464,7 @@ function ResultView({ result, txt }: {
                     <span className="text-sm font-semibold text-zinc-900">{s.name}</span>
                     <span className="text-xs text-zinc-400">{s.symbol}</span>
                   </div>
-                  <span className="text-sm font-mono font-medium text-zinc-700">
-                    {s.allocationPercent}%
-                  </span>
+                  <span className="text-sm font-mono font-medium text-zinc-700">{s.allocationPercent}%</span>
                 </div>
                 {s.sector && <p className="text-[11px] text-zinc-400 mb-1">{s.sector}</p>}
                 <p className="text-xs text-zinc-600 leading-relaxed">{s.reasoning}</p>
@@ -348,7 +486,7 @@ function ResultView({ result, txt }: {
       <div className="flex items-center gap-2">
         <span className="text-[10px] text-zinc-300">{result.model}</span>
         <span className="text-[10px] text-zinc-300">·</span>
-        <span className="text-[10px] text-zinc-300">{result.toolCallCount} tool calls</span>
+        <span className="text-[10px] text-zinc-300">{result.toolCallCount} tools</span>
       </div>
     </div>
   );

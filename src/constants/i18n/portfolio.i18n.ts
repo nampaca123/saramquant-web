@@ -186,6 +186,8 @@ export const portfolioTexts = {
     en: 'Tap the button above to get an AI portfolio recommendation',
   } satisfies LocalizedText,
   recMaxWait: { ko: '최대 2분 정도 걸릴 수 있어요', en: 'This may take up to 2 minutes' } satisfies LocalizedText,
+  recThinkingLabel: { ko: 'AI가 분석하고 있어요', en: 'AI is analyzing' } satisfies LocalizedText,
+  recToolDone: { ko: '완료', en: 'done' } satisfies LocalizedText,
   recRetryCost: { ko: '3 크레딧이 다시 소모됩니다', en: '3 credits will be used again' } satisfies LocalizedText,
 
   // Recommendation presets

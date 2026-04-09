@@ -65,6 +65,7 @@ export interface AiAnalysisSectionBaseProps {
   maxWaitText: LocalizedText;
   cachedResult?: { preset: string; analysis: string; disclaimer: string };
   sharedEconomyDetail?: LocalizedText;
+  headerExtra?: React.ReactNode;
 }
 
 /* ── Main Component ── */
@@ -83,6 +84,7 @@ export function AiAnalysisSectionBase({
   maxWaitText,
   cachedResult,
   sharedEconomyDetail,
+  headerExtra,
 }: AiAnalysisSectionBaseProps) {
   const txt = useText();
   const { user } = useAuth();
@@ -137,6 +139,7 @@ export function AiAnalysisSectionBase({
               {usage.used}/{usage.limit} {txt(t.stock.aiUsage)}
             </span>
           )}
+          {headerExtra}
           <div className="relative">
             <button
               onClick={() => setHelpOpen(!helpOpen)}
