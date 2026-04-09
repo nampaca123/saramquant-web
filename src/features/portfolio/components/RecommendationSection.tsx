@@ -280,10 +280,8 @@ export function RecommendationSection({ marketGroup, hasHoldings, onSuccess }: R
 /* ── Agent workspace — the "working" view ── */
 
 const TOOL_LABELS: Record<string, { ko: string; en: string }> = {
-  screen_stocks: { ko: '종목 검색', en: 'Stock screening' },
-  get_stock_detail: { ko: '종목 분석', en: 'Stock analysis' },
-  get_sector_overview: { ko: '섹터 분석', en: 'Sector overview' },
-  evaluate_portfolio: { ko: '리스크 검증', en: 'Risk evaluation' },
+  find_candidates: { ko: '종목 검색', en: 'Finding candidates' },
+  validate_portfolio: { ko: '리스크 검증', en: 'Risk validation' },
   web_search: { ko: '웹 검색', en: 'Web search' },
 };
 

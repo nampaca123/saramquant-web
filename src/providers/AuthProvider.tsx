@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { userApi } from '@/lib/api';
+import { ApiError } from '@/lib/api/client';
 import type { UserResponse } from '@/types';
 
 interface AuthContextType {
@@ -44,8 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const me = await userApi.me();
       setUser(me);
-    } catch {
-      setUser(null);
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 401) setUser(null);
     } finally {
       setLoading(false);
       fetchInFlightRef.current = false;
