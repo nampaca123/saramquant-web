@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const SLIDES = [
   { src: '/image/screenshots/sq_stock_detail_risks.png', alt: 'Stock risk analysis dashboard' },
   { src: '/image/screenshots/sq_analysis_cgv.png', alt: 'AI analysis with Monte Carlo simulation' },
-  { src: '/image/screenshots/sq_pf_list.png', alt: 'Portfolio overview with holdings' },
+  { src: '/image/screenshots/sq_ai_agent_en.png', alt: 'AI portfolio builder agent' },
 ];
 
 const INTERVAL = 5000;
